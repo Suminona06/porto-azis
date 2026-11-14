@@ -360,3 +360,4 @@ resource "aws_security_group_rule" "app_from_alb" {
     created_at: '2025-10-12T09:00:00Z',
   },
 ];
+

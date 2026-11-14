@@ -13,3 +13,4 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const rendered = await renderCozyMarkdown(markdown);
   return jsonResponse({ html: rendered.html, toc: rendered.toc });
 };
+

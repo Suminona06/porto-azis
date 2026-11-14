@@ -41,3 +41,4 @@ describe('getUiCopy', () => {
     expect(getUiCopy('id').homeCtaButton).toContain('→');
   });
 });
+

@@ -125,3 +125,4 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
   if (error) return jsonResponse({ error: error.message }, 400);
   return jsonResponse({ ok: true });
 };
+

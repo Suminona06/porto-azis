@@ -85,3 +85,4 @@ export function sanitizeExternalUrlOrFallback(raw: string | null | undefined, fa
 export function sanitizeMediaUrlOrFallback(raw: string | null | undefined, fallback: string): string {
   return isSafeMediaUrl(raw) ? raw!.trim() : fallback;
 }
+

@@ -67,3 +67,4 @@ describe('queries fallback and error handling', () => {
     expect(result.posts).toEqual([]);
   });
 });
+

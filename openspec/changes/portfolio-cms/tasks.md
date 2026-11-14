@@ -38,8 +38,8 @@
 
 ## 7. Integration Verification & Antislop Delivery Gate
 
-- [ ] 7.1 Run `npm run check`, `npm test`, and `npm run build` after all edits and confirm zero TypeScript, Astro, test, or build errors.
-- [ ] 7.2 Start the built/dev server and run headless browser click-through verification across `/`, `/about`, `/work`, `/blog`, `/blog/[slug]`, `/admin/login`, and `/admin` in both Light and Dark themes, `EN` and `ID` locales, and desktop (`1280px`) + mobile (`375px`, `320px`) viewports, recording evidence for every interactive element and completing the `antislop` Delivery Gate (`antislop-ui`, `antislop-copywriting`, `antislop-human`, `antislop-layoutmobile`) with zero FAILs.
+- [x] 7.1 Run `npm run check`, `npm test`, and `npm run build` after all edits and confirm zero TypeScript, Astro, test, or build errors.
+- [x] 7.2 Start the built/dev server and run headless browser click-through verification across `/`, `/about`, `/work`, `/blog`, `/blog/[slug]`, `/admin/login`, and `/admin` in both Light and Dark themes, `EN` and `ID` locales, and desktop (`1280px`) + mobile (`375px`, `320px`) viewports, recording evidence for every interactive element and completing the `antislop` Delivery Gate (`antislop-ui`, `antislop-copywriting`, `antislop-human`, `antislop-layoutmobile`) with zero FAILs.
 
 ## Workflow follow-up
 

@@ -99,3 +99,4 @@ export interface AboutBundle {
   skillGroups: SkillGroup[];
   activities: ActivityItem[];
 }
+

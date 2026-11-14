@@ -6,3 +6,4 @@ declare namespace App {
     user: { id: string; email?: string } | null;
   }
 }
+

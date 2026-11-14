@@ -36,3 +36,4 @@ export async function requireCmsAuth(
 
   return { ok: true, supabase, user };
 }
+

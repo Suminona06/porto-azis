@@ -53,3 +53,4 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   return jsonResponse({ url: urlData.publicUrl, path: objectPath }, 201);
 };
+

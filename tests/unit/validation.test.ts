@@ -52,3 +52,4 @@ describe('validation utilities', () => {
     expect(estimateReadingMinutes(words450)).toBe(3);
   });
 });
+

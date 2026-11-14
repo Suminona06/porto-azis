@@ -261,3 +261,4 @@ create policy "Owner delete portfolio-media"
   on storage.objects for delete
   to authenticated
   using (bucket_id = 'portfolio-media' and auth.role() = 'authenticated');
+

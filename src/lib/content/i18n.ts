@@ -194,3 +194,4 @@ export function pickLocale(
 export function getUiCopy(locale: Locale): UiCopy {
   return locale === 'id' ? ID_COPY : EN_COPY;
 }
+
