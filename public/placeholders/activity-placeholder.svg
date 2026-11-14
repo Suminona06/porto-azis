@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Activity milestone visual placeholder">
+  <rect width="960" height="540" fill="#fafafa"/>
+  <rect x="24" y="24" width="912" height="492" fill="none" stroke="#000000" stroke-width="1"/>
+  <circle cx="480" cy="240" r="68" fill="#ffffff" stroke="#000000" stroke-width="1.25"/>
+  <path d="M452 240h56M480 212v56" stroke="#000000" stroke-width="1.5"/>
+  <text x="480" y="346" text-anchor="middle" font-family="monospace" font-size="15" letter-spacing="3" fill="#52525b">[SAMPLE MILESTONE PHOTO]</text>
+  <text x="480" y="374" text-anchor="middle" font-family="monospace" font-size="13" letter-spacing="2" fill="#52525b">REPLACE VIA /ADMIN CMS</text>
+</svg>

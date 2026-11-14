@@ -1,0 +1,96 @@
+---
+import { pickLocale, type Locale } from '../../lib/content/i18n';
+import type { ActivityItem } from '../../lib/content/types';
+
+interface Props {
+  activities: ActivityItem[];
+  locale: Locale;
+}
+
+const { activities, locale } = Astro.props;
+---
+
+<div class="border-t border-[var(--border-strong)]">
+  {
+    activities.map((item, idx) => {
+      const title = pickLocale(item.title_en, item.title_id, locale);
+      const subtitle = pickLocale(item.subtitle_en, item.subtitle_id, locale);
+      const description = pickLocale(item.description_en, item.description_id, locale);
+      const num = String(idx + 1).padStart(2, '0');
+      const panelId = `activity-panel-${item.id}`;
+      const expanded = idx === 0;
+
+      return (
+        <div class="border-b border-[var(--border-light)]">
+          <button
+            type="button"
+            aria-expanded={expanded ? 'true' : 'false'}
+            aria-controls={panelId}
+            data-accordion-trigger
+            class="flex min-h-20 w-full flex-col justify-between gap-3 bg-transparent px-2 py-5 text-left text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-alt)] sm:flex-row sm:items-center sm:px-4"
+          >
+            <div class="flex flex-wrap items-baseline gap-4">
+              <span class="font-mono-tech text-xs tracking-[0.1em] text-[var(--text-muted)]">
+                /{num}
+              </span>
+              <span class="font-display text-2xl font-semibold sm:text-3xl">
+                {title}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 sm:justify-end">
+              <span class="font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+                {item.category} / {item.year}
+              </span>
+              <span
+                data-accordion-symbol
+                aria-hidden="true"
+                class="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[var(--border-light)] font-mono-tech text-base"
+              >
+                {expanded ? '-' : '+'}
+              </span>
+            </div>
+          </button>
+
+          <div
+            id={panelId}
+            data-accordion-panel
+            hidden={!expanded}
+            class="grid grid-cols-1 gap-6 px-2 pb-8 pt-2 sm:px-4 lg:grid-cols-12 lg:items-start"
+          >
+            <div class="lg:col-span-7">
+              <div class="aspect-[16/9] w-full overflow-hidden border border-[var(--border-light)] bg-[var(--bg-alt)]">
+                <img
+                  src={item.image_url || '/placeholders/activity-placeholder.svg'}
+                  alt={title}
+                  width="960"
+                  height="540"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4 lg:col-span-5 lg:pt-2">
+              {subtitle && (
+                <p class="m-0 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
+                  {subtitle}
+                </p>
+              )}
+              {description && (
+                <p class="m-0 font-sans-ui text-base leading-[1.7] text-[var(--text-secondary)]">
+                  {description}
+                </p>
+              )}
+              <div class="flex flex-wrap gap-6 border-t border-[var(--border-light)] pt-4 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+                {item.location && <span>{item.location}</span>}
+                {item.year && <span>{item.year}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>

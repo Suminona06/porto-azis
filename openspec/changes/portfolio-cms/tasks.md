@@ -2,20 +2,20 @@
 
 ## 1. Project Scaffold & Configuration
 
-- [ ] 1.1 Initialize Astro project with TypeScript strict mode, Tailwind CSS, `@astrojs/vercel` SSR adapter, `@supabase/supabase-js`, `@supabase/ssr`, `marked`, `shiki`, `sanitize-html`, and `vitest`, and verify `npm run check` and `npm run build` succeed on a minimal health route.
-- [ ] 1.2 Add `.env.example` documenting `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`, ensure `.env` is ignored in `.gitignore`, and verify no secrets exist in tracked files.
+- [x] 1.1 Initialize Astro project with TypeScript strict mode, Tailwind CSS, `@astrojs/vercel` SSR adapter, `@supabase/supabase-js`, `@supabase/ssr`, `marked`, `shiki`, `sanitize-html`, and `vitest`, and verify `npm run check` and `npm run build` succeed on a minimal health route.
+- [x] 1.2 Add `.env.example` documenting `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`, ensure `.env` is ignored in `.gitignore`, and verify no secrets exist in tracked files.
 
 ## 2. Design System, Dual-Theme & Navigation Shell (`design-system-theming`)
 
-- [ ] 2.1 Implement `src/styles/global.css` with Light default (`#ffffff`, `#fafafa`, `#000000`, `#09090b`, `#52525b` muted AA) and `[data-theme="dark"]` (`#000000`, `#0a0a0a`, `#ffffff`, `#a1a1aa` muted AA) tokens, Google Fonts (`Playfair Display`, `Plus Jakarta Sans`, `JetBrains Mono`), base `cursor: pointer`, visible `:focus-visible` outlines, and `prefers-reduced-motion` rules; verify WCAG AA contrast (4.5:1+) on all foreground/background pairs using `contrast-check.py`.
-- [ ] 2.2 Implement `src/lib/content/i18n.ts` with `EN` / `ID` UI dictionaries and `pickLocale` fallback helper, plus unit tests in `tests/unit/i18n.test.ts`; verify `npm test` passes.
-- [ ] 2.3 Implement `src/layouts/BaseLayout.astro`, `Navbar.astro`, `ThemeToggle.astro`, `LocaleToggle.astro`, and `Footer.astro` with Light-default anti-FOUC inline script, `HOME`/`ABOUT`/`WORK`/`BLOG` links, labeled accessible mobile drawer with `Escape` handling and focus return, live `GMT +7` clock, `azis` wordmark, and copyright without em dashes; verify keyboard navigation and zero horizontal overflow at 320px, 375px, 768px, and 1280px.
+- [x] 2.1 Implement `src/styles/global.css` with Light default (`#ffffff`, `#fafafa`, `#000000`, `#09090b`, `#52525b` muted AA) and `[data-theme="dark"]` (`#000000`, `#0a0a0a`, `#ffffff`, `#a1a1aa` muted AA) tokens, Google Fonts (`Playfair Display`, `Plus Jakarta Sans`, `JetBrains Mono`), base `cursor: pointer`, visible `:focus-visible` outlines, and `prefers-reduced-motion` rules; verify WCAG AA contrast (4.5:1+) on all foreground/background pairs using `contrast-check.py`.
+- [x] 2.2 Implement `src/lib/content/i18n.ts` with `EN` / `ID` UI dictionaries and `pickLocale` fallback helper, plus unit tests in `tests/unit/i18n.test.ts`; verify `npm test` passes.
+- [x] 2.3 Implement `src/layouts/BaseLayout.astro`, `Navbar.astro`, `ThemeToggle.astro`, `LocaleToggle.astro`, and `Footer.astro` with Light-default anti-FOUC inline script, `HOME`/`ABOUT`/`WORK`/`BLOG` links, labeled accessible mobile drawer with `Escape` handling and focus return, live `GMT +7` clock, `azis` wordmark, and copyright without em dashes; verify keyboard navigation and zero horizontal overflow at 320px, 375px, 768px, and 1280px.
 
 ## 3. Supabase Schema, Auth & Data Layer (`supabase-cms-backend`)
 
-- [ ] 3.1 Author `supabase/migrations/0001_initial_schema.sql` (all 6 tables: `site_profile`, `projects`, `posts`, `about_sections`, `skill_groups`, `activities`; indexes, `updated_at` triggers, RLS policies, and `portfolio-media` Storage bucket + policies) and `supabase/migrations/0002_seed_placeholder.sql` (labeled `[SAMPLE]` rows for Azis Muhamad Fadli); verify SQL syntax and schema alignment against `design.md`.
-- [ ] 3.2 Implement `src/lib/content/placeholder.ts`, `src/lib/content/validation.ts` (safe external URLs, slug normalization, upload MIME/size validation), `src/lib/supabase/server.ts`, `src/lib/supabase/queries.ts`, and `src/middleware.ts` protecting `/admin/*` (except `/admin/login`), plus unit tests in `tests/unit/validation.test.ts` and fallback tests in `tests/unit/queries.test.ts`; verify `npm test` and `npm run check` pass.
-- [ ] 3.3 Implement `src/pages/api/auth/login.ts` and `src/pages/api/auth/logout.ts` using HTTP-only SSR cookies and verify unauthenticated requests to `/admin` redirect to `/admin/login`.
+- [x] 3.1 Author `supabase/migrations/0001_initial_schema.sql` (all 6 tables: `site_profile`, `projects`, `posts`, `about_sections`, `skill_groups`, `activities`; indexes, `updated_at` triggers, RLS policies, and `portfolio-media` Storage bucket + policies) and `supabase/migrations/0002_seed_placeholder.sql` (labeled `[SAMPLE]` rows for Azis Muhamad Fadli); verify SQL syntax and schema alignment against `design.md`.
+- [x] 3.2 Implement `src/lib/content/placeholder.ts`, `src/lib/content/validation.ts` (safe external URLs, slug normalization, upload MIME/size validation), `src/lib/supabase/server.ts`, `src/lib/supabase/queries.ts`, and `src/middleware.ts` protecting `/admin/*` (except `/admin/login`), plus unit tests in `tests/unit/validation.test.ts` and fallback tests in `tests/unit/queries.test.ts`; verify `npm test` and `npm run check` pass.
+- [x] 3.3 Implement `src/pages/api/auth/login.ts` and `src/pages/api/auth/logout.ts` using HTTP-only SSR cookies and verify unauthenticated requests to `/admin` redirect to `/admin/login`.
 
 ## 4. Public Portfolio Pages (`public-portfolio`)
 

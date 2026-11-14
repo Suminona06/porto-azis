@@ -1,0 +1,59 @@
+---
+import { pickLocale, type Locale, type UiCopy } from '../../lib/content/i18n';
+import type { SiteProfile } from '../../lib/content/types';
+
+interface Props {
+  profile: SiteProfile;
+  locale: Locale;
+  copy: UiCopy;
+  isPlaceholder: boolean;
+}
+
+const { profile, locale, copy, isPlaceholder } = Astro.props;
+const roleText = pickLocale(profile.role_en, profile.role_id, locale);
+const bioText = pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale);
+const nameParts = profile.display_name.trim().split(/\s+/);
+const firstName = nameParts[0] || 'AZIS';
+const restName = nameParts.slice(1).join(' ');
+---
+
+<section class="relative border-b border-[var(--border-light)] bg-[var(--bg-primary)]">
+  <div class="mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl flex-col justify-between px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
+    {
+      isPlaceholder && (
+        <div
+          role="note"
+          class="mb-6 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2.5 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
+        >
+          {copy.placeholderNotice}
+        </div>
+      )
+    }
+
+    <div class="my-auto grid grid-cols-1 gap-10 py-6 lg:grid-cols-12 lg:items-end lg:gap-8">
+      <div class="lg:col-span-8">
+        <p class="mb-4 font-mono-tech text-xs tracking-[0.12em] uppercase text-[var(--text-muted)]">
+          {roleText}
+        </p>
+        <h1 class="m-0 font-display text-[clamp(2.75rem,8vw,6.25rem)] leading-[0.94] font-semibold tracking-[-0.03em] uppercase text-[var(--text-primary)]">
+          <span class="block">{firstName}</span>
+          {restName && <span class="block">{restName}</span>}
+        </h1>
+      </div>
+
+      <div class="lg:col-span-4 lg:pb-2">
+        <p class="m-0 max-w-md font-sans-ui text-base leading-[1.65] text-[var(--text-secondary)] sm:text-[17px]">
+          {bioText}
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-end justify-between gap-4 border-t border-[var(--border-light)] pt-5 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
+      <span>{copy.basedIn}</span>
+
+      <div class="hidden h-10 w-px bg-[var(--border-strong)] sm:block" aria-hidden="true"></div>
+
+      <span>{profile.location} - GMT +7</span>
+    </div>
+  </div>
+</section>

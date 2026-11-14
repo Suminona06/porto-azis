@@ -1,0 +1,32 @@
+{
+  "name": "porto-azis",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check && tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.22",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.12",
+    "marked": "^18.2.0",
+    "sanitize-html": "^2.18.2",
+    "shiki": "^4.6.0",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/node": "^24.0.0",
+    "@types/sanitize-html": "^2.16.2",
+    "typescript": "^5.8.3",
+    "vitest": "^5.1.0"
+  }
+}

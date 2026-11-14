@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SelectedWorkList from '../components/portfolio/SelectedWorkList.astro';
+import ContactBanner from '../components/portfolio/ContactBanner.astro';
+import { getUiCopy } from '../lib/content/i18n';
+import { createSupabaseServerClient } from '../lib/supabase/server';
+import { fetchPortfolioProjects, fetchSiteProfile } from '../lib/supabase/queries';
+
+export const prerender = false;
+
+const locale = Astro.locals.locale;
+const copy = getUiCopy(locale);
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+const [profileRes, projectsRes] = await Promise.all([
+  fetchSiteProfile(supabase),
+  fetchPortfolioProjects(supabase),
+]);
+
+const profile = profileRes.data;
+const projects = projectsRes.data;
+const isPlaceholder = profileRes.isPlaceholder || projectsRes.isPlaceholder;
+const totalPadded = String(projects.length).padStart(2, '0');
+---
+
+<BaseLayout
+  title={`${copy.navWork} - ${profile.display_name}`}
+  description={`${copy.worksPageTitle} - ${profile.display_name}`}
+  locale={locale}
+  currentPath={Astro.url.pathname + Astro.url.search}
+  fullName="Azis Muhamad Fadli"
+  wordmark={profile.wordmark}
+  socialLinks={profile.social_links}
+>
+  <section class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] pt-14 pb-12 sm:pt-20 sm:pb-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      {
+        isPlaceholder && (
+          <div
+            role="note"
+            class="mb-8 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2.5 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
+          >
+            {copy.placeholderNotice}
+          </div>
+        )
+      }
+
+      <div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <p class="m-0 mb-3 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+            {copy.worksIndexLabel}
+          </p>
+          <h1 class="m-0 font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] font-semibold tracking-[-0.03em] uppercase text-[var(--text-primary)]">
+            {copy.worksPageTitle}
+          </h1>
+        </div>
+
+        <p class="m-0 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
+          {totalPadded} {copy.worksTotalCompleted}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <SelectedWorkList projects={projects} />
+
+  <section class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-16 sm:py-24">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:items-center lg:px-10">
+      <div class="flex items-baseline gap-6 lg:col-span-6">
+        <span class="font-display text-[clamp(3.5rem,9vw,7rem)] leading-none font-semibold text-[var(--text-primary)]">
+          {totalPadded}
+        </span>
+        <span class="font-mono-tech text-xs tracking-[0.12em] uppercase text-[var(--text-muted)]">
+          {copy.worksTotalCompleted}
+        </span>
+      </div>
+
+      <div class="lg:col-span-6">
+        <p class="m-0 font-mono-tech text-xs leading-[1.8] tracking-[0.1em] uppercase text-[var(--text-secondary)]">
+          {copy.worksEngineeringNote}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <ContactBanner
+    eyebrow={copy.basedIn}
+    title={copy.worksCtaTitle}
+    subtitle={copy.homeCtaSubtitle}
+    ctaLabel={copy.homeCtaButton}
+    ctaUrl={profile.contact_url}
+  />
+</BaseLayout>

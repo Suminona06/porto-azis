@@ -1,0 +1,59 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  locationLabel?: string;
+}
+
+const { eyebrow, title, subtitle, ctaLabel, ctaUrl, locationLabel } = Astro.props;
+const isHttp = /^https?:\/\//i.test(ctaUrl);
+const arrowSplit = ctaLabel.replace(/\s*→\s*$/, '');
+const hasArrow = ctaLabel.includes('→');
+---
+
+<section class="bg-[var(--bg-primary)] py-20 sm:py-28 lg:py-32">
+  <div class="mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6">
+    {
+      eyebrow && (
+        <p class="m-0 mb-4 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+          {eyebrow}
+        </p>
+      )
+    }
+
+    <h2 class="m-0 font-display text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
+      {title}
+    </h2>
+
+    {
+      subtitle && (
+        <p class="m-0 mt-5 max-w-xl font-mono-tech text-xs leading-[1.7] tracking-[0.08em] uppercase text-[var(--text-muted)]">
+          {subtitle}
+        </p>
+      )
+    }
+
+    <div class="mt-9">
+      <a
+        href={ctaUrl}
+        target={isHttp ? '_blank' : undefined}
+        rel={isHttp ? 'noopener noreferrer' : undefined}
+        class="button-primary"
+      >
+        <span>{arrowSplit}</span>
+        {hasArrow && <span aria-hidden="true" class="button-primary-arrow">&rarr;</span>}
+      </a>
+    </div>
+
+    {
+      locationLabel && (
+        <p class="m-0 mt-10 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
+          {locationLabel}
+        </p>
+      )
+    }
+  </div>
+</section>

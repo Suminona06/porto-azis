@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/portfolio/HeroSection.astro';
+import StatementReveal from '../components/portfolio/StatementReveal.astro';
+import TiltedMarquee from '../components/portfolio/TiltedMarquee.astro';
+import QuoteTechCircle from '../components/portfolio/QuoteTechCircle.astro';
+import SelectedWorkList from '../components/portfolio/SelectedWorkList.astro';
+import ContactBanner from '../components/portfolio/ContactBanner.astro';
+import { getUiCopy, pickLocale } from '../lib/content/i18n';
+import { createSupabaseServerClient } from '../lib/supabase/server';
+import { fetchPortfolioProjects, fetchSiteProfile } from '../lib/supabase/queries';
+
+export const prerender = false;
+
+const locale = Astro.locals.locale;
+const copy = getUiCopy(locale);
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+const [profileRes, projectsRes] = await Promise.all([
+  fetchSiteProfile(supabase),
+  fetchPortfolioProjects(supabase),
+]);
+
+const profile = profileRes.data;
+const isPlaceholder = profileRes.isPlaceholder || projectsRes.isPlaceholder;
+
+const featured = projectsRes.data.filter((p) => p.featured_on_home);
+const homeProjects = (featured.length > 0 ? featured : projectsRes.data).slice(0, 4);
+
+const statementText = pickLocale(profile.statement_en, profile.statement_id, locale);
+const quoteText = pickLocale(profile.circle_quote_en, profile.circle_quote_id, locale);
+---
+
+<BaseLayout
+  title={`${profile.display_name} - ${pickLocale(profile.role_en, profile.role_id, locale)}`}
+  description={pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale)}
+  locale={locale}
+  currentPath={Astro.url.pathname + Astro.url.search}
+  fullName="Azis Muhamad Fadli"
+  wordmark={profile.wordmark}
+  socialLinks={profile.social_links}
+>
+  <HeroSection
+    profile={profile}
+    locale={locale}
+    copy={copy}
+    isPlaceholder={isPlaceholder}
+  />
+
+  <StatementReveal statement={statementText} />
+
+  <TiltedMarquee roles={profile.marquee_roles} stack={profile.marquee_stack} />
+
+  <QuoteTechCircle
+    quote={quoteText}
+    heading={copy.mostFavoriteTech}
+    techItems={profile.favorite_tech}
+  />
+
+  <SelectedWorkList
+    heading={copy.selectedWorkHeading}
+    projects={homeProjects}
+    viewAllHref="/work"
+    viewAllLabel={copy.viewAllWork}
+  />
+
+  <ContactBanner
+    eyebrow={copy.basedIn}
+    title={copy.homeCtaTitle}
+    subtitle={copy.homeCtaSubtitle}
+    ctaLabel={copy.homeCtaButton}
+    ctaUrl={profile.contact_url}
+  />
+</BaseLayout>

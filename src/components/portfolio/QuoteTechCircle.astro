@@ -1,0 +1,159 @@
+---
+import type { FavoriteTechItem } from '../../lib/content/types';
+
+interface Props {
+  quote: string;
+  heading: string;
+  techItems: FavoriteTechItem[];
+}
+
+const { quote, heading, techItems } = Astro.props;
+
+function getTechGlyph(slug: string): { path: string; color: string } {
+  const key = slug.trim().toLowerCase();
+  if (key.includes('linux')) {
+    return {
+      color: '#D97706',
+      path: 'M12 3a4 4 0 0 0-4 4v3l-3 5a2 2 0 0 0 1.7 3h10.6A2 2 0 0 0 19 15l-3-5V7a4 4 0 0 0-4-4zm-1.5 5.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zm3 0a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5z',
+    };
+  }
+  if (key.includes('docker')) {
+    return {
+      color: '#2496ED',
+      path: 'M3 13h14c.6 0 1.1-.4 1.3-.9l1.4-2.1h-2.2V7h-3V4h-3v3H8.5V4h-3v3H3v6zm3.5-4h2v2h-2V9zm3 0h2v2h-2V9zm3 0h2v2h-2V9zm-6-3h2v2h-2V6zm3 0h2v2h-2V6zM3 15c1.5 3.5 5 5 9 5s7.5-1.5 9-5H3z',
+    };
+  }
+  if (key.includes('kube')) {
+    return {
+      color: '#326CE5',
+      path: 'M12 2l7.5 4.2v8.6L12 19l-7.5-4.2V6.2L12 2zm0 4.5v4l3.5-2m-3.5 2l-3.5-2m3.5 2v4.5',
+    };
+  }
+  if (key.includes('terraform')) {
+    return {
+      color: '#7B42BC',
+      path: 'M4 4l6 3.5v7L4 11V4zm7.5 4.2L17.5 11.7v7l-6-3.5v-7zM11.5 1.5l6 3.5v5.5l-6-3.5V1.5zM18.5 8l3-1.8v6.5l-3 1.8V8z',
+    };
+  }
+  if (key.includes('aws')) {
+    return {
+      color: '#FF9900',
+      path: 'M6 12a4 4 0 0 1 7.8-1.2A3.5 3.5 0 0 1 18 14.5H6.5A2.5 2.5 0 0 1 6 12zm-2 5.5c4.5 2 11.5 2 16 0',
+    };
+  }
+  return {
+    color: '#2563EB',
+    path: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 5v8m-4-4h8',
+  };
+}
+---
+
+<section
+  class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] py-20 sm:py-28"
+  data-circle-section
+>
+  <div class="mx-auto flex max-w-5xl flex-col items-center px-4 text-center sm:px-6">
+    <div class="relative flex h-64 w-64 items-center justify-center sm:h-80 sm:w-80">
+      <svg
+        class="h-full w-full -rotate-90"
+        viewBox="0 0 260 260"
+        aria-hidden="true"
+      >
+        <circle
+          cx="130"
+          cy="130"
+          r="122"
+          fill="none"
+          stroke="var(--border-light)"
+          stroke-width="1"
+        />
+        <circle
+          data-progress-ring
+          cx="130"
+          cy="130"
+          r="122"
+          fill="none"
+          stroke="var(--border-strong)"
+          stroke-width="1.5"
+          stroke-dasharray="766.55"
+          stroke-dashoffset="191.64"
+          class="transition-[stroke-dashoffset] duration-300"
+        />
+      </svg>
+
+      <blockquote class="m-0 max-w-[20ch] px-6 font-display text-lg leading-[1.3] font-semibold uppercase text-[var(--text-primary)] sm:text-xl">
+        {quote}
+      </blockquote>
+    </div>
+
+    <div class="mt-14 w-full max-w-2xl">
+      <p class="m-0 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+        {heading}
+      </p>
+
+      <ul class="m-0 mt-8 flex list-none flex-wrap items-center justify-center gap-6 p-0 sm:gap-10">
+        {
+          techItems.map((tech) => {
+            const glyph = getTechGlyph(tech.slug);
+            return (
+              <li class="flex min-w-[88px] flex-col items-center gap-2">
+                <div
+                  tabindex="0"
+                  aria-label={tech.name}
+                  style={`color: ${glyph.color}`}
+                  class="tech-logo inline-flex h-12 w-12 items-center justify-center border border-[var(--border-light)] bg-[var(--bg-alt)] p-2.5"
+                >
+                  <svg
+                    class="h-7 w-7"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d={glyph.path} />
+                  </svg>
+                </div>
+                <span class="font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+                  {tech.name}
+                </span>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const prefersReduced =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sections = document.querySelectorAll('[data-circle-section]');
+    if (!sections.length) return;
+
+    sections.forEach(function (section) {
+      const ring = section.querySelector('[data-progress-ring]');
+      if (!ring) return;
+      const circumference = 766.55;
+
+      if (prefersReduced) {
+        ring.style.strokeDashoffset = '0';
+        return;
+      }
+
+      function onScroll() {
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight || 800;
+        const progress = Math.max(0.15, Math.min(1, (vh - rect.top) / (vh + rect.height * 0.5)));
+        ring.style.strokeDashoffset = String(circumference * (1 - progress));
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    });
+  })();
+</script>

@@ -1,0 +1,53 @@
+---
+import type { Locale } from '../../lib/content/i18n';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+
+function buildLocaleHref(targetLocale: Locale): string {
+  const url = new URL(currentPath || '/', 'http://localhost');
+  url.searchParams.set('lang', targetLocale);
+  return `${url.pathname}${url.search}`;
+}
+
+const enHref = buildLocaleHref('en');
+const idHref = buildLocaleHref('id');
+---
+
+<div
+  class="inline-flex items-center border border-[var(--border-light)]"
+  role="group"
+  aria-label="Language switch"
+>
+  <a
+    href={enHref}
+    data-locale-link="en"
+    aria-current={locale === 'en' ? 'true' : undefined}
+    class:list={[
+      'inline-flex min-h-11 min-w-11 items-center justify-center px-3 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
+      locale === 'en'
+        ? 'bg-[var(--bg-inverse)] font-medium text-[var(--text-inverse)]'
+        : 'text-[var(--text-muted)] hover:bg-[var(--hover-surface)] hover:text-[var(--text-primary)]',
+    ]}
+  >
+    EN
+  </a>
+  <span class="h-4 w-px bg-[var(--border-light)]" aria-hidden="true"></span>
+  <a
+    href={idHref}
+    data-locale-link="id"
+    aria-current={locale === 'id' ? 'true' : undefined}
+    class:list={[
+      'inline-flex min-h-11 min-w-11 items-center justify-center px-3 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
+      locale === 'id'
+        ? 'bg-[var(--bg-inverse)] font-medium text-[var(--text-inverse)]'
+        : 'text-[var(--text-muted)] hover:bg-[var(--hover-surface)] hover:text-[var(--text-primary)]',
+    ]}
+  >
+    ID
+  </a>
+</div>

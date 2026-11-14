@@ -1,0 +1,120 @@
+---
+import type { UiCopy } from '../../lib/content/i18n';
+
+export interface SocialLinkItem {
+  label: string;
+  url: string;
+}
+
+interface Props {
+  copy: UiCopy;
+  fullName?: string;
+  wordmark?: string;
+  socialLinks?: SocialLinkItem[];
+}
+
+const {
+  copy,
+  fullName = 'Azis Muhamad Fadli',
+  wordmark = 'azis',
+  socialLinks = [
+    { label: 'GITHUB', url: 'https://github.com/azisfadli-placeholder' },
+    { label: 'LINKEDIN', url: 'https://linkedin.com/in/azisfadli-placeholder' },
+    { label: 'EMAIL', url: 'mailto:azis.placeholder@example.com' },
+  ],
+} = Astro.props;
+
+const year = new Date().getFullYear();
+
+function formatJakartaTime(): string {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Jakarta',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(new Date());
+  } catch {
+    return '00:00:00';
+  }
+}
+
+const initialTime = formatJakartaTime();
+---
+
+<footer class="border-t border-[var(--border-light)] bg-[var(--bg-primary)] text-[var(--text-primary)]">
+  <div class="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+      <div class="space-y-1 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+        <p class="m-0">&copy; {year} {fullName}. All rights reserved.</p>
+        <p class="m-0">
+          LOCAL TIME: GMT +7 - <time id="footer-gmt7-clock">{initialTime}</time>
+        </p>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a
+          href="/admin"
+          class="inline-flex min-h-11 items-center border border-[var(--border-light)] px-4 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)] no-underline transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+        >
+          {copy.adminLinkLabel}
+        </a>
+      </div>
+    </div>
+
+    <div class="overflow-hidden py-4 text-center">
+      <p
+        aria-hidden="true"
+        class="m-0 font-display text-[clamp(4.25rem,21vw,13.5rem)] leading-[0.88] font-semibold tracking-[-0.04em] text-[var(--text-primary)] select-none"
+      >
+        {wordmark}
+      </p>
+    </div>
+
+    <div class="flex flex-col justify-between gap-4 border-t border-[var(--border-light)] pt-6 sm:flex-row sm:items-center">
+      <p class="m-0 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+        {copy.basedIn}
+      </p>
+
+      <ul class="m-0 flex list-none flex-wrap items-center gap-5 p-0">
+        {
+          socialLinks.map((item) => {
+            const isHttp = /^https?:\/\//i.test(item.url);
+            return (
+              <li>
+                <a
+                  href={item.url}
+                  target={isHttp ? '_blank' : undefined}
+                  rel={isHttp ? 'noopener noreferrer' : undefined}
+                  class="inline-flex min-h-11 items-center font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] underline underline-offset-4 transition-colors hover:text-[var(--text-muted)]"
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script is:inline>
+  (function () {
+    const el = document.getElementById('footer-gmt7-clock');
+    if (!el) return;
+    const fmt = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Jakarta',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    function tick() {
+      el.textContent = fmt.format(new Date());
+    }
+    tick();
+    window.setInterval(tick, 1000);
+  })();
+</script>

@@ -1,0 +1,149 @@
+---
+import '../styles/global.css';
+import { getUiCopy, type Locale } from '../lib/content/i18n';
+import Navbar from '../components/layout/Navbar.astro';
+import Footer, { type SocialLinkItem } from '../components/layout/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  currentPath: string;
+  fullName?: string;
+  wordmark?: string;
+  socialLinks?: SocialLinkItem[];
+  hideFooter?: boolean;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  locale,
+  currentPath,
+  fullName,
+  wordmark,
+  socialLinks,
+  hideFooter = false,
+  noindex = false,
+} = Astro.props;
+
+const copy = getUiCopy(locale);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      (function () {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (_e) {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <a href="#main-content" class="skip-link">{copy.skipToContent}</a>
+
+    <Navbar locale={locale} copy={copy} currentPath={currentPath} />
+
+    <main id="main-content" class="pt-16">
+      <slot />
+    </main>
+
+    {
+      !hideFooter && (
+        <Footer
+          copy={copy}
+          fullName={fullName}
+          wordmark={wordmark}
+          socialLinks={socialLinks}
+        />
+      )
+    }
+
+    <script is:inline>
+      (function () {
+        function getTheme() {
+          return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        }
+
+        function syncThemeButtons() {
+          const current = getTheme();
+          document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+            const lightWord = btn.getAttribute('data-label-light') || 'LIGHT';
+            const darkWord = btn.getAttribute('data-label-dark') || 'DARK';
+            const prefix = btn.getAttribute('data-label-prefix') || 'Theme';
+            const word = current === 'dark' ? darkWord : lightWord;
+            btn.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
+            btn.setAttribute('aria-label', prefix + ': ' + word);
+
+            const labelEl = btn.querySelector('[data-theme-label]');
+            if (labelEl) labelEl.textContent = word;
+
+            const sun = btn.querySelector('[data-theme-icon="sun"]');
+            const moon = btn.querySelector('[data-theme-icon="moon"]');
+            if (sun && moon) {
+              if (current === 'dark') {
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+              } else {
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+              }
+            }
+          });
+        }
+
+        function applyTheme(next) {
+          if (next === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+          try {
+            localStorage.setItem('theme', next);
+          } catch (_e) {}
+          syncThemeButtons();
+        }
+
+        syncThemeButtons();
+
+        document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const next = getTheme() === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+          });
+        });
+
+        document.querySelectorAll('[data-locale-link]').forEach(function (link) {
+          link.addEventListener('click', function () {
+            const nextLocale = link.getAttribute('data-locale-link');
+            if (nextLocale === 'en' || nextLocale === 'id') {
+              document.cookie = 'locale=' + nextLocale + '; path=/; max-age=31536000; SameSite=Lax';
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

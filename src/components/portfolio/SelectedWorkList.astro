@@ -1,0 +1,183 @@
+---
+import type { ProjectItem } from '../../lib/content/types';
+
+interface Props {
+  heading?: string;
+  projects: ProjectItem[];
+  viewAllHref?: string;
+  viewAllLabel?: string;
+}
+
+const { heading, projects, viewAllHref, viewAllLabel } = Astro.props;
+const defaultBanner = projects[0]?.banner_url || '/placeholders/work-placeholder.svg';
+const defaultCaption = projects[0] ? `${projects[0].year} / ${projects[0].title}` : '';
+---
+
+<section class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] py-16 sm:py-24" data-work-section>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+    {
+      (heading || (viewAllHref && viewAllLabel)) && (
+        <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+          {heading && (
+            <h2 class="m-0 font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.08] font-semibold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
+              {heading}
+            </h2>
+          )}
+          {viewAllHref && viewAllLabel && (
+            <a
+              href={viewAllHref}
+              class="inline-flex min-h-11 items-center gap-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] underline underline-offset-4 transition-colors hover:text-[var(--text-muted)]"
+            >
+              {viewAllLabel}
+            </a>
+          )}
+        </div>
+      )
+    }
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
+      <ul class="m-0 list-none border-t border-[var(--border-strong)] p-0 lg:col-span-8">
+        {
+          projects.map((project, index) => {
+            const num = String(index + 1).padStart(2, '0');
+            return (
+              <li class="border-b border-[var(--border-light)]">
+                <a
+                  href={project.external_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-project-row
+                  data-banner={project.banner_url}
+                  data-caption={`${project.year} / ${project.title}`}
+                  data-original-title={project.title}
+                  aria-label={`${project.title} (${project.tech_stack.join(', ')})`}
+                  class="group flex min-h-24 flex-col justify-between gap-3 px-2 py-6 no-underline transition-colors hover:bg-[var(--bg-alt)] sm:px-4 sm:py-7 md:flex-row md:items-center md:gap-6"
+                >
+                  <div class="flex min-w-0 flex-1 flex-col gap-2">
+                    <div class="flex flex-wrap items-center justify-between gap-3 md:justify-start">
+                      <span class="font-mono-tech text-xs tracking-[0.1em] text-[var(--text-muted)]">
+                        /{num}
+                      </span>
+                      <span class="font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)] md:hidden">
+                        {project.tech_stack.slice(0, 3).join(' / ')}
+                      </span>
+                    </div>
+
+                    <h3 class="m-0 font-display text-2xl leading-[1.2] font-semibold tracking-tight text-[var(--text-primary)] sm:text-3xl">
+                      <span data-scramble-text>{project.title}</span>
+                    </h3>
+                  </div>
+
+                  <div class="flex shrink-0 flex-wrap items-center gap-4 md:justify-end">
+                    <span class="hidden font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)] md:inline">
+                      {project.tech_stack.join(' / ')}
+                    </span>
+                    <span class="font-mono-tech text-xs tracking-[0.08em] text-[var(--text-muted)]">
+                      {project.year}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      class="font-mono-tech text-sm text-[var(--text-primary)] transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      &rarr;
+                    </span>
+                  </div>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <aside class="hidden lg:sticky lg:top-24 lg:col-span-4 lg:block" aria-hidden="true">
+        <div class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-3">
+          <div class="aspect-[16/10] w-full overflow-hidden border border-[var(--border-light)] bg-[var(--bg-primary)]">
+            <img
+              data-work-preview-img
+              src={defaultBanner}
+              alt=""
+              width="640"
+              height="400"
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover transition-opacity duration-300"
+            />
+          </div>
+          <p
+            data-work-preview-caption
+            class="m-0 mt-3 truncate font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]"
+          >
+            {defaultCaption}
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const prefersReduced =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+    document.querySelectorAll('[data-work-section]').forEach(function (section) {
+      const previewImg = section.querySelector('[data-work-preview-img]');
+      const previewCaption = section.querySelector('[data-work-preview-caption]');
+      const rows = section.querySelectorAll('[data-project-row]');
+
+      function activateRow(row) {
+        const banner = row.getAttribute('data-banner');
+        const caption = row.getAttribute('data-caption');
+        if (previewImg && banner && previewImg.getAttribute('src') !== banner) {
+          previewImg.setAttribute('src', banner);
+        }
+        if (previewCaption && caption) {
+          previewCaption.textContent = caption;
+        }
+      }
+
+      function scrambleTitle(row) {
+        if (prefersReduced) return;
+        const target = row.querySelector('[data-scramble-text]');
+        const original = row.getAttribute('data-original-title') || '';
+        if (!target || !original) return;
+
+        let frame = 0;
+        const totalFrames = 10;
+        const existing = Number(row.getAttribute('data-scramble-timer') || '0');
+        if (existing) window.clearInterval(existing);
+
+        const timer = window.setInterval(function () {
+          frame += 1;
+          const revealLength = Math.floor((frame / totalFrames) * original.length);
+          let nextText = '';
+          for (let i = 0; i < original.length; i += 1) {
+            if (i < revealLength || original[i] === ' ') {
+              nextText += original[i];
+            } else {
+              nextText += chars[Math.floor(Math.random() * chars.length)];
+            }
+          }
+          target.textContent = nextText;
+          if (frame >= totalFrames) {
+            window.clearInterval(timer);
+            target.textContent = original;
+          }
+        }, 22);
+
+        row.setAttribute('data-scramble-timer', String(timer));
+      }
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          activateRow(row);
+          scrambleTitle(row);
+        });
+        row.addEventListener('focus', function () {
+          activateRow(row);
+        });
+      });
+    });
+  })();
+</script>

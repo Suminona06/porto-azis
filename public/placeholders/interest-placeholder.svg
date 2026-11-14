@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Homelab and personal interest placeholder">
+  <rect width="800" height="600" fill="#fafafa"/>
+  <rect x="24" y="24" width="752" height="552" fill="none" stroke="#000000" stroke-width="1"/>
+  <rect x="140" y="130" width="520" height="300" fill="#ffffff" stroke="#000000" stroke-width="1.25"/>
+  <line x1="140" y1="210" x2="660" y2="210" stroke="#000000" stroke-width="1"/>
+  <line x1="140" y1="290" x2="660" y2="290" stroke="#000000" stroke-width="1"/>
+  <line x1="140" y1="370" x2="660" y2="370" stroke="#000000" stroke-width="1"/>
+  <circle cx="610" cy="170" r="6" fill="#000000"/>
+  <circle cx="610" cy="250" r="6" fill="#000000"/>
+  <circle cx="610" cy="330" r="6" fill="#000000"/>
+  <text x="400" y="485" text-anchor="middle" font-family="monospace" font-size="15" letter-spacing="3" fill="#52525b">[PLACEHOLDER HOMELAB SNAPSHOT]</text>
+</svg>
