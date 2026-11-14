@@ -1,0 +1,48 @@
+---
+interface Props {
+  html: string;
+}
+
+const { html } = Astro.props;
+---
+
+<div class="prose-editorial" set:html={html} />
+
+<div class="sr-only" aria-live="polite" data-copy-live-region></div>
+
+<script is:inline>
+  (function () {
+    const liveRegion = document.querySelector('[data-copy-live-region]');
+    document.querySelectorAll('[data-copy-code]').forEach(function (btn) {
+      if (btn.getAttribute('data-copy-bound') === 'true') return;
+      btn.setAttribute('data-copy-bound', 'true');
+
+      btn.addEventListener('click', async function () {
+        const wrap = btn.closest('.code-block-wrap');
+        const codeEl = wrap ? wrap.querySelector('pre code') : null;
+        if (!codeEl) return;
+
+        const text = codeEl.textContent || '';
+        const defaultLabel = btn.getAttribute('data-copy-label') || 'Copy';
+        const copiedLabel = btn.getAttribute('data-copied-label') || 'Copied';
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            throw new Error('Clipboard API unavailable');
+          }
+
+          btn.textContent = copiedLabel;
+          if (liveRegion) liveRegion.textContent = copiedLabel;
+
+          window.setTimeout(function () {
+            btn.textContent = defaultLabel;
+          }, 1800);
+        } catch (_err) {
+          btn.textContent = defaultLabel;
+        }
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,273 @@
+---
+import type { UiCopy } from '../../lib/content/i18n';
+import type { BlogPost } from '../../lib/content/types';
+
+interface Props {
+  posts: BlogPost[];
+  copy: UiCopy;
+  hasError: boolean;
+}
+
+const { posts, copy, hasError } = Astro.props;
+
+const categories = Array.from(
+  new Set(posts.map((p) => p.category.trim()).filter(Boolean)),
+).sort((a, b) => a.localeCompare(b));
+
+function formatDate(iso: string | null): string {
+  if (!iso) return '';
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    }).format(new Date(iso));
+  } catch {
+    return iso.slice(0, 10);
+  }
+}
+---
+
+<div data-blog-index-root>
+  {
+    hasError ? (
+      <div
+        role="alert"
+        class="border border-[var(--border-strong)] bg-[var(--bg-alt)] p-8 text-center"
+      >
+        <h2 class="m-0 font-display text-2xl font-semibold text-[var(--text-primary)]">
+          {copy.blogErrorTitle}
+        </h2>
+        <p class="mx-auto mt-3 mb-6 max-w-md font-sans-ui text-base text-[var(--text-secondary)]">
+          {copy.blogErrorBody}
+        </p>
+        <button
+          type="button"
+          data-blog-retry
+          class="button-primary"
+        >
+          {copy.blogRetry}
+        </button>
+      </div>
+    ) : posts.length === 0 ? (
+      <div class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-10 text-center">
+        <h2 class="m-0 font-display text-2xl font-semibold text-[var(--text-primary)]">
+          {copy.blogEmptyTitle}
+        </h2>
+        <p class="mx-auto mt-3 mb-0 max-w-md font-sans-ui text-base text-[var(--text-secondary)]">
+          {copy.blogEmptyBody}
+        </p>
+      </div>
+    ) : (
+      <div>
+        <div class="mb-10 flex flex-col gap-5 border-b border-[var(--border-light)] pb-8 lg:flex-row lg:items-end lg:justify-between">
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Blog category filters">
+            <button
+              type="button"
+              data-category-btn="__all"
+              aria-pressed="true"
+              class="min-h-11 border border-[var(--border-strong)] bg-[var(--bg-inverse)] px-4 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-inverse)] transition-colors"
+            >
+              {copy.blogCategoryAll}
+            </button>
+            {categories.map((category) => (
+              <button
+                type="button"
+                data-category-btn={category.toLowerCase()}
+                aria-pressed="false"
+                class="min-h-11 border border-[var(--border-light)] bg-transparent px-4 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          <div class="w-full max-w-sm">
+            <label
+              for="blog-search-input"
+              class="mb-2 block font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]"
+            >
+              {copy.blogSearchLabel}
+            </label>
+            <input
+              id="blog-search-input"
+              type="search"
+              data-blog-search
+              placeholder={copy.blogSearchPlaceholder}
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3.5 py-2 font-sans-ui text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--border-strong)]"
+            />
+          </div>
+        </div>
+
+        <p
+          aria-live="polite"
+          data-blog-count
+          class="m-0 mb-4 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]"
+        >
+          {posts.length} {posts.length === 1 ? 'POST' : 'POSTS'}
+        </p>
+
+        <ul class="m-0 list-none border-t border-[var(--border-strong)] p-0" data-blog-list>
+          {posts.map((post) => {
+            const searchBlob = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase();
+            return (
+              <li
+                data-blog-card
+                data-category={post.category.trim().toLowerCase()}
+                data-search={searchBlob}
+                class="border-b border-[var(--border-light)]"
+              >
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="group block px-3 py-7 no-underline transition-colors hover:bg-[var(--bg-alt)] sm:px-5 sm:py-9"
+                >
+                  <div class="mb-3 flex flex-wrap items-center gap-3 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)]">
+                    <span class="border border-[var(--border-light)] bg-[var(--bg-alt)] px-2.5 py-0.5 text-[var(--text-primary)]">
+                      {post.category}
+                    </span>
+                    <span class="border border-[var(--border-light)] px-2 py-0.5 text-[var(--text-secondary)]">
+                      {post.language.toUpperCase()}
+                    </span>
+                    {post.published_at && <time datetime={post.published_at}>{formatDate(post.published_at)}</time>}
+                    <span>
+                      {post.reading_minutes} {copy.blogReadingTimeSuffix}
+                    </span>
+                  </div>
+
+                  <h2 class="m-0 font-display text-2xl leading-[1.2] font-semibold tracking-tight text-[var(--text-primary)] group-hover:underline group-hover:underline-offset-4 sm:text-3xl">
+                    {post.title}
+                  </h2>
+
+                  {post.excerpt && (
+                    <p class="mt-3 mb-0 max-w-[68ch] font-sans-ui text-base leading-[1.68] text-[var(--text-secondary)]">
+                      {post.excerpt}
+                    </p>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div
+          hidden
+          data-blog-filtered-empty
+          class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-10 text-center"
+        >
+          <h2 class="m-0 font-display text-2xl font-semibold text-[var(--text-primary)]">
+            {copy.blogNoMatchTitle}
+          </h2>
+          <p class="mx-auto mt-3 mb-6 max-w-md font-sans-ui text-base text-[var(--text-secondary)]">
+            {copy.blogNoMatchBody}
+          </p>
+          <button
+            type="button"
+            data-blog-reset
+            class="button-primary"
+          >
+            {copy.blogResetFilters}
+          </button>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.querySelector('[data-blog-index-root]');
+    if (!root) return;
+
+    const retryBtn = root.querySelector('[data-blog-retry]');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function () {
+        window.location.reload();
+      });
+      return;
+    }
+
+    const searchInput = root.querySelector('[data-blog-search]');
+    const catButtons = Array.from(root.querySelectorAll('[data-category-btn]'));
+    const cards = Array.from(root.querySelectorAll('[data-blog-card]'));
+    const filteredEmpty = root.querySelector('[data-blog-filtered-empty]');
+    const resetBtn = root.querySelector('[data-blog-reset]');
+    const countEl = root.querySelector('[data-blog-count]');
+    const listEl = root.querySelector('[data-blog-list]');
+
+    let activeCategory = '__all';
+    let query = '';
+
+    function syncCategoryStyles() {
+      catButtons.forEach(function (btn) {
+        const isSelected = btn.getAttribute('data-category-btn') === activeCategory;
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        if (isSelected) {
+          btn.classList.add('border-[var(--border-strong)]', 'bg-[var(--bg-inverse)]', 'text-[var(--text-inverse)]');
+          btn.classList.remove('border-[var(--border-light)]', 'bg-transparent', 'text-[var(--text-muted)]');
+        } else {
+          btn.classList.remove('border-[var(--border-strong)]', 'bg-[var(--bg-inverse)]', 'text-[var(--text-inverse)]');
+          btn.classList.add('border-[var(--border-light)]', 'bg-transparent', 'text-[var(--text-muted)]');
+        }
+      });
+    }
+
+    function applyFilter() {
+      let visibleCount = 0;
+      const needle = query.trim().toLowerCase();
+
+      cards.forEach(function (card) {
+        const cardCat = card.getAttribute('data-category') || '';
+        const cardSearch = card.getAttribute('data-search') || '';
+        const matchCategory = activeCategory === '__all' || cardCat === activeCategory;
+        const matchQuery = !needle || cardSearch.indexOf(needle) !== -1;
+        const show = matchCategory && matchQuery;
+
+        if (show) {
+          card.removeAttribute('hidden');
+          visibleCount += 1;
+        } else {
+          card.setAttribute('hidden', '');
+        }
+      });
+
+      if (countEl) {
+        countEl.textContent = visibleCount + ' ' + (visibleCount === 1 ? 'POST' : 'POSTS');
+      }
+
+      if (filteredEmpty && listEl) {
+        if (visibleCount === 0) {
+          filteredEmpty.removeAttribute('hidden');
+          listEl.setAttribute('hidden', '');
+        } else {
+          filteredEmpty.setAttribute('hidden', '');
+          listEl.removeAttribute('hidden');
+        }
+      }
+    }
+
+    catButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeCategory = btn.getAttribute('data-category-btn') || '__all';
+        syncCategoryStyles();
+        applyFilter();
+      });
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        query = searchInput.value || '';
+        applyFilter();
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        activeCategory = '__all';
+        query = '';
+        if (searchInput) searchInput.value = '';
+        syncCategoryStyles();
+        applyFilter();
+      });
+    }
+  })();
+</script>

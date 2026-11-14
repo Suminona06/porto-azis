@@ -1,0 +1,285 @@
+---
+import type { Locale } from '../../lib/content/i18n';
+
+interface Props {
+  userEmail: string;
+  locale: Locale;
+}
+
+const { userEmail, locale } = Astro.props;
+const isId = locale === 'id';
+---
+
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+  <div class="mb-8 flex flex-col justify-between gap-4 border-b border-[var(--border-strong)] pb-6 sm:flex-row sm:items-center">
+    <div>
+      <p class="m-0 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+        CMS / WORKSPACE
+      </p>
+      <h1 class="mt-1 mb-1 font-display text-3xl font-semibold text-[var(--text-primary)] sm:text-4xl">
+        {isId ? 'Manajemen Konten' : 'Content Management'}
+      </h1>
+      <p class="m-0 font-mono-tech text-xs text-[var(--text-muted)]">
+        {userEmail}
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="/"
+        class="inline-flex min-h-11 items-center border border-[var(--border-light)] px-4 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] no-underline hover:border-[var(--border-strong)] hover:bg-[var(--hover-surface)]"
+      >
+        {isId ? 'Lihat Situs' : 'View Public Site'}
+      </a>
+
+      <form method="POST" action="/api/auth/logout">
+        <button
+          type="submit"
+          class="inline-flex min-h-11 items-center border border-[var(--border-strong)] bg-[var(--bg-inverse)] px-4 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-inverse)] transition-colors hover:bg-[var(--text-muted)]"
+        >
+          {isId ? 'Keluar' : 'Sign Out'}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div
+    id="cms-status-banner"
+    role="status"
+    aria-live="polite"
+    hidden
+    class="mb-6 flex items-center justify-between gap-4 border border-[var(--border-strong)] bg-[var(--bg-alt)] px-4 py-3 font-sans-ui text-sm text-[var(--text-primary)]"
+  >
+    <span id="cms-status-text"></span>
+    <button
+      type="button"
+      id="cms-status-close"
+      aria-label={isId ? 'Tutup notifikasi' : 'Dismiss status'}
+      class="inline-flex min-h-9 min-w-9 items-center justify-center border border-[var(--border-light)] px-2 font-mono-tech text-xs"
+    >
+      &times;
+    </button>
+  </div>
+
+  <div
+    role="tablist"
+    aria-label="CMS sections"
+    class="mb-8 flex flex-wrap gap-2 border-b border-[var(--border-light)] pb-4"
+  >
+    <button
+      type="button"
+      role="tab"
+      id="tab-btn-blog"
+      aria-selected="true"
+      aria-controls="tab-panel-blog"
+      data-cms-tab="blog"
+      class="min-h-11 border border-[var(--border-strong)] bg-[var(--bg-inverse)] px-5 py-2.5 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-inverse)]"
+    >
+      Blog Posts
+    </button>
+    <button
+      type="button"
+      role="tab"
+      id="tab-btn-projects"
+      aria-selected="false"
+      aria-controls="tab-panel-projects"
+      data-cms-tab="projects"
+      class="min-h-11 border border-[var(--border-light)] bg-transparent px-5 py-2.5 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+    >
+      Projects
+    </button>
+    <button
+      type="button"
+      role="tab"
+      id="tab-btn-about"
+      aria-selected="false"
+      aria-controls="tab-panel-about"
+      data-cms-tab="about"
+      class="min-h-11 border border-[var(--border-light)] bg-transparent px-5 py-2.5 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+    >
+      About &amp; Profile
+    </button>
+  </div>
+
+  <slot />
+</div>
+
+<div
+  id="cms-delete-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="cms-delete-title"
+  hidden
+  class="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/55 p-4"
+>
+  <div class="w-full max-w-md border border-[var(--border-strong)] bg-[var(--bg-primary)] p-6 text-[var(--text-primary)]">
+    <p class="m-0 font-mono-tech text-xs tracking-[0.12em] uppercase text-[var(--text-muted)]">
+      CONFIRM DELETE
+    </p>
+    <h2 id="cms-delete-title" class="mt-2 mb-3 font-display text-2xl font-semibold">
+      {isId ? 'Hapus item ini?' : 'Delete this item?'}
+    </h2>
+    <p id="cms-delete-desc" class="mt-0 mb-6 font-sans-ui text-sm leading-[1.6] text-[var(--text-secondary)]"></p>
+
+    <div class="flex flex-wrap justify-end gap-3">
+      <button
+        type="button"
+        id="cms-delete-cancel"
+        class="min-h-11 border border-[var(--border-light)] bg-transparent px-5 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+      >
+        {isId ? 'Batal' : 'Cancel'}
+      </button>
+      <button
+        type="button"
+        id="cms-delete-confirm"
+        class="min-h-11 border border-[var(--border-strong)] bg-[var(--bg-inverse)] px-5 py-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-inverse)]"
+      >
+        {isId ? 'Ya, Hapus' : 'Confirm Delete'}
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const statusBanner = document.getElementById('cms-status-banner');
+    const statusText = document.getElementById('cms-status-text');
+    const statusClose = document.getElementById('cms-status-close');
+    const modal = document.getElementById('cms-delete-modal');
+    const modalDesc = document.getElementById('cms-delete-desc');
+    const modalCancel = document.getElementById('cms-delete-cancel');
+    const modalConfirm = document.getElementById('cms-delete-confirm');
+
+    let pendingDeleteFn = null;
+    let lastFocusedBeforeModal = null;
+
+    function showStatus(message, isError) {
+      if (!statusBanner || !statusText) return;
+      statusText.textContent = (isError ? 'Error: ' : '') + message;
+      statusBanner.removeAttribute('hidden');
+      statusBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (statusClose && statusBanner) {
+      statusClose.addEventListener('click', function () {
+        statusBanner.setAttribute('hidden', '');
+      });
+    }
+
+    async function apiJson(url, method, body) {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+      const data = await res.json().catch(function () {
+        return {};
+      });
+      if (!res.ok) {
+        throw new Error(data.error || 'Request failed with HTTP ' + res.status);
+      }
+      return data;
+    }
+
+    async function uploadImage(file, folder) {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('folder', folder || 'blog');
+      const res = await fetch('/api/cms/upload', {
+        method: 'POST',
+        body: form,
+      });
+      const data = await res.json().catch(function () {
+        return {};
+      });
+      if (!res.ok) {
+        throw new Error(data.error || 'Upload failed.');
+      }
+      return data.url;
+    }
+
+    function openDeleteModal(description, triggerEl, onConfirm) {
+      if (!modal || !modalDesc || !modalCancel) return;
+      lastFocusedBeforeModal = triggerEl || document.activeElement;
+      pendingDeleteFn = onConfirm;
+      modalDesc.textContent = description;
+      modal.removeAttribute('hidden');
+      modalCancel.focus();
+    }
+
+    function closeDeleteModal() {
+      if (!modal) return;
+      modal.setAttribute('hidden', '');
+      pendingDeleteFn = null;
+      if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === 'function') {
+        lastFocusedBeforeModal.focus();
+      }
+      lastFocusedBeforeModal = null;
+    }
+
+    if (modalCancel) {
+      modalCancel.addEventListener('click', closeDeleteModal);
+    }
+
+    if (modal) {
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) closeDeleteModal();
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (modal && !modal.hasAttribute('hidden') && event.key === 'Escape') {
+        event.preventDefault();
+        closeDeleteModal();
+      }
+    });
+
+    if (modalConfirm) {
+      modalConfirm.addEventListener('click', async function () {
+        if (!pendingDeleteFn) return;
+        const run = pendingDeleteFn;
+        modalConfirm.disabled = true;
+        try {
+          await run();
+          closeDeleteModal();
+        } catch (err) {
+          showStatus(err && err.message ? err.message : 'Delete failed.', true);
+          closeDeleteModal();
+        } finally {
+          modalConfirm.disabled = false;
+        }
+      });
+    }
+
+    const tabs = Array.from(document.querySelectorAll('[data-cms-tab]'));
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const key = tab.getAttribute('data-cms-tab');
+        tabs.forEach(function (btn) {
+          const active = btn.getAttribute('data-cms-tab') === key;
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          const panelId = btn.getAttribute('aria-controls');
+          const panel = panelId ? document.getElementById(panelId) : null;
+          if (panel) {
+            if (active) panel.removeAttribute('hidden');
+            else panel.setAttribute('hidden', '');
+          }
+          if (active) {
+            btn.classList.add('border-[var(--border-strong)]', 'bg-[var(--bg-inverse)]', 'text-[var(--text-inverse)]');
+            btn.classList.remove('border-[var(--border-light)]', 'bg-transparent', 'text-[var(--text-muted)]');
+          } else {
+            btn.classList.remove('border-[var(--border-strong)]', 'bg-[var(--bg-inverse)]', 'text-[var(--text-inverse)]');
+            btn.classList.add('border-[var(--border-light)]', 'bg-transparent', 'text-[var(--text-muted)]');
+          }
+        });
+      });
+    });
+
+    window.__cms = {
+      apiJson,
+      uploadImage,
+      showStatus,
+      openDeleteModal,
+    };
+  })();
+</script>

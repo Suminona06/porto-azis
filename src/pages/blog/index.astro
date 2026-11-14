@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogIndexClient from '../../components/blog/BlogIndexClient.astro';
+import { getUiCopy } from '../../lib/content/i18n';
+import { createSupabaseServerClient } from '../../lib/supabase/server';
+import { fetchPublishedPosts, fetchSiteProfile } from '../../lib/supabase/queries';
+
+export const prerender = false;
+
+const locale = Astro.locals.locale;
+const copy = getUiCopy(locale);
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+const [profileRes, postsRes] = await Promise.all([
+  fetchSiteProfile(supabase),
+  fetchPublishedPosts(supabase),
+]);
+
+const profile = profileRes.data;
+const isPlaceholder = postsRes.isPlaceholder;
+---
+
+<BaseLayout
+  title={`${copy.navBlog} - ${profile.display_name}`}
+  description={copy.blogPageSubtitle}
+  locale={locale}
+  currentPath={Astro.url.pathname + Astro.url.search}
+  fullName="Azis Muhamad Fadli"
+  wordmark={profile.wordmark}
+  socialLinks={profile.social_links}
+>
+  <section class="bg-[var(--bg-primary)] py-14 sm:py-20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-10">
+      {
+        isPlaceholder && (
+          <div
+            role="note"
+            class="mb-8 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2.5 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
+          >
+            {copy.placeholderNotice}
+          </div>
+        )
+      }
+
+      <div class="mb-12 border-b border-[var(--border-light)] pb-10">
+        <p class="m-0 mb-3 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+          {copy.blogIndexLabel}
+        </p>
+        <h1 class="m-0 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
+          {copy.blogPageTitle}
+        </h1>
+        <p class="mt-4 mb-0 max-w-2xl font-sans-ui text-base leading-[1.65] text-[var(--text-secondary)] sm:text-[17px]">
+          {copy.blogPageSubtitle}
+        </p>
+      </div>
+
+      <BlogIndexClient
+        posts={postsRes.posts}
+        copy={copy}
+        hasError={postsRes.hasError}
+      />
+    </div>
+  </section>
+</BaseLayout>

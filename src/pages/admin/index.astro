@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminShell from '../../components/admin/AdminShell.astro';
+import PostEditor from '../../components/admin/PostEditor.astro';
+import ProjectManager from '../../components/admin/ProjectManager.astro';
+import AboutManager from '../../components/admin/AboutManager.astro';
+import { createSupabaseServerClient } from '../../lib/supabase/server';
+import {
+  fetchAboutData,
+  fetchAllPostsForAdmin,
+  fetchPortfolioProjects,
+  fetchSiteProfile,
+} from '../../lib/supabase/queries';
+
+export const prerender = false;
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/admin/login', 302);
+}
+
+const locale = Astro.locals.locale;
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+const [postsRes, projectsRes, profileRes, aboutRes] = await Promise.all([
+  fetchAllPostsForAdmin(supabase),
+  fetchPortfolioProjects(supabase),
+  fetchSiteProfile(supabase),
+  fetchAboutData(supabase),
+]);
+---
+
+<BaseLayout
+  title="CMS Admin - Azis Muhamad Fadli"
+  description="Content management dashboard for portfolio, projects, and blog articles."
+  locale={locale}
+  currentPath={Astro.url.pathname}
+  hideFooter
+  noindex
+>
+  <AdminShell userEmail={user.email || 'Owner'} locale={locale}>
+    <PostEditor initialPosts={postsRes.posts} />
+    <ProjectManager initialProjects={projectsRes.data} />
+    <AboutManager profile={profileRes.data} about={aboutRes.data} />
+  </AdminShell>
+</BaseLayout>

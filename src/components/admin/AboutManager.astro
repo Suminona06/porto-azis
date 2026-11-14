@@ -1,0 +1,486 @@
+---
+import type { AboutBundle, SiteProfile } from '../../lib/content/types';
+
+interface Props {
+  profile: SiteProfile;
+  about: AboutBundle;
+}
+
+const { profile, about } = Astro.props;
+const { sections, skillGroups, activities } = about;
+---
+
+<section
+  id="tab-panel-about"
+  role="tabpanel"
+  aria-labelledby="tab-btn-about"
+  hidden
+  class="space-y-12"
+>
+  <form id="cms-profile-form" class="space-y-5 border border-[var(--border-light)] bg-[var(--bg-alt)] p-5 sm:p-7">
+    <h2 class="mt-0 mb-2 font-display text-2xl font-semibold text-[var(--text-primary)]">
+      Home Profile &amp; Contact Settings
+    </h2>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div>
+        <label for="prof-display-name" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Display Name
+        </label>
+        <input id="prof-display-name" type="text" value={profile.display_name} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-wordmark" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Footer Wordmark
+        </label>
+        <input id="prof-wordmark" type="text" value={profile.wordmark} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-location" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Location
+        </label>
+        <input id="prof-location" type="text" value={profile.location} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-role-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Role Tagline (EN)
+        </label>
+        <input id="prof-role-en" type="text" value={profile.role_en} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-role-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Role Tagline (ID Optional)
+        </label>
+        <input id="prof-role-id" type="text" value={profile.role_id} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-bio-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Hero Bio (EN)
+        </label>
+        <textarea id="prof-bio-en" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{profile.hero_bio_en}</textarea>
+      </div>
+      <div>
+        <label for="prof-bio-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Hero Bio (ID Optional)
+        </label>
+        <textarea id="prof-bio-id" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{profile.hero_bio_id}</textarea>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-statement-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Statement Reveal (EN)
+        </label>
+        <textarea id="prof-statement-en" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{profile.statement_en}</textarea>
+      </div>
+      <div>
+        <label for="prof-statement-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Statement Reveal (ID Optional)
+        </label>
+        <textarea id="prof-statement-id" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{profile.statement_id}</textarea>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-quote-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Circle Quote (EN)
+        </label>
+        <input id="prof-quote-en" type="text" value={profile.circle_quote_en} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-quote-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Circle Quote (ID Optional)
+        </label>
+        <input id="prof-quote-id" type="text" value={profile.circle_quote_id} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-marquee-roles" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Marquee Roles (comma separated)
+        </label>
+        <input id="prof-marquee-roles" type="text" value={profile.marquee_roles.join(', ')} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-marquee-stack" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Marquee Tech Stack (comma separated)
+        </label>
+        <input id="prof-marquee-stack" type="text" value={profile.marquee_stack.join(', ')} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="prof-contact-url" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          GET IN TOUCH External URL (mailto: or https://)
+        </label>
+        <input id="prof-contact-url" type="text" value={profile.contact_url} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="prof-social-json" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Social Links JSON
+        </label>
+        <textarea id="prof-social-json" rows="2" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]">{JSON.stringify(profile.social_links)}</textarea>
+      </div>
+    </div>
+
+    <input id="prof-fav-json" type="hidden" value={JSON.stringify(profile.favorite_tech)} />
+
+    <div class="flex justify-end">
+      <button type="submit" class="button-primary">Save Site Profile</button>
+    </div>
+  </form>
+
+  <form id="cms-about-form" class="space-y-5 border border-[var(--border-light)] bg-[var(--bg-alt)] p-5 sm:p-7">
+    <h2 class="mt-0 mb-2 font-display text-2xl font-semibold text-[var(--text-primary)]">
+      About Narrative &amp; Portraits
+    </h2>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-headline-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Headline (EN)
+        </label>
+        <input id="about-headline-en" type="text" value={sections.headline_en} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="about-headline-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Headline (ID Optional)
+        </label>
+        <input id="about-headline-id" type="text" value={sections.headline_id} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-profile-img" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Profile Portrait URL
+        </label>
+        <input id="about-profile-img" type="text" value={sections.profile_image_url} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="about-profile-file" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Upload Profile Portrait
+        </label>
+        <input id="about-profile-file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-journey-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Journey Paragraphs (EN)
+        </label>
+        <textarea id="about-journey-en" rows="5" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.journey_en}</textarea>
+      </div>
+      <div>
+        <label for="about-journey-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Journey Paragraphs (ID Optional)
+        </label>
+        <textarea id="about-journey-id" rows="5" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.journey_id}</textarea>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-philosophy-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Engineering Statement (EN)
+        </label>
+        <textarea id="about-philosophy-en" rows="2" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.philosophy_en}</textarea>
+      </div>
+      <div>
+        <label for="about-philosophy-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Engineering Statement (ID Optional)
+        </label>
+        <textarea id="about-philosophy-id" rows="2" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.philosophy_id}</textarea>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-interest-en" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Personal Interest (EN)
+        </label>
+        <textarea id="about-interest-en" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.interest_en}</textarea>
+      </div>
+      <div>
+        <label for="about-interest-id" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Personal Interest (ID Optional)
+        </label>
+        <textarea id="about-interest-id" rows="3" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]">{sections.interest_id}</textarea>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label for="about-interest-img" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Interest Photo URL
+        </label>
+        <input id="about-interest-img" type="text" value={sections.interest_image_url} class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+      <div>
+        <label for="about-interest-file" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Upload Interest Photo
+        </label>
+        <input id="about-interest-file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" class="button-primary">Save About Copy</button>
+    </div>
+  </form>
+
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <div class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-5 sm:p-7">
+      <h2 class="mt-0 mb-4 font-display text-2xl font-semibold text-[var(--text-primary)]">
+        Skill Groups
+      </h2>
+      <ul class="m-0 mb-6 list-none border-t border-[var(--border-light)] p-0">
+        {
+          skillGroups.map((sg) => (
+            <li class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-light)] py-3">
+              <div>
+                <p class="m-0 font-semibold text-sm text-[var(--text-primary)]">{sg.title_en}</p>
+                <p class="m-0 font-mono-tech text-xs text-[var(--text-muted)]">{sg.items.join(', ')}</p>
+              </div>
+              <button
+                type="button"
+                data-delete-entity="skill_group"
+                data-entity-id={sg.id}
+                class="min-h-11 border border-[var(--border-light)] px-3 py-1 font-mono-tech text-xs uppercase text-[var(--text-muted)] hover:border-[var(--border-strong)]"
+              >
+                Delete
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+
+      <form id="cms-skill-form" class="space-y-3 border-t border-[var(--border-light)] pt-4">
+        <label for="skill-title-en" class="block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Add Skill Category (EN)
+        </label>
+        <input id="skill-title-en" type="text" required class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+
+        <label for="skill-items" class="block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Skills (comma separated)
+        </label>
+        <input id="skill-items" type="text" required class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]" />
+
+        <button type="submit" class="button-primary">Add Skill Group</button>
+      </form>
+    </div>
+
+    <div class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-5 sm:p-7">
+      <h2 class="mt-0 mb-4 font-display text-2xl font-semibold text-[var(--text-primary)]">
+        Activities &amp; Milestones
+      </h2>
+      <ul class="m-0 mb-6 list-none border-t border-[var(--border-light)] p-0">
+        {
+          activities.map((act) => (
+            <li class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-light)] py-3">
+              <div>
+                <p class="m-0 font-semibold text-sm text-[var(--text-primary)]">{act.title_en}</p>
+                <p class="m-0 font-mono-tech text-xs text-[var(--text-muted)]">
+                  {act.category} &middot; {act.year}
+                </p>
+              </div>
+              <button
+                type="button"
+                data-delete-entity="activity"
+                data-entity-id={act.id}
+                class="min-h-11 border border-[var(--border-light)] px-3 py-1 font-mono-tech text-xs uppercase text-[var(--text-muted)] hover:border-[var(--border-strong)]"
+              >
+                Delete
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+
+      <form id="cms-activity-form" class="space-y-3 border-t border-[var(--border-light)] pt-4">
+        <label for="act-title-en" class="block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Add Activity Title (EN)
+        </label>
+        <input id="act-title-en" type="text" required class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="act-category" class="mb-1 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Category
+            </label>
+            <input id="act-category" type="text" value="WORK" class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+          </div>
+          <div>
+            <label for="act-year" class="mb-1 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Year
+            </label>
+            <input id="act-year" type="text" value="2025" class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+          </div>
+        </div>
+
+        <label for="act-desc-en" class="block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+          Description (EN)
+        </label>
+        <textarea id="act-desc-en" rows="2" class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"></textarea>
+
+        <button type="submit" class="button-primary">Add Milestone</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const profileForm = document.getElementById('cms-profile-form');
+    const aboutForm = document.getElementById('cms-about-form');
+    const skillForm = document.getElementById('cms-skill-form');
+    const activityForm = document.getElementById('cms-activity-form');
+    const profFile = document.getElementById('about-profile-file');
+    const intFile = document.getElementById('about-interest-file');
+
+    if (profFile) {
+      profFile.addEventListener('change', async function () {
+        const f = profFile.files && profFile.files[0];
+        if (!f) return;
+        try {
+          const url = await window.__cms.uploadImage(f, 'about');
+          document.getElementById('about-profile-img').value = url;
+          window.__cms.showStatus('Portrait uploaded.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Upload failed.', true);
+        }
+      });
+    }
+
+    if (intFile) {
+      intFile.addEventListener('change', async function () {
+        const f = intFile.files && intFile.files[0];
+        if (!f) return;
+        try {
+          const url = await window.__cms.uploadImage(f, 'about');
+          document.getElementById('about-interest-img').value = url;
+          window.__cms.showStatus('Interest photo uploaded.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Upload failed.', true);
+        }
+      });
+    }
+
+    if (profileForm) {
+      profileForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        try {
+          const socialLinks = JSON.parse(document.getElementById('prof-social-json').value || '[]');
+          const favTech = JSON.parse(document.getElementById('prof-fav-json').value || '[]');
+          await window.__cms.apiJson('/api/cms/about', 'PUT', {
+            action: 'update_profile',
+            display_name: document.getElementById('prof-display-name').value,
+            wordmark: document.getElementById('prof-wordmark').value,
+            location: document.getElementById('prof-location').value,
+            role_en: document.getElementById('prof-role-en').value,
+            role_id: document.getElementById('prof-role-id').value,
+            hero_bio_en: document.getElementById('prof-bio-en').value,
+            hero_bio_id: document.getElementById('prof-bio-id').value,
+            statement_en: document.getElementById('prof-statement-en').value,
+            statement_id: document.getElementById('prof-statement-id').value,
+            circle_quote_en: document.getElementById('prof-quote-en').value,
+            circle_quote_id: document.getElementById('prof-quote-id').value,
+            marquee_roles: document.getElementById('prof-marquee-roles').value,
+            marquee_stack: document.getElementById('prof-marquee-stack').value,
+            contact_url: document.getElementById('prof-contact-url').value,
+            social_links: socialLinks,
+            favorite_tech: favTech,
+          });
+          window.__cms.showStatus('Site profile updated.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Save failed.', true);
+        }
+      });
+    }
+
+    if (aboutForm) {
+      aboutForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        try {
+          await window.__cms.apiJson('/api/cms/about', 'PUT', {
+            action: 'update_about',
+            headline_en: document.getElementById('about-headline-en').value,
+            headline_id: document.getElementById('about-headline-id').value,
+            profile_image_url: document.getElementById('about-profile-img').value,
+            journey_en: document.getElementById('about-journey-en').value,
+            journey_id: document.getElementById('about-journey-id').value,
+            philosophy_en: document.getElementById('about-philosophy-en').value,
+            philosophy_id: document.getElementById('about-philosophy-id').value,
+            interest_en: document.getElementById('about-interest-en').value,
+            interest_id: document.getElementById('about-interest-id').value,
+            interest_image_url: document.getElementById('about-interest-img').value,
+          });
+          window.__cms.showStatus('About copy updated.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Save failed.', true);
+        }
+      });
+    }
+
+    if (skillForm) {
+      skillForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        try {
+          await window.__cms.apiJson('/api/cms/about', 'PUT', {
+            action: 'upsert_skill_group',
+            title_en: document.getElementById('skill-title-en').value,
+            items: document.getElementById('skill-items').value,
+          });
+          window.location.reload();
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Save failed.', true);
+        }
+      });
+    }
+
+    if (activityForm) {
+      activityForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        try {
+          await window.__cms.apiJson('/api/cms/about', 'PUT', {
+            action: 'upsert_activity',
+            title_en: document.getElementById('act-title-en').value,
+            category: document.getElementById('act-category').value,
+            year: document.getElementById('act-year').value,
+            description_en: document.getElementById('act-desc-en').value,
+          });
+          window.location.reload();
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Save failed.', true);
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-delete-entity]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const entity = btn.getAttribute('data-delete-entity');
+        const id = btn.getAttribute('data-entity-id');
+        if (!entity || !id) return;
+        window.__cms.openDeleteModal(
+          'This permanently deletes this entry from Supabase.',
+          btn,
+          async function () {
+            await window.__cms.apiJson('/api/cms/about', 'DELETE', { entity, id });
+            window.location.reload();
+          }
+        );
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,444 @@
+---
+import type { BlogPost } from '../../lib/content/types';
+
+interface Props {
+  initialPosts: BlogPost[];
+}
+
+const { initialPosts } = Astro.props;
+---
+
+<section id="tab-panel-blog" role="tabpanel" aria-labelledby="tab-btn-blog" class="space-y-10">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+    <div class="lg:col-span-4">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="m-0 font-display text-2xl font-semibold text-[var(--text-primary)]">
+          Saved Articles
+        </h2>
+        <button
+          type="button"
+          id="post-new-btn"
+          class="min-h-11 border border-[var(--border-strong)] px-3.5 py-2 font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-primary)] hover:bg-[var(--hover-surface)]"
+        >
+          + New Post
+        </button>
+      </div>
+
+      <div
+        id="cms-posts-empty"
+        hidden={initialPosts.length > 0}
+        class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-6 font-sans-ui text-sm text-[var(--text-secondary)]"
+      >
+        No blog posts in the database yet. Create your first documentation note on the right.
+      </div>
+
+      <ul
+        id="cms-posts-list"
+        hidden={initialPosts.length === 0}
+        class="m-0 list-none border-t border-[var(--border-light)] p-0"
+      >
+        {
+          initialPosts.map((post) => (
+            <li
+              data-post-id={post.id}
+              data-post-json={JSON.stringify(post)}
+              class="border-b border-[var(--border-light)] py-4"
+            >
+              <div class="mb-1.5 flex flex-wrap items-center gap-2 font-mono-tech text-xs uppercase text-[var(--text-muted)]">
+                <span class="border border-[var(--border-light)] px-1.5 py-0.5 text-[var(--text-primary)]">
+                  {post.published ? 'PUBLISHED' : 'DRAFT'}
+                </span>
+                <span>{post.language.toUpperCase()}</span>
+                <span>{post.category}</span>
+              </div>
+              <p class="m-0 font-display text-lg font-semibold text-[var(--text-primary)]">
+                {post.title}
+              </p>
+              <div class="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  data-edit-post
+                  class="min-h-11 border border-[var(--border-light)] px-3 py-1.5 font-mono-tech text-xs uppercase text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  data-delete-post
+                  class="min-h-11 border border-[var(--border-light)] px-3 py-1.5 font-mono-tech text-xs uppercase text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="border border-[var(--border-light)] bg-[var(--bg-alt)] p-5 sm:p-7 lg:col-span-8">
+      <h2 id="post-form-heading" class="mt-0 mb-5 font-display text-2xl font-semibold text-[var(--text-primary)]">
+        Create New Post
+      </h2>
+
+      <form id="cms-post-form" class="space-y-5">
+        <input type="hidden" id="post-id" value="" />
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="post-title" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Title
+            </label>
+            <input
+              id="post-title"
+              type="text"
+              required
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+            />
+          </div>
+
+          <div>
+            <label for="post-slug" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              URL Slug
+            </label>
+            <input
+              id="post-slug"
+              type="text"
+              required
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-sm text-[var(--text-primary)]"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label for="post-category" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Category
+            </label>
+            <input
+              id="post-category"
+              type="text"
+              value="DevOps"
+              required
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+            />
+          </div>
+
+          <div>
+            <label for="post-language" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Article Language
+            </label>
+            <select
+              id="post-language"
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+            >
+              <option value="id">Indonesian (ID)</option>
+              <option value="en">English (EN)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="post-translation-group" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Translation Group UUID (Optional)
+            </label>
+            <input
+              id="post-translation-group"
+              type="text"
+              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="post-excerpt" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+            Excerpt / Summary
+          </label>
+          <textarea
+            id="post-excerpt"
+            rows="2"
+            class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="post-cover-url" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Cover Image URL
+            </label>
+            <input
+              id="post-cover-url"
+              type="url"
+              placeholder="https://..."
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]"
+            />
+          </div>
+
+          <div>
+            <label for="post-cover-file" class="mb-1.5 block font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Upload Cover Image
+            </label>
+            <input
+              id="post-cover-file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-2 font-mono-tech text-xs text-[var(--text-primary)]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <label for="post-markdown" class="font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+              Markdown Body
+            </label>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <label
+                for="post-inline-file"
+                class="inline-flex min-h-11 items-center border border-[var(--border-light)] bg-[var(--bg-primary)] px-3 py-1.5 font-mono-tech text-xs uppercase text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+              >
+                + Insert Image
+              </label>
+              <input
+                id="post-inline-file"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                class="sr-only"
+              />
+
+              <button
+                type="button"
+                id="post-preview-btn"
+                class="min-h-11 border border-[var(--border-light)] bg-[var(--bg-primary)] px-3.5 py-1.5 font-mono-tech text-xs uppercase text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+              >
+                Refresh Preview
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            id="post-markdown"
+            rows="12"
+            required
+            class="w-full border border-[var(--border-light)] bg-[var(--bg-primary)] p-3.5 font-mono-tech text-sm leading-[1.6] text-[var(--text-primary)]"
+          ></textarea>
+        </div>
+
+        <div class="border border-[var(--border-light)] bg-[var(--bg-primary)] p-5">
+          <p class="mt-0 mb-3 border-b border-[var(--border-light)] pb-2 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
+            Markdown Preview
+          </p>
+          <div id="post-preview-pane" class="prose-editorial min-h-24 text-sm">
+            <p class="text-[var(--text-muted)]">Click "Refresh Preview" to preview rendered HTML and syntax highlighting.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border-light)] pt-4">
+          <label for="post-published" class="inline-flex min-h-11 items-center gap-2.5 font-mono-tech text-xs uppercase text-[var(--text-primary)]">
+            <input id="post-published" type="checkbox" class="h-4 w-4 accent-black" />
+            <span>Published (Visible on /blog)</span>
+          </label>
+
+          <button
+            type="submit"
+            id="post-save-btn"
+            class="button-primary"
+          >
+            Save Article
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const form = document.getElementById('cms-post-form');
+    const heading = document.getElementById('post-form-heading');
+    const idInput = document.getElementById('post-id');
+    const titleInput = document.getElementById('post-title');
+    const slugInput = document.getElementById('post-slug');
+    const catInput = document.getElementById('post-category');
+    const langInput = document.getElementById('post-language');
+    const groupInput = document.getElementById('post-translation-group');
+    const excerptInput = document.getElementById('post-excerpt');
+    const coverInput = document.getElementById('post-cover-url');
+    const coverFileInput = document.getElementById('post-cover-file');
+    const inlineFileInput = document.getElementById('post-inline-file');
+    const markdownInput = document.getElementById('post-markdown');
+    const publishedInput = document.getElementById('post-published');
+    const previewBtn = document.getElementById('post-preview-btn');
+    const previewPane = document.getElementById('post-preview-pane');
+    const saveBtn = document.getElementById('post-save-btn');
+    const newBtn = document.getElementById('post-new-btn');
+    const listEl = document.getElementById('cms-posts-list');
+
+    if (!form || !titleInput || !slugInput || !markdownInput) return;
+
+    let slugManuallyEdited = false;
+
+    function slugify(val) {
+      return val
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-{2,}/g, '-');
+    }
+
+    titleInput.addEventListener('input', function () {
+      if (!slugManuallyEdited && !idInput.value) {
+        slugInput.value = slugify(titleInput.value);
+      }
+    });
+
+    slugInput.addEventListener('input', function () {
+      slugManuallyEdited = true;
+    });
+
+    function resetForm() {
+      idInput.value = '';
+      slugManuallyEdited = false;
+      heading.textContent = 'Create New Post';
+      titleInput.value = '';
+      slugInput.value = '';
+      catInput.value = 'DevOps';
+      langInput.value = 'id';
+      groupInput.value = '';
+      excerptInput.value = '';
+      coverInput.value = '';
+      markdownInput.value = '';
+      publishedInput.checked = false;
+      previewPane.innerHTML = '<p class="text-[var(--text-muted)]">Click "Refresh Preview" to preview rendered HTML and syntax highlighting.</p>';
+    }
+
+    if (newBtn) {
+      newBtn.addEventListener('click', resetForm);
+    }
+
+    if (previewBtn && previewPane) {
+      previewBtn.addEventListener('click', async function () {
+        previewBtn.disabled = true;
+        previewPane.textContent = 'Rendering preview...';
+        try {
+          const res = await window.__cms.apiJson('/api/cms/preview', 'POST', {
+            markdown: markdownInput.value || '',
+          });
+          previewPane.innerHTML = res.html || '<p>No content.</p>';
+        } catch (err) {
+          previewPane.textContent = err && err.message ? err.message : 'Preview failed.';
+        } finally {
+          previewBtn.disabled = false;
+        }
+      });
+    }
+
+    if (coverFileInput && coverInput) {
+      coverFileInput.addEventListener('change', async function () {
+        const file = coverFileInput.files && coverFileInput.files[0];
+        if (!file) return;
+        try {
+          window.__cms.showStatus('Uploading cover image...', false);
+          const url = await window.__cms.uploadImage(file, 'blog');
+          coverInput.value = url;
+          window.__cms.showStatus('Cover image uploaded.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Upload failed.', true);
+        } finally {
+          coverFileInput.value = '';
+        }
+      });
+    }
+
+    if (inlineFileInput) {
+      inlineFileInput.addEventListener('change', async function () {
+        const file = inlineFileInput.files && inlineFileInput.files[0];
+        if (!file) return;
+        try {
+          window.__cms.showStatus('Uploading inline image...', false);
+          const url = await window.__cms.uploadImage(file, 'blog');
+          const snippet = '\n![' + file.name.replace(/\.[^.]+$/, '') + '](' + url + ')\n';
+          const start = markdownInput.selectionStart || markdownInput.value.length;
+          markdownInput.value =
+            markdownInput.value.slice(0, start) + snippet + markdownInput.value.slice(start);
+          window.__cms.showStatus('Inline image inserted into Markdown.', false);
+        } catch (err) {
+          window.__cms.showStatus(err && err.message ? err.message : 'Upload failed.', true);
+        } finally {
+          inlineFileInput.value = '';
+        }
+      });
+    }
+
+    if (listEl) {
+      listEl.querySelectorAll('[data-edit-post]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const item = btn.closest('[data-post-id]');
+          const raw = item && item.getAttribute('data-post-json');
+          if (!raw) return;
+          const post = JSON.parse(raw);
+          idInput.value = post.id;
+          slugManuallyEdited = true;
+          heading.textContent = 'Edit Post';
+          titleInput.value = post.title || '';
+          slugInput.value = post.slug || '';
+          catInput.value = post.category || 'DevOps';
+          langInput.value = post.language || 'id';
+          groupInput.value = post.translation_group_id || '';
+          excerptInput.value = post.excerpt || '';
+          coverInput.value = post.cover_image_url || '';
+          markdownInput.value = post.content_markdown || '';
+          publishedInput.checked = Boolean(post.published);
+          titleInput.focus();
+        });
+      });
+
+      listEl.querySelectorAll('[data-delete-post]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const item = btn.closest('[data-post-id]');
+          const id = item && item.getAttribute('data-post-id');
+          if (!id) return;
+          window.__cms.openDeleteModal(
+            'This permanently removes the selected blog post from Supabase.',
+            btn,
+            async function () {
+              await window.__cms.apiJson('/api/cms/posts', 'DELETE', { id });
+              window.location.reload();
+            }
+          );
+        });
+      });
+    }
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      if (!saveBtn) return;
+      saveBtn.disabled = true;
+      saveBtn.setAttribute('aria-busy', 'true');
+      try {
+        const payload = {
+          id: idInput.value || undefined,
+          title: titleInput.value,
+          slug: slugInput.value,
+          category: catInput.value,
+          language: langInput.value,
+          translation_group_id: groupInput.value || null,
+          excerpt: excerptInput.value,
+          cover_image_url: coverInput.value,
+          content_markdown: markdownInput.value,
+          published: publishedInput.checked,
+        };
+        const method = idInput.value ? 'PUT' : 'POST';
+        await window.__cms.apiJson('/api/cms/posts', method, payload);
+        window.location.reload();
+      } catch (err) {
+        window.__cms.showStatus(err && err.message ? err.message : 'Unable to save post.', true);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.removeAttribute('aria-busy');
+      }
+    });
+  })();
+</script>

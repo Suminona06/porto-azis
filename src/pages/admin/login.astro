@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getUiCopy } from '../../lib/content/i18n';
+import { isSupabaseConfigured } from '../../lib/supabase/server';
+
+export const prerender = false;
+
+if (Astro.locals.user) {
+  return Astro.redirect('/admin', 302);
+}
+
+const locale = Astro.locals.locale;
+const copy = getUiCopy(locale);
+const configured = isSupabaseConfigured();
+const isId = locale === 'id';
+---
+
+<BaseLayout
+  title={isId ? 'Masuk CMS Admin - Azis Muhamad Fadli' : 'Admin CMS Sign In - Azis Muhamad Fadli'}
+  description="Single-owner CMS authentication for Azis Muhamad Fadli portfolio."
+  locale={locale}
+  currentPath={Astro.url.pathname}
+  hideFooter
+  noindex
+>
+  <section class="bg-[var(--bg-primary)] py-16 sm:py-24">
+    <div class="mx-auto max-w-md px-4 sm:px-6">
+      <div class="border border-[var(--border-strong)] bg-[var(--bg-alt)] p-7 sm:p-9">
+        <p class="m-0 mb-2 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
+          CMS / AUTHENTICATION
+        </p>
+        <h1 class="m-0 font-display text-3xl font-semibold text-[var(--text-primary)]">
+          {isId ? 'Masuk ke CMS' : 'Sign in to CMS'}
+        </h1>
+        <p class="mt-2 mb-6 font-sans-ui text-sm leading-[1.6] text-[var(--text-secondary)]">
+          {
+            isId
+              ? 'Masuk menggunakan akun pemilik tunggal Supabase untuk mengelola blog, proyek, dan profil.'
+              : 'Sign in with your single-owner Supabase credentials to manage blog notes, projects, and profile content.'
+          }
+        </p>
+
+        {
+          !configured && (
+            <div
+              role="note"
+              class="mb-6 border border-[var(--border-strong)] bg-[var(--bg-primary)] p-4 font-mono-tech text-xs leading-[1.6] text-[var(--text-primary)]"
+            >
+              <strong>[SETUP REQUIRED]</strong>{' '}
+              {isId
+                ? 'Variabel lingkungan PUBLIC_SUPABASE_URL dan PUBLIC_SUPABASE_ANON_KEY belum diatur. Lengkapi .env terlebih dahulu untuk mengaktifkan login CMS.'
+                : 'PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are not configured yet. Configure environment variables first to enable CMS sign in.'}
+            </div>
+          )
+        }
+
+        <div
+          id="login-error-box"
+          role="alert"
+          hidden
+          class="mb-5 border border-[var(--border-strong)] bg-[var(--bg-primary)] px-4 py-3 font-sans-ui text-sm font-medium text-[var(--text-primary)]"
+        ></div>
+
+        <form id="cms-login-form" novalidate class="space-y-5">
+          <div>
+            <label
+              for="login-email"
+              class="mb-2 block font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)]"
+            >
+              Email
+            </label>
+            <input
+              id="login-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="azis@example.com"
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3.5 py-2 font-sans-ui text-sm text-[var(--text-primary)] focus:border-[var(--border-strong)]"
+            />
+          </div>
+
+          <div>
+            <label
+              for="login-password"
+              class="mb-2 block font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)]"
+            >
+              Password
+            </label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              minlength="6"
+              class="min-h-11 w-full border border-[var(--border-light)] bg-[var(--bg-primary)] px-3.5 py-2 font-sans-ui text-sm text-[var(--text-primary)] focus:border-[var(--border-strong)]"
+            />
+          </div>
+
+          <button
+            id="login-submit-btn"
+            type="submit"
+            disabled={!configured}
+            data-default-label={isId ? 'Masuk ke Dashboard' : 'Sign in to Dashboard'}
+            data-loading-label={isId ? 'Memverifikasi...' : 'Signing in...'}
+            class="button-primary w-full justify-center"
+          >
+            {isId ? 'Masuk ke Dashboard' : 'Sign in to Dashboard'}
+          </button>
+        </form>
+
+        <div class="mt-6 border-t border-[var(--border-light)] pt-5">
+          <a
+            href="/"
+            class="inline-flex min-h-11 items-center font-mono-tech text-xs tracking-[0.08em] uppercase text-[var(--text-muted)] no-underline hover:text-[var(--text-primary)]"
+          >
+            &larr; {copy.navHome}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  (function () {
+    const form = document.getElementById('cms-login-form');
+    const emailInput = document.getElementById('login-email');
+    const passInput = document.getElementById('login-password');
+    const errorBox = document.getElementById('login-error-box');
+    const submitBtn = document.getElementById('login-submit-btn');
+    if (!form || !emailInput || !passInput || !errorBox || !submitBtn) return;
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.removeAttribute('hidden');
+    }
+
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.setAttribute('hidden', '');
+    }
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      clearError();
+
+      const email = (emailInput.value || '').trim();
+      const password = passInput.value || '';
+
+      if (!email || !email.includes('@')) {
+        showError('Enter a valid email address.');
+        emailInput.focus();
+        return;
+      }
+      if (!password || password.length < 6) {
+        showError('Password must be at least 6 characters.');
+        passInput.focus();
+        return;
+      }
+
+      const defaultLabel = submitBtn.getAttribute('data-default-label') || 'Sign in';
+      const loadingLabel = submitBtn.getAttribute('data-loading-label') || 'Signing in...';
+      submitBtn.disabled = true;
+      submitBtn.setAttribute('aria-busy', 'true');
+      submitBtn.textContent = loadingLabel;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json().catch(function () {
+          return {};
+        });
+
+        if (!res.ok) {
+          showError(data.error || 'Authentication failed.');
+          submitBtn.disabled = false;
+          submitBtn.removeAttribute('aria-busy');
+          submitBtn.textContent = defaultLabel;
+          return;
+        }
+
+        window.location.assign(data.redirectTo || '/admin');
+      } catch (_err) {
+        showError('Network error while signing in.');
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-busy');
+        submitBtn.textContent = defaultLabel;
+      }
+    });
+  })();
+</script>
