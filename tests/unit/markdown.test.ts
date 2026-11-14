@@ -21,9 +21,14 @@ describe('markdown renderer and sanitizer', () => {
 ## Safe Title
 
 <script>alert('xss')</script>
+
 <img src="x" onerror="alert(1)" />
-[Bad Link](javascript:alert(2))
-<a href="https://example.com" onclick="steal()">Safe Link</a>
+
+[Bad Markdown Link](javascript:alert(2))
+
+<a href="javascript:alert(3)" onclick="steal()">Bad Raw Link</a>
+
+[Safe Link](https://example.com)
 `;
     const result = await renderCozyMarkdown(malicious);
 
@@ -41,7 +46,8 @@ describe('markdown renderer and sanitizer', () => {
     expect(result.html).toContain('code-block-wrap');
     expect(result.html).toContain('data-copy-code');
     expect(result.html).toContain('class="shiki');
-    expect(result.html).toContain('df -h');
-    expect(result.html).toContain('echo hello');
+    const stripped = result.html.replace(/<[^>]*>/g, '');
+    expect(stripped).toContain('df -h');
+    expect(stripped).toContain('echo hello');
   });
 });
