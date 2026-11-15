@@ -2,7 +2,7 @@
 
 ## 1. Library Check & Installation
 
-- [ ] 1.1 Verify `package.json` and `package-lock.json` (`npm` lockfile, Astro v7 without React) and run `npm install gsap`; verify `gsap` is added to `package.json` dependencies and `npm run check` succeeds with `gsap` and `gsap/ScrollTrigger` TypeScript imports.
+- [x] 1.1 Verify `package.json` and `package-lock.json` (`npm` lockfile, Astro v7 without React) and run `npm install gsap`; verify `gsap` is added to `package.json` dependencies and `npm run check` succeeds with `gsap` and `gsap/ScrollTrigger` TypeScript imports.
 - [ ] 1.2 Implement `src/lib/motion/easing.ts` (pure `[0.77, 0, 0.175, 1]` cubic-bezier evaluator and `prefersReducedMotion()` helper) and `src/lib/motion/clock.ts` (`Asia/Jakarta` `hh:mm A (GMT +7)` formatter and minute/second ticker), plus unit tests in `tests/unit/motion-utils.test.ts`; verify `npm test` and `npm run check` pass.
 
 ## 2. Preloader & Curtain Transition
