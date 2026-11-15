@@ -18,6 +18,10 @@ dist/
 npm-debug.log*
 .DS_Store
 
+# Supabase CLI temp state
+supabase/.temp/
+supabase/.branches/
+
 # Node & Astro
 node_modules/
 dist/
@@ -33,3 +37,7 @@ dist/
 # Logs & OS
 npm-debug.log*
 .DS_Store
+
+# Supabase CLI temp state
+supabase/.temp/
+supabase/.branches/
