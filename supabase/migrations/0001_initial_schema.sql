@@ -5,6 +5,7 @@ create extension if not exists "pgcrypto";
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = timezone('utc', now());
@@ -157,75 +158,231 @@ alter table public.activities enable row level security;
 drop policy if exists "Public read site_profile" on public.site_profile;
 create policy "Public read site_profile"
   on public.site_profile for select
+  to anon, authenticated
   using (true);
 
 drop policy if exists "Public read projects" on public.projects;
 create policy "Public read projects"
   on public.projects for select
+  to anon, authenticated
   using (true);
 
 drop policy if exists "Public read published posts" on public.posts;
 create policy "Public read published posts"
   on public.posts for select
-  using (published = true or auth.role() = 'authenticated');
+  to anon
+  using (published = true);
+
+drop policy if exists "Owner read all posts" on public.posts;
+create policy "Owner read all posts"
+  on public.posts for select
+  to authenticated
+  using (
+    published = true
+    or (
+      (select auth.uid()) is not null
+      and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+    )
+  );
 
 drop policy if exists "Public read about_sections" on public.about_sections;
 create policy "Public read about_sections"
   on public.about_sections for select
+  to anon, authenticated
   using (true);
 
 drop policy if exists "Public read skill_groups" on public.skill_groups;
 create policy "Public read skill_groups"
   on public.skill_groups for select
+  to anon, authenticated
   using (true);
 
 drop policy if exists "Public read activities" on public.activities;
 create policy "Public read activities"
   on public.activities for select
+  to anon, authenticated
   using (true);
 
--- Authenticated Single-Owner Write Policies
+-- Authenticated Non-Anonymous Owner Write Policies (split per command to avoid permissive SELECT overlap)
 drop policy if exists "Owner write site_profile" on public.site_profile;
-create policy "Owner write site_profile"
-  on public.site_profile for all
+drop policy if exists "Owner insert site_profile" on public.site_profile;
+create policy "Owner insert site_profile"
+  on public.site_profile for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update site_profile" on public.site_profile;
+create policy "Owner update site_profile"
+  on public.site_profile for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete site_profile" on public.site_profile;
+create policy "Owner delete site_profile"
+  on public.site_profile for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner write projects" on public.projects;
-create policy "Owner write projects"
-  on public.projects for all
+drop policy if exists "Owner insert projects" on public.projects;
+create policy "Owner insert projects"
+  on public.projects for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update projects" on public.projects;
+create policy "Owner update projects"
+  on public.projects for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete projects" on public.projects;
+create policy "Owner delete projects"
+  on public.projects for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner write posts" on public.posts;
-create policy "Owner write posts"
-  on public.posts for all
+drop policy if exists "Owner insert posts" on public.posts;
+create policy "Owner insert posts"
+  on public.posts for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update posts" on public.posts;
+create policy "Owner update posts"
+  on public.posts for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete posts" on public.posts;
+create policy "Owner delete posts"
+  on public.posts for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner write about_sections" on public.about_sections;
-create policy "Owner write about_sections"
-  on public.about_sections for all
+drop policy if exists "Owner insert about_sections" on public.about_sections;
+create policy "Owner insert about_sections"
+  on public.about_sections for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update about_sections" on public.about_sections;
+create policy "Owner update about_sections"
+  on public.about_sections for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete about_sections" on public.about_sections;
+create policy "Owner delete about_sections"
+  on public.about_sections for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner write skill_groups" on public.skill_groups;
-create policy "Owner write skill_groups"
-  on public.skill_groups for all
+drop policy if exists "Owner insert skill_groups" on public.skill_groups;
+create policy "Owner insert skill_groups"
+  on public.skill_groups for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update skill_groups" on public.skill_groups;
+create policy "Owner update skill_groups"
+  on public.skill_groups for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete skill_groups" on public.skill_groups;
+create policy "Owner delete skill_groups"
+  on public.skill_groups for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner write activities" on public.activities;
-create policy "Owner write activities"
-  on public.activities for all
+drop policy if exists "Owner insert activities" on public.activities;
+create policy "Owner insert activities"
+  on public.activities for insert
   to authenticated
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner update activities" on public.activities;
+create policy "Owner update activities"
+  on public.activities for update
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
+drop policy if exists "Owner delete activities" on public.activities;
+create policy "Owner delete activities"
+  on public.activities for delete
+  to authenticated
+  using (
+    (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 -- Supabase Storage Bucket & Policies
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -241,24 +398,41 @@ on conflict (id) do nothing;
 drop policy if exists "Public view portfolio-media" on storage.objects;
 create policy "Public view portfolio-media"
   on storage.objects for select
+  to anon, authenticated
   using (bucket_id = 'portfolio-media');
 
 drop policy if exists "Owner upload portfolio-media" on storage.objects;
 create policy "Owner upload portfolio-media"
   on storage.objects for insert
   to authenticated
-  with check (bucket_id = 'portfolio-media' and auth.role() = 'authenticated');
+  with check (
+    bucket_id = 'portfolio-media'
+    and (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner update portfolio-media" on storage.objects;
 create policy "Owner update portfolio-media"
   on storage.objects for update
   to authenticated
-  using (bucket_id = 'portfolio-media' and auth.role() = 'authenticated')
-  with check (bucket_id = 'portfolio-media' and auth.role() = 'authenticated');
+  using (
+    bucket_id = 'portfolio-media'
+    and (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  )
+  with check (
+    bucket_id = 'portfolio-media'
+    and (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
 drop policy if exists "Owner delete portfolio-media" on storage.objects;
 create policy "Owner delete portfolio-media"
   on storage.objects for delete
   to authenticated
-  using (bucket_id = 'portfolio-media' and auth.role() = 'authenticated');
+  using (
+    bucket_id = 'portfolio-media'
+    and (select auth.uid()) is not null
+    and coalesce(((select auth.jwt()) ->> 'is_anonymous')::boolean, false) = false
+  );
 
