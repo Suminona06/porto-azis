@@ -1,0 +1,28 @@
+# Proposal: Monochrome Editorial Motion System for Homepage
+
+## Why
+
+The homepage (`src/pages/index.astro`) currently relies on static initial rendering and minimal inline scroll listeners (`StatementReveal.astro`), lacking the choreographed editorial entrance, tactile monospace micro-interactions, and layered sticky scroll depth observed in the reference landing page. Introducing a unified GSAP-powered motion system brings cohesive visual rhythm to Azis Muhamad Fadli's portfolio while preserving its existing bilingual (`EN / ID`) Supabase CMS data, Light-default / Dark-toggle theming, and WCAG AA accessibility standards.
+
+## What Changes
+
+- **Motion Runtime Standardization (`gsap`):** Add `gsap` (with `ScrollTrigger`) as the sole client-side animation dependency for this Astro v7 codebase (no React or `framer-motion` installed), coordinated through a clean client controller and `gsap.context()` lifecycle cleanup.
+- **Session-Scoped Multilingual Preloader & Curtain Wipe:** Add a full-viewport preloader on initial `/` visit per browser session (`sessionStorage`) cycling uppercase serif labels (`"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`), paired with a `0%`–`100%` monospace counter, bottom-edge `3px` horizontal progress bar (`scaleX: 0 -> 1`), and an upward vertical curtain wipe (`600ms`, `cubic-bezier(0.77, 0, 0.175, 1)`).
+- **Synchronized 3-Part Hero Entrance Choreography:** Immediately after curtain exit (or on immediate mount when the preloader is skipped), animate `HeroSection.astro` using Azis's localized CMS fields: left-to-right alphanumeric cipher decode on `display_name` (`800ms`), horizontal block-mask sweep (`700ms`, `cubic-bezier(0.77, 0, 0.175, 1)`) on the role subtitle, and staggered word-by-word fade-in (`900ms`) on the hero bio paragraph.
+- **Monospace Micro-Interactions, Live Clock & Header Polish:** Add a `350ms` trailing-character scramble on hover/focus/tap for the hero location label (`profile.location`), a real-time `hh:mm A (GMT +7)` Asia/Jakarta clock in the hero footer, and refine `Navbar.astro` fixed translucent backdrop (`bg-[var(--bg-primary)]/80 backdrop-blur-sm`) with sharp rectangular (`rounded-none`) high-contrast inversion on header action buttons (while preserving `DESIGN.md` `33554400px` pill radius on primary external contact CTAs).
+- **Sticky Hero Overlap & Scroll-Scrubbed Statement Illumination:** Layer the Hero as a sticky base (`position: sticky; top: 0; z-index: 0`) under an opaque, `z-10` `StatementReveal.astro` curtain with a `1px solid var(--border-light)` top hairline border, and upgrade statement illumination to GSAP `ScrollTrigger` bidirectional scrubbing between WCAG AA `--text-muted` and `--text-primary`.
+- **Reduced-Motion Accessibility Guarantee:** Bypass preloader, curtain wipe, cipher scrambles, block mask, and scroll-scrubbing immediately when `prefers-reduced-motion: reduce` is enabled, rendering full-contrast static states from first paint.
+
+## Capabilities
+
+### New Capabilities
+- `landing-page-motion`: Homepage preloader and upward curtain transition, synchronized hero entrance choreography, location scramble micro-interaction, live `hh:mm A (GMT +7)` hero clock, translucent navbar with sharp inverted header controls, sticky hero overlap with `ScrollTrigger` word-by-word statement illumination, and `prefers-reduced-motion` fallbacks integrated with Azis's dual-theme (`Light`/`Dark`) and bilingual (`EN`/`ID`) CMS architecture.
+
+### Modified Capabilities
+<!-- None in openspec/specs/ yet (portfolio-cms remains a separate complete change at 20/20 tasks). -->
+
+## Impact
+
+- **Dependencies:** Adds `gsap` to `package.json` via `npm install gsap` (detected from `package-lock.json`; deferred to implementation Task `1.1`).
+- **Affected Files (during implementation):** `src/pages/index.astro`, `src/layouts/BaseLayout.astro`, `src/components/layout/Navbar.astro`, `src/components/portfolio/HeroSection.astro`, `src/components/portfolio/StatementReveal.astro`, `src/styles/global.css`, plus new client motion modules/preloader component under `src/components/portfolio/` and `src/lib/motion/`.
+- **Compatibility & Guardrails:** Preserves `portfolio-cms` contracts (`SiteProfile` bilingual fields, Light default + Dark toggle tokens, WCAG AA contrast on `--text-muted`, zero horizontal overflow on 320px+ mobile viewports, and zero em dashes in UI copy).
