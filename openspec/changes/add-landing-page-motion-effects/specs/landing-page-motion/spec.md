@@ -2,31 +2,31 @@
 
 ## Purpose
 
-Defines the monochrome editorial motion system and scroll choreography for the portfolio homepage (`/`), delivering a session-scoped multilingual preloader, synchronized hero entrance animations, interactive monospace feedback, live `GMT +7` metadata, and layered sticky scroll depth integrated with Azis Muhamad Fadli's dual-theme (`Light`/`Dark`) and bilingual (`EN`/`ID`) CMS content.
+Defines the monochrome editorial motion system and scroll choreography for the portfolio homepage (`/`), delivering an every-load multilingual preloader, jitter-free GSAP hero entrance animations, interactive monospace feedback, live `GMT +7` metadata, and layered sticky scroll depth integrated with Azis Muhamad Fadli's dual-theme (`Light`/`Dark`) and bilingual (`EN`/`ID`) CMS content.
 
 ## ADDED Requirements
 
 ### Requirement: Multilingual Preloader & Curtain Transition
-The system SHALL display a full-screen `#000000` preloader overlay on the visitor's initial load of `/` per browser session before revealing the hero canvas, unless reduced motion is active.
+The system SHALL display a full-screen `#000000` preloader overlay on every initial load and reload of `/` before revealing the hero canvas, unless `prefers-reduced-motion: reduce` is active. Secondary routes (`/about`, `/work`, `/blog`, `/contact`, `/admin`) SHALL NOT display the preloader overlay.
 
 #### Scenario: Loading progress & localized label cycling
-- **WHEN** the homepage initializes asset loading from `0%` to `100%` on the first `/` visit in the browser session with reduced motion disabled
-- **THEN** a centered uppercase serif label SHALL cycle through localized loading strings (`"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`), paired with a bottom-right `#FFFFFF` monospace percentage counter (`0%`–`100%`) and a full-width `3px` `#FFFFFF` horizontal progress bar pinned to the bottom viewport edge (`scaleX: 0` to `1`).
+- **WHEN** the homepage loads or reloads on `/` with reduced motion disabled
+- **THEN** a centered uppercase serif label SHALL cycle smoothly through localized loading strings (`"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`), paired with a bottom-right `#FFFFFF` monospace percentage counter (`0%`–`100%`) and a full-width `3px` `#FFFFFF` horizontal progress bar pinned to the bottom viewport edge (`scaleX: 0` to `1`).
 
 #### Scenario: Preloader exit wipe
 - **WHEN** loading progress reaches `100%`
-- **THEN** a solid `#FFFFFF` vertical curtain panel SHALL wipe upward across the viewport (`duration: 600ms`, easing `[0.77, 0, 0.175, 1]`) and dismiss the preloader overlay to reveal the hero in the visitor's active Light or Dark theme.
+- **THEN** a solid `#FFFFFF` vertical curtain panel SHALL wipe upward cleanly across the viewport in a single continuous GPU-composited pass (`duration: 600ms`, easing `[0.77, 0, 0.175, 1]`) without scrollbar width jump or velocity stutter to transition into the hero in the visitor's active Light or Dark theme.
 
-#### Scenario: Repeat visits within the same session skip the preloader
-- **WHEN** the visitor reloads `/` or returns to `/` within the same browser session after the preloader has completed once
-- **THEN** the system SHALL skip the preloader overlay and curtain wipe, reveal the hero immediately, and trigger the hero entrance choreography directly.
+#### Scenario: Reloads trigger the preloader smoothly without scroll-restoration or FOUC jitter
+- **WHEN** the visitor reloads `/` (or switches locale on `/` via `/?lang=`) with reduced motion disabled
+- **THEN** the system SHALL stabilize scroll position and scrollbar gutter before first paint, conceal hero entrance elements beneath the `#000000` preloader overlay with zero unstyled hero flash, execute the unbroken preloader and curtain sequence, and launch the hero entrance cleanly.
 
 ### Requirement: Hero Entrance Choreography
-The system SHALL execute a synchronized 3-part entrance sequence on the homepage hero immediately after the preloader curtain exits (or on immediate mount when the preloader is skipped for repeat session visits), binding animations to Azis Muhamad Fadli's localized CMS profile fields (`site_profile`).
+The system SHALL execute a synchronized 3-part GSAP entrance sequence on the homepage hero immediately after the preloader curtain exits (or immediately render static text when `prefers-reduced-motion: reduce` is active), binding animations to Azis Muhamad Fadli's localized CMS profile fields (`site_profile`) with zero layout reflow jitter.
 
 #### Scenario: Primary serif title cipher decode
 - **WHEN** the hero section enters the viewport
-- **THEN** the primary serif headline (`profile.display_name`, defaulting to `AZIS MUHAMAD FADLI`) SHALL animate using a progressive left-to-right character scramble/decode effect (`A-Z`, `0-9` uppercase glyphs) resolving into the exact final characters over `800ms`, while preserving the exact final text in the accessible name for assistive technologies.
+- **THEN** the primary serif headline (`profile.display_name`, defaulting to `AZIS MUHAMAD FADLI`) SHALL animate on GSAP's unified ticker using a progressive left-to-right character scramble/decode effect (`A-Z`, `0-9` uppercase glyphs) rendered inside layout-locked word boxes (`0px` height/wrap shift) resolving into the exact final characters over `800ms`, while preserving the exact final text in the accessible name for assistive technologies.
 
 #### Scenario: Secondary subtitle block mask reveal
 - **WHEN** the primary title decode begins

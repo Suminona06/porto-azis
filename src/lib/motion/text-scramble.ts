@@ -1,5 +1,7 @@
+import gsap from 'gsap';
+
 /**
- * Left-to-right A-Z0-9 cipher decode and trailing-character hover scramble utilities.
+ * GSAP-synchronized left-to-right A-Z0-9 cipher decode and trailing-character hover scramble utilities.
  */
 
 export const CIPHER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -76,82 +78,99 @@ export interface ScrambleOptions {
   onComplete?: () => void;
 }
 
-function runFrameLoop(
+function createFrameTween(
   element: HTMLElement,
   originalText: string,
   durationMs: number,
   frameIntervalMs: number,
   computeFrame: (text: string, progress: number) => string,
   onComplete?: () => void,
-): () => void {
-  let rafId = 0;
-  let cancelled = false;
+): gsap.core.Tween {
+  const proxy = { progress: 0 };
   let lastGlyphUpdate = -frameIntervalMs;
-  const start = performance.now();
+  let lastRendered = '';
 
-  const step = (now: number) => {
-    if (cancelled) return;
-    const elapsed = now - start;
-    const progress = durationMs <= 0 ? 1 : Math.min(1, elapsed / durationMs);
-
-    if (progress >= 1) {
-      element.textContent = originalText;
+  return gsap.to(proxy, {
+    progress: 1,
+    duration: Math.max(0.01, durationMs / 1000),
+    ease: 'none',
+    onStart: () => {
+      const initial = computeFrame(originalText, 0);
+      lastRendered = initial;
+      element.textContent = initial;
+      lastGlyphUpdate = performance.now();
+    },
+    onUpdate: () => {
+      const now = performance.now();
+      if (proxy.progress >= 1 || now - lastGlyphUpdate >= frameIntervalMs) {
+        lastGlyphUpdate = now;
+        const frame = computeFrame(originalText, proxy.progress);
+        if (frame !== lastRendered) {
+          lastRendered = frame;
+          element.textContent = frame;
+        }
+      }
+    },
+    onComplete: () => {
+      if (element.textContent !== originalText) {
+        element.textContent = originalText;
+      }
       onComplete?.();
-      return;
-    }
-
-    if (now - lastGlyphUpdate >= frameIntervalMs) {
-      lastGlyphUpdate = now;
-      element.textContent = computeFrame(originalText, progress);
-    }
-
-    rafId = window.requestAnimationFrame(step);
-  };
-
-  element.textContent = computeFrame(originalText, 0);
-  rafId = window.requestAnimationFrame(step);
-
-  return () => {
-    cancelled = true;
-    if (rafId) {
-      window.cancelAnimationFrame(rafId);
-    }
-    element.textContent = originalText;
-  };
+    },
+  });
 }
 
 /**
- * Runs an 800ms left-to-right A-Z0-9 cipher decode into `targetText` on `element`.
+ * Builds an 800ms GSAP tween for left-to-right A-Z0-9 cipher decode into `targetText` on `element`.
  */
-export function runCipherDecode(
+export function createCipherDecodeTween(
   element: HTMLElement,
   targetText: string,
   options: ScrambleOptions = {},
-): () => void {
-  return runFrameLoop(
+): gsap.core.Tween {
+  return createFrameTween(
     element,
     targetText,
     options.durationMs ?? 800,
-    options.frameIntervalMs ?? 32,
+    options.frameIntervalMs ?? 40,
     computeCipherFrame,
     options.onComplete,
   );
 }
 
 /**
- * Runs a 350ms trailing-character scramble on `element` and resolves cleanly back to `originalText`.
+ * Runs an 800ms GSAP-driven left-to-right A-Z0-9 cipher decode into `targetText` on `element`.
+ */
+export function runCipherDecode(
+  element: HTMLElement,
+  targetText: string,
+  options: ScrambleOptions = {},
+): () => void {
+  const tween = createCipherDecodeTween(element, targetText, options);
+  return () => {
+    tween.kill();
+    element.textContent = targetText;
+  };
+}
+
+/**
+ * Runs a 350ms GSAP-driven trailing-character scramble on `element` and resolves cleanly back to `originalText`.
  */
 export function runTrailingScramble(
   element: HTMLElement,
   originalText: string,
   options: ScrambleOptions = {},
 ): () => void {
-  return runFrameLoop(
+  const tween = createFrameTween(
     element,
     originalText,
     options.durationMs ?? 350,
-    options.frameIntervalMs ?? 32,
+    options.frameIntervalMs ?? 36,
     computeTrailingScrambleFrame,
     options.onComplete,
   );
+  return () => {
+    tween.kill();
+    element.textContent = originalText;
+  };
 }

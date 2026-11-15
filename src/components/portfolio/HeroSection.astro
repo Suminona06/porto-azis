@@ -15,8 +15,8 @@ const roleText = pickLocale(profile.role_en, profile.role_id, locale);
 const bioText = pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale);
 const bioWords = bioText.trim().split(/\s+/).filter(Boolean);
 const nameParts = profile.display_name.trim().split(/\s+/);
-const firstName = (nameParts[0] || 'AZIS').toUpperCase();
-const restName = nameParts.slice(1).join(' ').toUpperCase();
+const firstNameWords = (nameParts[0] || 'AZIS').toUpperCase().split(/\s+/).filter(Boolean);
+const restNameWords = nameParts.slice(1).map((w) => w.toUpperCase()).filter(Boolean);
 const locationLabel = profile.location.trim().toUpperCase();
 const initialJakartaClock = formatJakartaTime12h(new Date());
 ---
@@ -25,7 +25,7 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
   class="sticky top-0 z-0 min-h-[100svh] border-b border-[var(--border-light)] bg-[var(--bg-primary)]"
   data-hero-section
 >
-  <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between px-4 pt-24 pb-8 sm:px-6 lg:px-10 lg:pt-28 lg:pb-12">
+  <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between overflow-x-clip px-4 pt-24 pb-8 sm:px-6 lg:px-10 lg:pt-28 lg:pb-12">
     {
       isPlaceholder && (
         <div
@@ -51,13 +51,43 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
 
         <h1 class="m-0 font-display text-[clamp(2.75rem,8vw,6.25rem)] leading-[0.94] font-semibold tracking-[-0.03em] uppercase text-[var(--text-primary)]">
           <span class="sr-only">{profile.display_name}</span>
-          <span aria-hidden="true" class="block" data-hero-decode data-decode-target={firstName}>
-            {firstName}
+          <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em]">
+            {
+              firstNameWords.map((word) => (
+                <span class="relative inline-block">
+                  <span class="invisible select-none" aria-hidden="true">
+                    {word}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
+                    data-hero-decode
+                    data-decode-target={word}
+                  >
+                    {word}
+                  </span>
+                </span>
+              ))
+            }
           </span>
           {
-            restName && (
-              <span aria-hidden="true" class="block" data-hero-decode data-decode-target={restName}>
-                {restName}
+            restNameWords.length > 0 && (
+              <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em]">
+                {restNameWords.map((word) => (
+                  <span class="relative inline-block">
+                    <span class="invisible select-none" aria-hidden="true">
+                      {word}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
+                      data-hero-decode
+                      data-decode-target={word}
+                    >
+                      {word}
+                    </span>
+                  </span>
+                ))}
               </span>
             )
           }

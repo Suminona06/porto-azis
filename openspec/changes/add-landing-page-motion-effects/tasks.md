@@ -26,6 +26,13 @@
 - [x] 5.1 Enforce `prefers-reduced-motion: reduce` detection and live media-query listener (`ctx.revert()`) in `src/lib/motion/landing-motion.ts` and `src/styles/global.css` so reduced-motion mode bypasses preloader, curtain wipe, cipher decode, block mask, bio stagger, location scramble, and `ScrollTrigger` scrubbing while rendering static `--text-primary` states and live `hh:mm A (GMT +7)` clock updates; verify with emulated `prefers-reduced-motion: reduce` in Chromium headless checks.
 - [x] 5.2 Run `npm run check`, `npm test`, and `npm run build` after final implementation edits, perform headless browser verification across `/`, Light/Dark modes, `EN`/`ID` locales, and `320px`/`375px`/`768px`/`1280px` viewports, and execute the `antislop` Mode `AFTER` audit (`anti-slop/audit-001-YYYY-MM-DD.md`) and Delivery Gate before closing.
 
+## 6. Every-Load Preloader & Jitter-Free GSAP Polish Revision
+
+- [x] 6.1 Update `src/layouts/BaseLayout.astro` (`<head>` inline script: remove `sessionStorage` skip gate so `preloader-active` applies on every `/` load/reload unless reduced motion is active, reset reload scroll restoration manually to `(0, 0)`) and add `scrollbar-gutter: stable` plus clean compositor/reduced-motion safety in `src/styles/global.css`.
+- [x] 6.2 Refactor `src/components/portfolio/PreloaderCurtain.astro` to await cached/fast fonts up front (bounded `160ms`), play a single unbroken `0% -> 100%` GSAP progress curve with GPU `scaleX` tweening, execute one continuous `600ms` GPU `yPercent: 100 -> -100` (`[0.77, 0, 0.175, 1]`, `force3D: true`) curtain sweep without mid-screen stop-and-go hitching, and emit `azis:preloader-complete` seamlessly on exit.
+- [x] 6.3 Refactor `src/lib/motion/text-scramble.ts`, `src/components/portfolio/HeroSection.astro`, and `src/lib/motion/landing-motion.ts` so cipher decodes and trailing scrambles run on GSAP's unified ticker inside layout-locked word wrappers (`0px` bounding box shift / zero line wrap jitter), pre-build the paused Hero entrance timeline behind the preloader (`force3D: true`, smooth opacity + micro-rise bio stagger, `clearProps` cleanup), lock button min-width during location scramble, and verify zero layout shift across reloads.
+- [x] 6.4 Re-run `npm test`, `npm run check`, `npm run build`, and headless Chromium reload/jitter verification (`/` fresh load + reload + `EN`/`ID` + Light/Dark + `320px`/`375px`/`768px`/`1280px` + `prefers-reduced-motion: reduce`), and update the `antislop` Mode `AFTER` audit before closing.
+
 ## Workflow follow-up
 
 - Optionally archive `portfolio-cms` (`openspec archive portfolio-cms`) and later `add-landing-page-motion-effects` once implementation and review requirements are satisfied.

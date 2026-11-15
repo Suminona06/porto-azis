@@ -1,7 +1,8 @@
 ---
 /**
- * Session-scoped monochrome #000000 multilingual preloader and #FFFFFF vertical exit curtain.
- * Hidden immediately via CSS unless html.preloader-active is applied synchronously in <head>.
+ * Every-load monochrome #000000 multilingual preloader and #FFFFFF vertical exit curtain.
+ * Active on initial paint whenever html.preloader-active is applied synchronously in <head>,
+ * and bypassed immediately when prefers-reduced-motion: reduce is active.
  */
 ---
 
@@ -60,16 +61,17 @@
     }
   }
 
-  const STORAGE_KEY = 'azis_preloader_seen';
   const LABELS = ['LOADING', 'MEMUAT', '로딩 중'] as const;
 
-  function markDone(overlay: HTMLElement | null) {
-    try {
-      sessionStorage.setItem(STORAGE_KEY, '1');
-    } catch (_e) {
-      // Ignore storage access errors in strict privacy contexts.
-    }
+  function unlockScroll() {
     document.documentElement.classList.remove('preloader-active');
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'auto';
+    }
+  }
+
+  function markDone(overlay: HTMLElement | null) {
+    unlockScroll();
     if (overlay) {
       overlay.classList.remove('preloader-exiting');
       overlay.classList.add('preloader-done');
@@ -81,6 +83,8 @@
   }
 
   function initPreloader() {
+    window.__azisPreloaderDone = false;
+
     const overlay = document.querySelector<HTMLElement>('[data-preloader-overlay]');
     if (!overlay) {
       window.__azisPreloaderDone = true;
@@ -92,6 +96,10 @@
     if (!active || prefersReducedMotion()) {
       markDone(overlay);
       return;
+    }
+
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
 
     const backdrop = overlay.querySelector<HTMLElement>('[data-preloader-backdrop]');
@@ -108,13 +116,6 @@
     let finished = false;
     let activeTimeline: gsap.core.Timeline | null = null;
 
-    const failsafeTimer = window.setTimeout(() => {
-      if (!finished) {
-        activeTimeline?.kill();
-        complete();
-      }
-    }, 3200);
-
     const mql = getReducedMotionMediaQuery();
     const onReducedMotionChange = (event: MediaQueryListEvent) => {
       if (event.matches && !finished) {
@@ -129,8 +130,16 @@
       finished = true;
       window.clearTimeout(failsafeTimer);
       mql?.removeEventListener('change', onReducedMotionChange);
+      gsap.set([barEl, curtainEl], { clearProps: 'willChange' });
       markDone(overlay);
     };
+
+    const failsafeTimer = window.setTimeout(() => {
+      if (!finished) {
+        activeTimeline?.kill();
+        complete();
+      }
+    }, 3200);
 
     const state = { progress: 0 };
     let lastLabel: (typeof LABELS)[number] = LABELS[0];
@@ -148,65 +157,77 @@
         lastLabel = nextLabel;
         labelEl.textContent = nextLabel;
       }
-
-      barEl.style.transform = `scaleX(${Math.min(1, Math.max(0, state.progress / 100))})`;
     };
+
+    gsap.set(barEl, {
+      scaleX: 0,
+      transformOrigin: '0% 50%',
+      force3D: true,
+      willChange: 'transform',
+    });
+    gsap.set(curtainEl, {
+      yPercent: 100,
+      y: 0,
+      force3D: true,
+      willChange: 'transform',
+    });
 
     const waitForFonts =
       document.fonts && document.fonts.ready
         ? Promise.race([
             document.fonts.ready,
-            new Promise<void>((resolve) => window.setTimeout(resolve, 900)),
+            new Promise<void>((resolve) => window.setTimeout(resolve, 160)),
           ])
         : Promise.resolve();
 
-    const tl = gsap.timeline();
-    activeTimeline = tl;
-
-    tl.to(state, {
-      progress: 92,
-      duration: 0.72,
-      ease: 'power2.out',
-      onUpdate: renderProgress,
-    });
-
     waitForFonts.then(() => {
       if (finished) return;
-      tl.kill();
 
-      const exitTl = gsap.timeline({ onComplete: complete });
-      activeTimeline = exitTl;
+      let backdropRevealed = false;
+      const masterTl = gsap.timeline({ onComplete: complete });
+      activeTimeline = masterTl;
 
-      exitTl
-        .to(state, {
-          progress: 100,
-          duration: 0.24,
-          ease: 'power2.out',
-          onUpdate: renderProgress,
-        })
-        .set(curtainEl, { yPercent: 100, y: 0 })
-        .to(curtainEl, {
-          yPercent: 0,
-          duration: 0.3,
-          ease: editorialEase,
-        })
-        .add(() => {
-          overlay.classList.add('preloader-exiting');
-          overlay.style.backgroundColor = 'transparent';
-          backdrop.style.opacity = '0';
-          backdrop.style.visibility = 'hidden';
-          try {
-            sessionStorage.setItem(STORAGE_KEY, '1');
-          } catch (_e) {
-            // Ignore storage errors.
-          }
-          document.documentElement.classList.remove('preloader-active');
-        })
-        .to(curtainEl, {
-          yPercent: -100,
-          duration: 0.3,
-          ease: editorialEase,
-        });
+      masterTl
+        .to(
+          state,
+          {
+            progress: 100,
+            duration: 0.92,
+            ease: 'power2.inOut',
+            onUpdate: renderProgress,
+          },
+          0,
+        )
+        .to(
+          barEl,
+          {
+            scaleX: 1,
+            duration: 0.92,
+            ease: 'power2.inOut',
+            force3D: true,
+          },
+          0,
+        )
+        .to(
+          curtainEl,
+          {
+            yPercent: -100,
+            duration: 0.6,
+            ease: editorialEase,
+            force3D: true,
+            onUpdate() {
+              if (!backdropRevealed && this.progress() >= 0.5) {
+                backdropRevealed = true;
+                overlay.classList.add('preloader-exiting');
+                overlay.style.backgroundColor = 'transparent';
+                backdrop.style.opacity = '0';
+                backdrop.style.visibility = 'hidden';
+                unlockScroll();
+              }
+            },
+          },
+          '+=0.04',
+        );
     });
   }
 

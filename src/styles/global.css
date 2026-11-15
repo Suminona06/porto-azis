@@ -63,6 +63,8 @@
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-sans);
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
   }
@@ -452,7 +454,7 @@
 
 [data-reveal-word] {
   color: var(--text-muted);
-  transition: color 180ms var(--motion-easing-standard);
+  transition: color 140ms var(--motion-easing-standard);
 }
 
 [data-reveal-word][data-revealed="true"] {
@@ -482,10 +484,17 @@
   }
 }
 
-html.preloader-active,
+html.preloader-active {
+  overscroll-behavior: none;
+  color-scheme: dark;
+  scrollbar-color: #000000 #000000;
+}
+
 html.preloader-active body {
-  overflow: hidden;
-  height: 100%;
+  height: 100svh;
+  overflow: clip;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .preloader-overlay {

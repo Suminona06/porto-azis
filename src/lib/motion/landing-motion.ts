@@ -2,7 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { startJakartaClock } from './clock';
 import { editorialEase, getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
-import { runCipherDecode, runTrailingScramble } from './text-scramble';
+import { createCipherDecodeTween, runTrailingScramble } from './text-scramble';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,8 +14,8 @@ declare global {
 
 /**
  * Orchestrates homepage motion on `/`:
- * - Synchronized 3-part Hero entrance after preloader exit
- * - Interactive 350ms location hover/focus/tap scramble & live GMT +7 clock
+ * - Pre-staged GSAP 3-part Hero entrance timeline triggered cleanly upon preloader curtain exit
+ * - Interactive 350ms GSAP trailing scramble & live GMT +7 clock in Hero footer
  * - Bidirectional ScrollTrigger statement illumination
  * - Strict prefers-reduced-motion static fallback + live media-query listener
  */
@@ -35,43 +35,40 @@ export function initLandingMotion(): () => void {
   const statementWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal-word]'));
 
   let activeCtx: gsap.Context | null = null;
-  let cancelDecodes: Array<() => void> = [];
+  let heroTl: gsap.core.Timeline | null = null;
   let cancelLocationScramble: (() => void) | null = null;
   let entrancePlayed = false;
 
   const stopClock = clockEl ? startJakartaClock(clockEl) : () => {};
 
-  const stopAllTextEffects = () => {
-    for (const cancel of cancelDecodes) {
-      cancel();
-    }
-    cancelDecodes = [];
+  const applyStaticReducedState = () => {
     cancelLocationScramble?.();
     cancelLocationScramble = null;
-  };
-
-  const applyStaticReducedState = () => {
-    stopAllTextEffects();
+    heroTl?.kill();
+    heroTl = null;
     activeCtx?.revert();
     activeCtx = null;
+
+    if (locationBtnEl) {
+      locationBtnEl.style.minWidth = '';
+    }
 
     for (const el of decodeEls) {
       const target = el.dataset.decodeTarget;
       if (target) {
         el.textContent = target;
       }
+      gsap.set(el, { opacity: 1, clearProps: 'opacity,willChange' });
     }
 
     if (roleTextEl) {
-      roleTextEl.style.opacity = '1';
-      gsap.set(roleTextEl, { clearProps: 'opacity' });
+      gsap.set(roleTextEl, { opacity: 1, clearProps: 'opacity' });
     }
     if (roleMaskEl) {
-      gsap.set(roleMaskEl, { scaleX: 0, clearProps: 'transform,transformOrigin' });
+      gsap.set(roleMaskEl, { scaleX: 0, clearProps: 'transform,transformOrigin,willChange' });
     }
     for (const word of bioWordEls) {
-      word.style.opacity = '1';
-      gsap.set(word, { clearProps: 'opacity' });
+      gsap.set(word, { opacity: 1, y: 0, clearProps: 'opacity,transform,willChange' });
     }
     for (const word of statementWordEls) {
       word.dataset.revealed = 'true';
@@ -106,6 +103,7 @@ export function initLandingMotion(): () => void {
       start: 'top 82%',
       end: 'bottom 35%',
       scrub: true,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const revealedCount = Math.round(self.progress * totalWords);
         setRevealedCount(revealedCount);
@@ -117,14 +115,11 @@ export function initLandingMotion(): () => void {
         setRevealedCount(totalWords);
       },
     });
-    ScrollTrigger.refresh();
   };
 
-  const playHeroEntrance = () => {
-    if (entrancePlayed) return;
-    entrancePlayed = true;
-
+  const stageMotionContext = () => {
     if (prefersReducedMotion()) {
+      entrancePlayed = true;
       applyStaticReducedState();
       return;
     }
@@ -136,64 +131,113 @@ export function initLandingMotion(): () => void {
         gsap.set(roleTextEl, { opacity: 0 });
       }
       if (roleMaskEl) {
-        gsap.set(roleMaskEl, { scaleX: 0, transformOrigin: '0% 50%' });
+        gsap.set(roleMaskEl, {
+          scaleX: 0,
+          transformOrigin: '0% 50%',
+          force3D: true,
+          willChange: 'transform',
+        });
       }
       if (bioWordEls.length > 0) {
-        gsap.set(bioWordEls, { opacity: 0 });
+        gsap.set(bioWordEls, {
+          opacity: 0,
+          y: 5,
+          force3D: true,
+          willChange: 'transform, opacity',
+        });
+      }
+      if (decodeEls.length > 0) {
+        gsap.set(decodeEls, {
+          opacity: 0.35,
+          willChange: 'opacity',
+        });
       }
 
-      const heroTl = gsap.timeline();
+      const tl = gsap.timeline({ paused: true });
+      heroTl = tl;
 
-      // Part 1 (t = 0ms): progressive 800ms A-Z0-9 cipher decode on serif display name.
-      heroTl.add(() => {
+      // Part 1 (t = 0ms): unified-ticker 800ms A-Z0-9 cipher decode + clean compositor opacity settle.
+      if (decodeEls.length > 0) {
+        tl.to(
+          decodeEls,
+          {
+            opacity: 1,
+            duration: 0.28,
+            ease: 'power2.out',
+            clearProps: 'willChange',
+          },
+          0,
+        );
         for (const el of decodeEls) {
           const target = el.dataset.decodeTarget ?? el.textContent ?? '';
-          cancelDecodes.push(
-            runCipherDecode(el, target, {
+          tl.add(
+            createCipherDecodeTween(el, target, {
               durationMs: 800,
+              frameIntervalMs: 40,
             }),
+            0,
           );
         }
-      }, 0);
+      }
 
       // Part 2 (t = 0ms): 700ms inverse rectangular block mask reveal over subtitle.
       if (roleMaskEl && roleTextEl) {
-        heroTl
-          .to(
-            roleMaskEl,
-            {
-              scaleX: 1,
-              duration: 0.35,
-              ease: editorialEase,
-            },
-            0,
-          )
+        tl.to(
+          roleMaskEl,
+          {
+            scaleX: 1,
+            duration: 0.35,
+            ease: editorialEase,
+            force3D: true,
+          },
+          0,
+        )
           .set(roleTextEl, { opacity: 1 })
           .set(roleMaskEl, { transformOrigin: '100% 50%' })
           .to(roleMaskEl, {
             scaleX: 0,
             duration: 0.35,
             ease: editorialEase,
+            force3D: true,
+            clearProps: 'willChange',
           });
       } else if (roleTextEl) {
-        heroTl.set(roleTextEl, { opacity: 1 }, 0);
+        tl.set(roleTextEl, { opacity: 1 }, 0);
       }
 
-      // Part 3 (after headlines settle at 800ms): 900ms staggered bio word fade-in.
+      // Part 3 (at headline settle): 900ms staggered bio word entrance.
       if (bioWordEls.length > 0) {
-        heroTl.fromTo(
+        tl.to(
           bioWordEls,
-          { opacity: 0 },
           {
             opacity: 1,
-            duration: 0.35,
-            stagger: { amount: 0.55, from: 'random' },
-            ease: 'power2.out',
+            y: 0,
+            duration: 0.44,
+            stagger: { amount: 0.46, from: 'random' },
+            ease: 'power3.out',
+            force3D: true,
+            clearProps: 'transform,willChange',
           },
-          0.8,
+          0.74,
         );
       }
     });
+  };
+
+  const playHeroEntrance = () => {
+    if (entrancePlayed) return;
+    entrancePlayed = true;
+
+    if (prefersReducedMotion()) {
+      applyStaticReducedState();
+      return;
+    }
+
+    if (!heroTl) {
+      stageMotionContext();
+    }
+    ScrollTrigger.refresh();
+    heroTl?.play(0);
   };
 
   // Mount location hover/focus/tap scramble handler.
@@ -203,6 +247,9 @@ export function initLandingMotion(): () => void {
     if (prefersReducedMotion()) {
       locationTextEl.textContent = original;
       return;
+    }
+    if (!locationBtnEl.style.minWidth) {
+      locationBtnEl.style.minWidth = `${Math.ceil(locationBtnEl.getBoundingClientRect().width)}px`;
     }
     cancelLocationScramble?.();
     cancelLocationScramble = runTrailingScramble(locationTextEl, original, {
@@ -218,18 +265,14 @@ export function initLandingMotion(): () => void {
     playHeroEntrance();
   };
 
-  if (prefersReducedMotion()) {
-    entrancePlayed = true;
-    applyStaticReducedState();
-  } else if (
+  stageMotionContext();
+
+  if (
     window.__azisPreloaderDone ||
     !document.documentElement.classList.contains('preloader-active')
   ) {
     playHeroEntrance();
   } else {
-    // Keep role subtitle and bio concealed beneath preloader until curtain exit finishes.
-    if (roleTextEl) roleTextEl.style.opacity = '0';
-    for (const word of bioWordEls) word.style.opacity = '0';
     window.addEventListener('azis:preloader-complete', onPreloaderComplete, { once: true });
   }
 
@@ -245,7 +288,10 @@ export function initLandingMotion(): () => void {
 
   return () => {
     stopClock();
-    stopAllTextEffects();
+    cancelLocationScramble?.();
+    cancelLocationScramble = null;
+    heroTl?.kill();
+    heroTl = null;
     activeCtx?.revert();
     window.removeEventListener('azis:preloader-complete', onPreloaderComplete);
     mql?.removeEventListener('change', handleReducedMotionChange);

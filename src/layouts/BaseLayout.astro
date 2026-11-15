@@ -73,8 +73,10 @@ const copy = getUiCopy(locale);
               var reduceMotion =
                 typeof window.matchMedia === 'function' &&
                 window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-              var seen = sessionStorage.getItem('azis_preloader_seen') === '1';
-              if (!reduceMotion && !seen) {
+              if (!reduceMotion) {
+                if ('scrollRestoration' in window.history) {
+                  window.history.scrollRestoration = 'manual';
+                }
                 document.documentElement.classList.add('preloader-active');
               }
             } catch (_e) {
