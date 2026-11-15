@@ -33,6 +33,11 @@
 - [x] 6.3 Refactor `src/lib/motion/text-scramble.ts`, `src/components/portfolio/HeroSection.astro`, and `src/lib/motion/landing-motion.ts` so cipher decodes and trailing scrambles run on GSAP's unified ticker inside layout-locked word wrappers (`0px` bounding box shift / zero line wrap jitter), pre-build the paused Hero entrance timeline behind the preloader (`force3D: true`, smooth opacity + micro-rise bio stagger, `clearProps` cleanup), lock button min-width during location scramble, and verify zero layout shift across reloads.
 - [x] 6.4 Re-run `npm test`, `npm run check`, `npm run build`, and headless Chromium reload/jitter verification (`/` fresh load + reload + `EN`/`ID` + Light/Dark + `320px`/`375px`/`768px`/`1280px` + `prefers-reduced-motion: reduce`), and update the `antislop` Mode `AFTER` audit before closing.
 
+## 7. Site-Wide Public Preloader Rollout (Except CMS Admin)
+
+- [x] 7.1 Update `src/layouts/BaseLayout.astro` to default `enablePreloader = !/^\/admin(\/|$)/.test(Astro.url.pathname)`, mount `<PreloaderCurtain />` inside `BaseLayout.astro` across all public pages (excluding `/admin` and `/admin/login`), guard `history.scrollRestoration = 'manual'` with `!window.location.hash`, update `unlockScroll()` in `src/components/portfolio/PreloaderCurtain.astro` to scroll `#hash` targets cleanly into view after unlocking, and remove redundant `<PreloaderCurtain />` / `enablePreloader={true}` wiring from `src/pages/index.astro`.
+- [x] 7.2 Run `npm test && npm run check && npm run build` and verify in headless Chromium across public pages (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]#hash`) and CMS admin routes (`/admin/login`, `/admin` bypass) plus `prefers-reduced-motion: reduce` before completing.
+
 ## Workflow follow-up
 
 - Optionally archive `portfolio-cms` (`openspec archive portfolio-cms`) and later `add-landing-page-motion-effects` once implementation and review requirements are satisfied.

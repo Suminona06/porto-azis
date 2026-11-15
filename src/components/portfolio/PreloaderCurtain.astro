@@ -68,6 +68,16 @@
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'auto';
     }
+    if (window.location.hash) {
+      try {
+        const id = decodeURIComponent(window.location.hash.slice(1));
+        const target = id ? document.getElementById(id) : null;
+        // Restore fragment target while the exit curtain still hides the viewport.
+        target?.scrollIntoView({ behavior: 'instant', block: 'start' });
+      } catch (_e) {
+        // Ignore malformed hash fragments
+      }
+    }
   }
 
   function markDone(overlay: HTMLElement | null) {

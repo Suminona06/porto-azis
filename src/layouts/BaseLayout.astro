@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { getUiCopy, type Locale } from '../lib/content/i18n';
 import Navbar from '../components/layout/Navbar.astro';
 import Footer, { type SocialLinkItem } from '../components/layout/Footer.astro';
+import PreloaderCurtain from '../components/portfolio/PreloaderCurtain.astro';
 
 interface Props {
   title: string;
@@ -28,7 +29,7 @@ const {
   socialLinks,
   hideFooter = false,
   noindex = false,
-  enablePreloader = false,
+  enablePreloader = !/^\/admin(\/|$)/.test(Astro.url.pathname),
   flushTop = false,
 } = Astro.props;
 
@@ -74,7 +75,7 @@ const copy = getUiCopy(locale);
                 typeof window.matchMedia === 'function' &&
                 window.matchMedia('(prefers-reduced-motion: reduce)').matches;
               if (!reduceMotion) {
-                if ('scrollRestoration' in window.history) {
+                if (!window.location.hash && 'scrollRestoration' in window.history) {
                   window.history.scrollRestoration = 'manual';
                 }
                 document.documentElement.classList.add('preloader-active');
@@ -88,6 +89,7 @@ const copy = getUiCopy(locale);
     }
   </head>
   <body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    {enablePreloader && <PreloaderCurtain />}
     <a href="#main-content" class="skip-link">{copy.skipToContent}</a>
 
     <Navbar locale={locale} copy={copy} currentPath={currentPath} />

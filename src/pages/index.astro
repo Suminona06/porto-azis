@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PreloaderCurtain from '../components/portfolio/PreloaderCurtain.astro';
 import HeroSection from '../components/portfolio/HeroSection.astro';
 import StatementReveal from '../components/portfolio/StatementReveal.astro';
 import TiltedMarquee from '../components/portfolio/TiltedMarquee.astro';
@@ -40,11 +39,8 @@ const quoteText = pickLocale(profile.circle_quote_en, profile.circle_quote_id, l
   fullName="Azis Muhamad Fadli"
   wordmark={profile.wordmark}
   socialLinks={profile.social_links}
-  enablePreloader={true}
   flushTop={true}
 >
-  <PreloaderCurtain />
-
   <HeroSection
     profile={profile}
     locale={locale}

@@ -2,24 +2,28 @@
 
 ## Purpose
 
-Defines the monochrome editorial motion system and scroll choreography for the portfolio homepage (`/`), delivering an every-load multilingual preloader, jitter-free GSAP hero entrance animations, interactive monospace feedback, live `GMT +7` metadata, and layered sticky scroll depth integrated with Azis Muhamad Fadli's dual-theme (`Light`/`Dark`) and bilingual (`EN`/`ID`) CMS content.
+Defines the monochrome editorial motion system and scroll choreography across Azis Muhamad Fadli's portfolio website, delivering an every-load multilingual preloader across all public pages (excluding CMS `/admin` routes) alongside jitter-free GSAP hero entrance animations, interactive monospace feedback, live `GMT +7` metadata, and layered sticky scroll depth on `/` integrated with dual-theme (`Light`/`Dark`) and bilingual (`EN`/`ID`) CMS content.
 
 ## ADDED Requirements
 
 ### Requirement: Multilingual Preloader & Curtain Transition
-The system SHALL display a full-screen `#000000` preloader overlay on every initial load and reload of `/` before revealing the hero canvas, unless `prefers-reduced-motion: reduce` is active. Secondary routes (`/about`, `/work`, `/blog`, `/contact`, `/admin`) SHALL NOT display the preloader overlay.
+The system SHALL display a full-screen `#000000` preloader overlay on every initial load, route navigation, and reload across all public website pages (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]`) before revealing the target page, unless `prefers-reduced-motion: reduce` is active. CMS admin routes (`/admin`, `/admin/*`) SHALL NOT display the preloader overlay.
 
 #### Scenario: Loading progress & localized label cycling
-- **WHEN** the homepage loads or reloads on `/` with reduced motion disabled
+- **WHEN** any public website page (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]`) loads or reloads with reduced motion disabled
 - **THEN** a centered uppercase serif label SHALL cycle smoothly through localized loading strings (`"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`), paired with a bottom-right `#FFFFFF` monospace percentage counter (`0%`–`100%`) and a full-width `3px` `#FFFFFF` horizontal progress bar pinned to the bottom viewport edge (`scaleX: 0` to `1`).
 
 #### Scenario: Preloader exit wipe
 - **WHEN** loading progress reaches `100%`
-- **THEN** a solid `#FFFFFF` vertical curtain panel SHALL wipe upward cleanly across the viewport in a single continuous GPU-composited pass (`duration: 600ms`, easing `[0.77, 0, 0.175, 1]`) without scrollbar width jump or velocity stutter to transition into the hero in the visitor's active Light or Dark theme.
+- **THEN** a solid `#FFFFFF` vertical curtain panel SHALL wipe upward cleanly across the viewport in a single continuous GPU-composited pass (`duration: 600ms`, easing `[0.77, 0, 0.175, 1]`) without scrollbar width jump or velocity stutter to transition cleanly into the active page (and trigger the hero entrance when on `/`) in the visitor's active Light or Dark theme.
 
-#### Scenario: Reloads trigger the preloader smoothly without scroll-restoration or FOUC jitter
-- **WHEN** the visitor reloads `/` (or switches locale on `/` via `/?lang=`) with reduced motion disabled
-- **THEN** the system SHALL stabilize scroll position and scrollbar gutter before first paint, conceal hero entrance elements beneath the `#000000` preloader overlay with zero unstyled hero flash, execute the unbroken preloader and curtain sequence, and launch the hero entrance cleanly.
+#### Scenario: Reloads trigger the preloader smoothly without scroll-restoration, hash loss, or FOUC jitter
+- **WHEN** the visitor reloads any public page or opens a deep-link fragment URL (e.g., `/blog/[slug]#section`) with reduced motion disabled
+- **THEN** the system SHALL stabilize scroll restoration and scrollbar gutter before first paint, conceal page content beneath the `#000000` preloader overlay with zero unstyled flash, execute the unbroken preloader and curtain sequence, restore `#hash` fragment scroll position if present during curtain occlusion (or reset to top otherwise), and launch the hero entrance when on `/`.
+
+#### Scenario: CMS admin routes bypass the preloader immediately
+- **WHEN** the visitor opens or reloads `/admin` or `/admin/login`
+- **THEN** `.preloader-active` SHALL NOT be applied and the CMS interface or sign-in form SHALL render immediately without preloader overlay obstruction.
 
 ### Requirement: Hero Entrance Choreography
 The system SHALL execute a synchronized 3-part GSAP entrance sequence on the homepage hero immediately after the preloader curtain exits (or immediately render static text when `prefers-reduced-motion: reduce` is active), binding animations to Azis Muhamad Fadli's localized CMS profile fields (`site_profile`) with zero layout reflow jitter.

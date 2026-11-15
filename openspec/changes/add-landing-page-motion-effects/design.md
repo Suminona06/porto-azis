@@ -8,12 +8,12 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 
 **Goals:**
 - Standardize homepage motion orchestration on **`gsap`** (core timeline + `gsap/ScrollTrigger`) bundled cleanly inside Astro client `<script>` modules with `gsap.context()` cleanup.
-- Deliver an **every-load** multilingual preloader (`LOADING` -> `MEMUAT` -> `로딩 중`), unbroken `600ms` vertical curtain wipe, synchronized GSAP-driven 3-part Hero entrance (`800ms` layout-locked cipher decode, `700ms` block mask reveal, `900ms` bio word stagger), `350ms` location scramble, live `hh:mm A (GMT +7)` hero clock, fixed translucent navbar with sharp `rounded-none` header button inversion, sticky Hero overlap, and bidirectional `ScrollTrigger` word reveal.
+- Deliver an **every-load** multilingual preloader (`LOADING` -> `MEMUAT` -> `로딩 중`) and unbroken `600ms` vertical curtain wipe across all public pages (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]`), excluding `/admin` and `/admin/*`, paired on `/` with synchronized GSAP-driven 3-part Hero entrance (`800ms` layout-locked cipher decode, `700ms` block mask reveal, `900ms` bio word stagger), `350ms` location scramble, live `hh:mm A (GMT +7)` hero clock, fixed translucent navbar with sharp `rounded-none` header button inversion, sticky Hero overlap, and bidirectional `ScrollTrigger` word reveal.
 - Maintain full compatibility with Light default (`#ffffff` / `#fafafa` / `#000000`), Dark toggle (`#000000` / `#0a0a0a` / `#ffffff`), bilingual `EN / ID` switching, WCAG AA contrast (`--text-muted` -> `--text-primary`), zero horizontal overflow on `320px+`, and immediate static fallbacks under `prefers-reduced-motion: reduce`.
 
 **Non-Goals:**
 - Installing React, `@astrojs/react`, or `framer-motion` (unnecessary bundle overhead for an Astro site without React islands).
-- Changing Supabase schema, `/admin` CMS fields, `/blog` pages, or `SelectedWorkList.astro`'s existing project-row hover scramble.
+- Changing Supabase schema, `/admin` CMS fields, `/blog` pages, `SelectedWorkList.astro`'s existing project-row hover scramble, or showing the preloader overlay inside `/admin` or `/admin/login`.
 - Dropping Light mode or altering `ContactBanner.astro`'s `DESIGN.md` pill CTA (`33554400px`).
 
 ## Decisions
@@ -27,13 +27,13 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 - **Decision**: Implement the editorial easing curve `cubic-bezier(0.77, 0, 0.175, 1)` deterministically using a pure TypeScript cubic-bezier easing function (`src/lib/motion/easing.ts`) registered with GSAP (or passed directly as a custom ease callback `(t: number) => number`, paired with CSS `cubic-bezier(0.77, 0, 0.175, 1)` where CSS transitions apply).
 - **Rationale**: GSAP accepts arbitrary easing functions `(progress: number) => number` natively in core `gsap` without relying on extra plugin registration, guaranteeing exact `[0.77, 0, 0.175, 1]` motion fidelity on the curtain wipe and block mask.
 
-### 3. Every-Load Preloader Without Reload Jitter, FOUC, or Scrollbar Shift
-- **Decision**: Mount `PreloaderCurtain.astro` exclusively on `/` (`src/pages/index.astro`, `enablePreloader={true}`), activated on every load or reload of `/` whenever `prefers-reduced-motion: reduce` is NOT enabled (no `sessionStorage` skip gate).
+### 3. Public-Site Every-Load Preloader (Except CMS Admin) Without Jitter or Hash Clobbering
+- **Decision**: Centralize `PreloaderCurtain.astro` mounting inside `src/layouts/BaseLayout.astro` with `enablePreloader = !/^\/admin(\/|$)/.test(Astro.url.pathname)` by default (eliminating duplicate prop/component wiring from `src/pages/index.astro`), active on every load or reload of public pages whenever `prefers-reduced-motion: reduce` is NOT enabled.
 - **Flow**:
-  - **Every `/` load or reload (motion enabled)**: `<head>` inline script synchronously sets `html.classList.add('preloader-active')`, disables scrolled reload snap via `if ('scrollRestoration' in history) history.scrollRestoration = 'manual';` + `window.scrollTo({ top: 0, left: 0, behavior: 'instant' })`, keeping `PreloaderCurtain` immediately painted (`#000000` backdrop, `#FFFFFF` uppercase serif cycling `"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`, `#FFFFFF` `0%`–`100%` monospace counter, `#FFFFFF` `3px` GSAP-tweened `scaleX: 0 -> 1` progress bar). `html { scrollbar-gutter: stable; }` reserves scrollbar space permanently so toggling `.preloader-active` never causes a `15px` horizontal layout shift.
-  - **Unbroken Preloader & Curtain Curve**: Briefly resolve cached fonts up front (`Promise.race([document.fonts.ready, delay(160ms)])`), then run a single continuous `0% -> 100%` GSAP progress tween followed by a single unbroken `600ms` GPU pass (`yPercent: 100 -> -100`, `ease: editorialEase`, `force3D: true`). At exact midpoint (`yPercent <= 0`, full `#FFFFFF` occlusion), hide preloader backdrop, unlock scroll, and seamlessly lift curtain to `-100%` before launching the pre-built paused Hero timeline (`heroTl.play(0)`). A `3200ms` failsafe timeout guarantees the overlay never locks scrolling.
-  - **`prefers-reduced-motion: reduce` & secondary routes (`/about`, `/work`, `/blog`, `/contact`, `/admin`)**: `.preloader-active` is never added; `PreloaderCurtain` stays `display: none` from pixel zero.
-- **Alternatives Considered**: Session-only preloader (`sessionStorage`, superseded per user revision to replay the branded entrance on every `/` load/reload); multi-segment split curtain tweens (`100% -> 0%` stop + `0% -> -100%`, replaced because pausing velocity at mid-screen caused visible stagger).
+  - **Every public page load/navigation/reload (motion enabled)**: `<head>` inline script synchronously sets `html.classList.add('preloader-active')`, sets `history.scrollRestoration = 'manual'` when `!window.location.hash` (preserving deep-link fragments such as `/blog/[slug]#section`), keeping `PreloaderCurtain` immediately painted (`#000000` backdrop, `#FFFFFF` uppercase serif cycling `"LOADING"` -> `"MEMUAT"` -> `"로딩 중"`, `#FFFFFF` `0%`–`100%` monospace counter, `#FFFFFF` `3px` GSAP-tweened `scaleX: 0 -> 1` progress bar). `html { scrollbar-gutter: stable; }` and dark `html.preloader-active` scrollbar styling avoid horizontal layout shift or white scrollbar flashes.
+  - **Unbroken Preloader & Curtain Curve**: Briefly resolve cached fonts up front (`Promise.race([document.fonts.ready, delay(160ms)])`), then run a single continuous `0% -> 100%` GSAP progress tween followed by a single unbroken `600ms` GPU pass (`yPercent: 100 -> -100`, `ease: editorialEase`, `force3D: true`). At exact midpoint (`yPercent <= 0`, full `#FFFFFF` occlusion), hide preloader backdrop, unlock scroll, restore `#hash` anchor target via `scrollIntoView({ behavior: 'instant', block: 'start' })` if present, and seamlessly lift curtain to `-100%` while emitting `azis:preloader-complete` (which triggers the pre-built paused Hero timeline on `/` cleanly and reveals static page content on secondary public pages). A `3200ms` failsafe timeout guarantees the overlay never locks scrolling.
+  - **`prefers-reduced-motion: reduce` & CMS Admin routes (`/admin`, `/admin/login`)**: `enablePreloader` evaluates `false` on `/admin*` (and `.preloader-active` is never added under reduced motion); no preloader overlay renders or blocks interactions.
+- **Alternatives Considered**: Mounting `<PreloaderCurtain />` in each of the 5 public `.astro` pages manually (rejected due to needless duplication when `BaseLayout.astro` already wraps every HTML route); running preloader on `/admin` too (excluded per user requirement so CMS editing/auth workflows remain instant).
 
 ### 4. Accessible Layout-Locked Cipher Decode, Block Mask & GSAP Performance Architecture
 - **Decision**:
@@ -63,16 +63,16 @@ src/
     clock.ts                # Asia/Jakarta hh:mm A (GMT +7) formatter & ticker
     landing-motion.ts       # GSAP + ScrollTrigger orchestrator (preloader, 3-part hero, statement scrub)
   components/portfolio/
-    PreloaderCurtain.astro  # Session-gated #000000 preloader + multilingual label cycle + #FFFFFF curtain
+    PreloaderCurtain.astro  # Public-site every-load #000000 preloader + multilingual label cycle + #FFFFFF curtain
     HeroSection.astro       # Sticky hero, cipher H1, mask subtitle, staggered bio, scramble location, live clock
     StatementReveal.astro   # z-10 opaque curtain band + top hairline + ScrollTrigger word illumination
   components/layout/
     Navbar.astro            # Translucent bg-[var(--bg-primary)]/80 backdrop-blur-sm + rounded-none inversion
     Footer.astro            # relative z-10 layer guard so sticky hero never bleeds through
   layouts/
-    BaseLayout.astro        # Optional flushTop + inline head preloader-pending check (no FOUC)
+    BaseLayout.astro        # Shared layout: flushTop, default enablePreloader=!admin, single <PreloaderCurtain /> mount, head anti-FOUC script
   pages/
-    index.astro             # Mounts PreloaderCurtain + sticky HeroSection + z-10 wrapped downstream sections
+    index.astro             # Sticky HeroSection + z-10 wrapped downstream sections (inherits public preloader from BaseLayout)
   styles/
     global.css              # Preloader active lock, dark hairline token (#1F1F1F), reduced-motion safety overrides
 tests/
