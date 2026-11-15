@@ -14,6 +14,8 @@ interface Props {
   socialLinks?: SocialLinkItem[];
   hideFooter?: boolean;
   noindex?: boolean;
+  enablePreloader?: boolean;
+  flushTop?: boolean;
 }
 
 const {
@@ -26,6 +28,8 @@ const {
   socialLinks,
   hideFooter = false,
   noindex = false,
+  enablePreloader = false,
+  flushTop = false,
 } = Astro.props;
 
 const copy = getUiCopy(locale);
@@ -61,13 +65,32 @@ const copy = getUiCopy(locale);
         }
       })();
     </script>
+    {
+      enablePreloader && (
+        <script is:inline>
+          (function () {
+            try {
+              var reduceMotion =
+                typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              var seen = sessionStorage.getItem('azis_preloader_seen') === '1';
+              if (!reduceMotion && !seen) {
+                document.documentElement.classList.add('preloader-active');
+              }
+            } catch (_e) {
+              document.documentElement.classList.remove('preloader-active');
+            }
+          })();
+        </script>
+      )
+    }
   </head>
   <body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
     <a href="#main-content" class="skip-link">{copy.skipToContent}</a>
 
     <Navbar locale={locale} copy={copy} currentPath={currentPath} />
 
-    <main id="main-content" class="pt-16">
+    <main id="main-content" class:list={[flushTop ? 'pt-0' : 'pt-16']}>
       <slot />
     </main>
 

@@ -47,7 +47,7 @@
   --text-muted: #a1a1aa;
   --text-inverse: #000000;
   --border-strong: #ffffff;
-  --border-light: rgba(255, 255, 255, 0.16);
+  --border-light: #1f1f1f;
   --hover-surface: #141416;
   --code-bg: #0a0a0a;
   --code-border: rgba(255, 255, 255, 0.18);
@@ -221,14 +221,16 @@
 }
 
 .nav-link-blog {
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
   background-color: var(--bg-inverse);
   color: var(--text-inverse);
   padding: 8px 20px;
 }
 
 .nav-link-blog:hover {
-  background-color: var(--text-muted);
-  color: var(--text-inverse);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .nav-link-blog[aria-current="page"] {
@@ -444,22 +446,69 @@
   border: 1px solid var(--border-light);
 }
 
+[data-reveal-word] {
+  color: var(--text-muted);
+  transition: color 180ms var(--motion-easing-standard);
+}
+
+[data-reveal-word][data-revealed="true"] {
+  color: var(--text-primary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 
   .marquee-track,
   .marquee-track-reverse {
     animation: none !important;
   }
+
+  .hero-motion-mask {
+    display: none !important;
+  }
+
+  [data-hero-bio-word] {
+    opacity: 1 !important;
+  }
+
+  [data-reveal-word] {
+    color: var(--text-primary) !important;
+  }
+}
+
+html.preloader-active,
+html.preloader-active body {
+  overflow: hidden;
+  height: 100%;
+}
+
+.preloader-overlay {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+html.preloader-active .preloader-overlay {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.preloader-overlay.preloader-exiting {
+  display: flex;
+  opacity: 1;
+  pointer-events: none;
+  visibility: visible;
+  background-color: transparent;
+}
+
+.preloader-overlay.preloader-done {
+  display: none !important;
+  pointer-events: none;
+  visibility: hidden;
 }
 

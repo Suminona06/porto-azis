@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PreloaderCurtain from '../components/portfolio/PreloaderCurtain.astro';
 import HeroSection from '../components/portfolio/HeroSection.astro';
 import StatementReveal from '../components/portfolio/StatementReveal.astro';
 import TiltedMarquee from '../components/portfolio/TiltedMarquee.astro';
@@ -39,7 +40,11 @@ const quoteText = pickLocale(profile.circle_quote_en, profile.circle_quote_id, l
   fullName="Azis Muhamad Fadli"
   wordmark={profile.wordmark}
   socialLinks={profile.social_links}
+  enablePreloader={true}
+  flushTop={true}
 >
+  <PreloaderCurtain />
+
   <HeroSection
     profile={profile}
     locale={locale}
@@ -47,29 +52,31 @@ const quoteText = pickLocale(profile.circle_quote_en, profile.circle_quote_id, l
     isPlaceholder={isPlaceholder}
   />
 
-  <StatementReveal statement={statementText} />
+  <div class="relative z-10 bg-[var(--bg-primary)]">
+    <StatementReveal statement={statementText} />
 
-  <TiltedMarquee roles={profile.marquee_roles} stack={profile.marquee_stack} />
+    <TiltedMarquee roles={profile.marquee_roles} stack={profile.marquee_stack} />
 
-  <QuoteTechCircle
-    quote={quoteText}
-    heading={copy.mostFavoriteTech}
-    techItems={profile.favorite_tech}
-  />
+    <QuoteTechCircle
+      quote={quoteText}
+      heading={copy.mostFavoriteTech}
+      techItems={profile.favorite_tech}
+    />
 
-  <SelectedWorkList
-    heading={copy.selectedWorkHeading}
-    projects={homeProjects}
-    viewAllHref="/work"
-    viewAllLabel={copy.viewAllWork}
-  />
+    <SelectedWorkList
+      heading={copy.selectedWorkHeading}
+      projects={homeProjects}
+      viewAllHref="/work"
+      viewAllLabel={copy.viewAllWork}
+    />
 
-  <ContactBanner
-    eyebrow={copy.basedIn}
-    title={copy.homeCtaTitle}
-    subtitle={copy.homeCtaSubtitle}
-    ctaLabel={copy.homeCtaButton}
-    ctaUrl={profile.contact_url}
-  />
+    <ContactBanner
+      eyebrow={copy.basedIn}
+      title={copy.homeCtaTitle}
+      subtitle={copy.homeCtaSubtitle}
+      ctaLabel={copy.homeCtaButton}
+      ctaUrl={profile.contact_url}
+    />
+  </div>
 </BaseLayout>
 

@@ -8,7 +8,7 @@ const words = statement.trim().split(/\s+/).filter(Boolean);
 ---
 
 <section
-  class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-20 sm:py-24 lg:py-32"
+  class="relative z-10 border-y border-[var(--border-light)] bg-[var(--bg-alt)] py-20 sm:py-24 lg:py-32"
   data-statement-section
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
@@ -21,7 +21,7 @@ const words = statement.trim().split(/\s+/).filter(Boolean);
             <span
               data-reveal-word
               data-word-index={index}
-              class="inline-block text-[var(--text-muted)] transition-colors duration-300"
+              class="inline-block"
             >
               {word}
             </span>
@@ -32,66 +32,4 @@ const words = statement.trim().split(/\s+/).filter(Boolean);
     </p>
   </div>
 </section>
-
-<script is:inline>
-  (function () {
-    const sections = document.querySelectorAll('[data-statement-section]');
-    if (!sections.length) return;
-
-    const prefersReduced =
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    sections.forEach(function (section) {
-      const words = Array.from(section.querySelectorAll('[data-reveal-word]'));
-      if (!words.length) return;
-
-      function revealAll() {
-        words.forEach(function (el) {
-          el.classList.remove('text-[var(--text-muted)]');
-          el.classList.add('text-[var(--text-primary)]');
-        });
-      }
-
-      if (prefersReduced || !('IntersectionObserver' in window)) {
-        revealAll();
-        return;
-      }
-
-      function updateProgress() {
-        const rect = section.getBoundingClientRect();
-        const vh = window.innerHeight || 800;
-        const start = vh * 0.85;
-        const end = vh * 0.25;
-        const raw = (start - rect.top) / (start - end + rect.height * 0.35);
-        const progress = Math.max(0, Math.min(1, raw));
-        const activeCount = Math.ceil(progress * words.length);
-
-        words.forEach(function (el, idx) {
-          if (idx < activeCount) {
-            el.classList.remove('text-[var(--text-muted)]');
-            el.classList.add('text-[var(--text-primary)]');
-          } else {
-            el.classList.add('text-[var(--text-muted)]');
-            el.classList.remove('text-[var(--text-primary)]');
-          }
-        });
-      }
-
-      const observer = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              updateProgress();
-            }
-          });
-        },
-        { threshold: [0, 0.25, 0.5, 0.75, 1] }
-      );
-
-      observer.observe(section);
-      window.addEventListener('scroll', updateProgress, { passive: true });
-      updateProgress();
-    });
-  })();
-</script>
 
