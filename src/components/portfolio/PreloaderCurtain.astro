@@ -172,6 +172,7 @@
 
     waitForFonts.then(() => {
       if (finished) return;
+      tl.kill();
 
       const exitTl = gsap.timeline({ onComplete: complete });
       activeTimeline = exitTl;

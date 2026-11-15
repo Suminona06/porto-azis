@@ -24,7 +24,7 @@
 ## 5. Reduced-Motion Accessibility Fallback & Verification
 
 - [x] 5.1 Enforce `prefers-reduced-motion: reduce` detection and live media-query listener (`ctx.revert()`) in `src/lib/motion/landing-motion.ts` and `src/styles/global.css` so reduced-motion mode bypasses preloader, curtain wipe, cipher decode, block mask, bio stagger, location scramble, and `ScrollTrigger` scrubbing while rendering static `--text-primary` states and live `hh:mm A (GMT +7)` clock updates; verify with emulated `prefers-reduced-motion: reduce` in Chromium headless checks.
-- [ ] 5.2 Run `npm run check`, `npm test`, and `npm run build` after final implementation edits, perform headless browser verification across `/`, Light/Dark modes, `EN`/`ID` locales, and `320px`/`375px`/`768px`/`1280px` viewports, and execute the `antislop` Mode `AFTER` audit (`anti-slop/audit-001-YYYY-MM-DD.md`) and Delivery Gate before closing.
+- [x] 5.2 Run `npm run check`, `npm test`, and `npm run build` after final implementation edits, perform headless browser verification across `/`, Light/Dark modes, `EN`/`ID` locales, and `320px`/`375px`/`768px`/`1280px` viewports, and execute the `antislop` Mode `AFTER` audit (`anti-slop/audit-001-YYYY-MM-DD.md`) and Delivery Gate before closing.
 
 ## Workflow follow-up
 

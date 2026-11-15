@@ -81,18 +81,15 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-light)] pt-4 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
-      <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <span>{copy.basedIn}:</span>
-        <button
-          type="button"
-          data-hero-location-btn
-          data-location-original={locationLabel}
-          aria-label={profile.location}
-          class="inline-flex min-h-11 items-center border-0 bg-transparent p-0 text-left font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] transition-colors hover:text-[var(--text-muted)]"
-        >
-          <span aria-hidden="true" data-hero-location-text>{locationLabel}</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        data-hero-location-btn
+        data-location-original={locationLabel}
+        aria-label={`${copy.basedIn}: ${profile.location}`}
+        class="inline-flex min-h-11 items-center border-0 bg-transparent p-0 text-left font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] transition-colors hover:text-[var(--text-muted)]"
+      >
+        <span aria-hidden="true" data-hero-location-text>{locationLabel}</span>
+      </button>
 
       <div class="hidden h-8 w-px bg-[var(--border-strong)] sm:block" aria-hidden="true"></div>
 
