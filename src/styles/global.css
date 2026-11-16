@@ -282,25 +282,6 @@
   fill: #ff9900;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports ((animation-timeline: view()) and (animation-range: entry)) {
-    @keyframes circle-ring-draw {
-      from {
-        stroke-dashoffset: 805;
-      }
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    .circle-progress-ring {
-      animation: circle-ring-draw linear both;
-      animation-timeline: view();
-      animation-range: cover 5% cover 50%;
-    }
-  }
-}
-
 /* Marquee loops contained cleanly to prevent horizontal overflow */
 @keyframes marquee-scroll {
   0% {

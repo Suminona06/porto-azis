@@ -76,6 +76,7 @@ export function initLandingMotion(): () => void {
     }
     if (progressRingEl) {
       progressRingEl.style.strokeDashoffset = '0';
+      progressRingEl.style.opacity = '';
     }
   };
 
@@ -131,27 +132,41 @@ export function initLandingMotion(): () => void {
     activeCtx = gsap.context(() => {
       setupStatementScrollTrigger();
 
-      // ScrollTrigger fallback only when CSS scroll-driven view() timeline is unsupported.
-      if (
-        progressRingEl &&
-        typeof CSS !== 'undefined' &&
-        !CSS.supports('(animation-timeline: view()) and (animation-range: entry)')
-      ) {
+      // Smoothly scrubbed GSAP ScrollTrigger draws the circle clockwise with damped inertia.
+      const circleTriggerEl =
+        progressRingEl?.closest<HTMLElement>('[data-circle-ring]') ?? progressRingEl;
+
+      if (progressRingEl && circleTriggerEl) {
+        const ringCircumference = 798;
+        const syncRingOpacity = () => {
+          const offset = Number.parseFloat(
+            String(gsap.getProperty(progressRingEl, 'strokeDashoffset')),
+          );
+          if (!Number.isFinite(offset)) return;
+          progressRingEl.style.opacity = String(
+            Math.min(1, Math.max(0, (ringCircumference - offset) / 8)),
+          );
+        };
+
         gsap.fromTo(
           progressRingEl,
-          { strokeDashoffset: 805 },
+          { strokeDashoffset: ringCircumference },
           {
             strokeDashoffset: 0,
             ease: 'none',
+            onStart: syncRingOpacity,
+            onUpdate: syncRingOpacity,
             scrollTrigger: {
-              trigger: progressRingEl,
-              start: 'top 90%',
-              end: 'center 45%',
-              scrub: true,
+              trigger: circleTriggerEl,
+              start: 'top 85%',
+              end: 'center center',
+              scrub: 1.35,
               invalidateOnRefresh: true,
+              onRefresh: syncRingOpacity,
             },
           },
         );
+        syncRingOpacity();
       }
 
       if (roleTextEl) {
