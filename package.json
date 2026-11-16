@@ -21,6 +21,7 @@
     "marked": "^18.2.0",
     "sanitize-html": "^2.18.2",
     "shiki": "^4.6.0",
+    "simple-icons": "^16.38.0",
     "tailwindcss": "^4.3.5"
   },
   "devDependencies": {

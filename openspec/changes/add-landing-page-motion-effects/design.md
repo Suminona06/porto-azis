@@ -8,8 +8,9 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 
 **Goals:**
 - Standardize homepage motion orchestration on **`gsap`** (core timeline + `gsap/ScrollTrigger`) bundled cleanly inside Astro client `<script>` modules with `gsap.context()` cleanup.
-- Deliver an **every-load** multilingual preloader (`LOADING` -> `MEMUAT` -> `로딩 중`) and unbroken `600ms` vertical curtain wipe across all public pages (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]`), excluding `/admin` and `/admin/*`, paired on `/` with synchronized GSAP-driven 3-part Hero entrance (`800ms` layout-locked cipher decode, `700ms` block mask reveal, `900ms` bio word stagger), `350ms` location scramble, live `hh:mm A (GMT +7)` hero clock, fixed translucent navbar with sharp `rounded-none` header button inversion, sticky Hero overlap, and bidirectional `ScrollTrigger` word reveal.
-- Maintain full compatibility with Light default (`#ffffff` / `#fafafa` / `#000000`), Dark toggle (`#000000` / `#0a0a0a` / `#ffffff`), bilingual `EN / ID` switching, WCAG AA contrast (`--text-muted` -> `--text-primary`), zero horizontal overflow on `320px+`, and immediate static fallbacks under `prefers-reduced-motion: reduce`.
+- Deliver an **every-load** multilingual preloader (`LOADING` -> `MEMUAT` -> `로딩 중`) and unbroken `600ms` vertical curtain wipe across all public pages (`/`, `/about`, `/work`, `/blog`, `/blog/[slug]`), excluding `/admin` and `/admin/*`, paired on `/` with synchronized GSAP-driven 3-part Hero entrance (`800ms` layout-locked cipher decode, `700ms` block mask reveal, `900ms` bio word stagger), `350ms` location scramble, live `hh:mm A (GMT +7)` hero clock, fixed borderless translucent navbar with sharp `rounded-none` `BLOG` inversion, sticky Hero overlap, and bidirectional `ScrollTrigger` word reveal.
+- Achieve 1:1 visual parity with Reference Images 3 and 6 across Header, Hero, Circle + Quote (`QuoteTechCircle.astro`), `MOST FAVORITE TECH` (`simple-icons` + verified AWS official SVG), and Footer (`Footer.astro` with `Playfair Display` `700` bold `azis` wordmark, live `hh:mm A (GMT +7)` clock, and `LINKEDIN`, `GITHUB`, `INSTAGRAM`, `THREADS`).
+- Maintain full compatibility with Light default (`#ffffff` / `#fafafa` / `#000000`), Dark toggle (`#000000` / `#0a0a0a` / `#ffffff`), bilingual `EN / ID` switching, WCAG AA contrast (`--text-muted` -> `--text-primary`, `#737373` tech icons), zero horizontal overflow on `320px+`, and immediate static fallbacks under `prefers-reduced-motion: reduce`.
 
 **Non-Goals:**
 - Installing React, `@astrojs/react`, or `framer-motion` (unnecessary bundle overhead for an Astro site without React islands).
@@ -53,6 +54,26 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 ### 6. Reduced Motion Fallback (`prefers-reduced-motion: reduce`)
 - **Decision**: Centralize `prefersReducedMotion()` check in `src/lib/motion/landing-motion.ts`. When `true`, skip preloader activation, skip GSAP timelines and `ScrollTrigger` registration, ensure all hero titles, subtitles, bio words, and statement words stay at `opacity: 1` and `var(--text-primary)`, and only run the text-only `hh:mm A (GMT +7)` clock interval. Also add a `matchMedia('(prefers-reduced-motion: reduce)')` change listener to revert GSAP context (`ctx.revert()`) if the user enables reduced motion mid-session.
 
+### 7. Borderless Header, Hero & Footer Parity (`Navbar`, `LocaleToggle`, `ThemeToggle`, `HeroSection`, `Footer`)
+- **Decision**: Strip `border-b` from `<header>` in `Navbar.astro`, strip outer box borders and the vertical `w-px` divider from `LocaleToggle.astro` (rendering `EN / ID` with a `/` separator matching Reference Image 3), strip the outer box border from `ThemeToggle.astro` (keeping `BLOG` as the single sharp inverted rectangular button in the header), strip `border-b`, `border-t`, and the center vertical `w-px` bar from `HeroSection.astro`, and strip `border-t` dividers from `Footer.astro` and `border-b` from `QuoteTechCircle.astro`.
+- **Rationale**: Eliminates horizontal and vertical hairline breaks across the Header, Hero, Circle/Tech section, and Footer so Dark mode (`[data-theme="dark"]`) renders as a continuous `#000000` canvas matching Reference Images 3 and 6 while Light mode remains clean and legible (`antislop` R-34).
+
+### 8. Centered Uniform 2px Circle & Sans-Serif Quote (`QuoteTechCircle.astro`)
+- **Decision**: Fix the side-by-side flex child defect in `QuoteTechCircle.astro` by placing the circle inside a dedicated `min-h-screen flex items-center justify-center` container using a uniform `2px` solid ring (`aspect-square w-[min(85vw,320px)] sm:w-[440px] lg:w-[520px] rounded-full border-2 border-[var(--border-strong)]` without the partial scroll-progress SVG stroke or inline scroll listener) and placing the `<blockquote>` dead-center inside (`flex items-center justify-center text-center px-8 sm:px-12`). Style the quote with `font-sans-ui font-medium uppercase tracking-wide leading-snug text-lg sm:text-2xl lg:text-[28px] text-[var(--text-primary)]` (`Plus Jakarta Sans` weight `500`, already loaded in `BaseLayout.astro`).
+- **Rationale**: Prevents the previous flex-sibling collapse where `<svg>` shifted left of `<blockquote>` and eliminates the partial gradient ring, achieving 1:1 geometric and typographic parity with Reference Image 3 while remaining overflow-free at `320px`.
+
+### 9. Official 1:1 Brand SVGs for `MOST FAVORITE TECH` (`simple-icons` + AWS Verified Mark)
+- **Decision**: Install `simple-icons` (`npm install simple-icons`) and import exact official SVG paths/metadata server-side inside `QuoteTechCircle.astro` (`siLinux`, `siDocker`, `siKubernetes`, `siTerraform`, plus common additional infrastructure slugs such as `siNginx`, `siPrometheus`, `siGithubactions`, `siPostgresql`, `siCloudflare`, `siGrafana`), paired with an authentic 1:1 official AWS SVG (`aws` wordmark + curved smile arrow, in case `simple-icons` omits AWS due to trademark policy). Render icons uniformly (`w-7 h-7` or `w-8 h-8`) with default monochrome `#737373` (4.17:1 on `#0a0a0a` and 4.74:1 on `#ffffff`, passing WCAG 1.4.11 3:1 non-text contrast) and transition on hover/focus/active to each brand's official accent color (`#FCC624`/`#D97706`, `#2496ED`, `#326CE5`, `#844FBA`, `#FF9900`, or `--text-primary` fallback) plus `--border-strong` square card outline without CSS `grayscale`/`invert` filter conflicts.
+- **Rationale**: Resolving `simple-icons` inside Astro frontmatter compiles only the rendered `<svg>` elements into HTML (zero client JS overhead) and guarantees exact 1:1 brand silhouettes matching Reference Image 5's square card interaction.
+
+### 10. Footer Parity, `Playfair Display` `700` & `antislop` R-37 Override (`Footer.astro`, `BaseLayout.astro`)
+- **Decision**: Refactor `Footer.astro` to match Reference Image 6 1:1:
+  - Remove the `/admin` (`CMS`) link and `BASED IN INDONESIA` bottom-left text.
+  - Render top-left two stacked uppercase monospace lines (`font-mono-tech text-[11px] sm:text-xs tracking-[0.12em] text-[var(--text-muted)] uppercase`): `© 2026 — AZIS MUHAMAD FADLI` (explicit owner override recorded under `antislop` R-37 against R-02) and live `hh:mm A (GMT +7)` clock driven by `formatJakartaTime12h` / `startJakartaClock` from `src/lib/motion/clock.ts`.
+  - Load `Playfair Display` `700` weight in `BaseLayout.astro` (`Playfair+Display:ital,wght@0,600;0,700;1,600`) and render `azis` centered in lowercase bold serif (`font-display font-bold lowercase leading-none tracking-[-0.03em] text-[clamp(5.5rem,30vw,24rem)] text-[var(--text-primary)] select-none my-8 sm:my-12`) so the 4-character wordmark spans ~85-90% of the container width like 10-character `ammaricano` in Image 6 without exceeding `max-w-7xl` or causing overflow on `320px`.
+  - Render bottom-right horizontal uppercase monospace social links (`LINKEDIN`, `GITHUB`, `INSTAGRAM`, `THREADS`) in `placeholder.ts`, `0002_seed_placeholder.sql`, and `Footer.astro` defaults, styled `text-[11px] sm:text-xs tracking-[0.15em] text-[var(--text-muted)] hover:text-[var(--text-primary)] uppercase` with `44px` accessible touch targets (`min-h-11`).
+- **Rationale**: Reusing `clock.ts` eliminates duplicate clock formatting (`en-GB` 24h vs `hh:mm A (GMT +7)`), while scaling `azis` via `clamp` + `Playfair Display` `700` achieves authentic visual proportion parity with Image 6 across both desktop and mobile viewports.
+
 ## Architecture & File Map
 
 ```text
@@ -60,21 +81,24 @@ src/
   lib/motion/
     easing.ts               # Pure cubic-bezier(0.77, 0, 0.175, 1) evaluator & reduced-motion helper
     text-scramble.ts        # Reusable left-to-right cipher decode & trailing location scramble engine
-    clock.ts                # Asia/Jakarta hh:mm A (GMT +7) formatter & ticker
+    clock.ts                # Asia/Jakarta hh:mm A (GMT +7) formatter & ticker (Hero + Footer)
     landing-motion.ts       # GSAP + ScrollTrigger orchestrator (preloader, 3-part hero, statement scrub)
   components/portfolio/
     PreloaderCurtain.astro  # Public-site every-load #000000 preloader + multilingual label cycle + #FFFFFF curtain
-    HeroSection.astro       # Sticky hero, cipher H1, mask subtitle, staggered bio, scramble location, live clock
+    HeroSection.astro       # Borderless sticky hero, cipher H1, mask subtitle, staggered bio, scramble location, live clock
     StatementReveal.astro   # z-10 opaque curtain band + top hairline + ScrollTrigger word illumination
+    QuoteTechCircle.astro   # min-h-screen centered 2px uniform circle + Sans-Serif quote + simple-icons/AWS tech grid
   components/layout/
-    Navbar.astro            # Translucent bg-[var(--bg-primary)]/80 backdrop-blur-sm + rounded-none inversion
-    Footer.astro            # relative z-10 layer guard so sticky hero never bleeds through
+    Navbar.astro            # Borderless translucent bg-[var(--bg-primary)]/80 backdrop-blur-sm + inverted BLOG link
+    LocaleToggle.astro      # Borderless EN / ID slash toggle
+    ThemeToggle.astro       # Borderless Light/Dark toggle
+    Footer.astro            # Borderless footer (top-left metadata + hh:mm A clock, bold serif azis, bottom-right social links)
   layouts/
-    BaseLayout.astro        # Shared layout: flushTop, default enablePreloader=!admin, single <PreloaderCurtain /> mount, head anti-FOUC script
+    BaseLayout.astro        # Shared layout: flushTop, default enablePreloader=!admin, Playfair Display 600/700, single <PreloaderCurtain />
   pages/
-    index.astro             # Sticky HeroSection + z-10 wrapped downstream sections (inherits public preloader from BaseLayout)
+    index.astro             # Sticky HeroSection + z-10 wrapped downstream sections
   styles/
-    global.css              # Preloader active lock, dark hairline token (#1F1F1F), reduced-motion safety overrides
+    global.css              # Preloader active lock, dark hairline token (#1F1F1F), tech card highlight, reduced-motion overrides
 tests/
   unit/
     motion-utils.test.ts    # Deterministic unit tests for cubic-bezier easing, clock format, and scramble convergence
@@ -86,3 +110,5 @@ tests/
 - **Hero Content Height on Short Viewports / 320px Mobile**: If `HeroSection` content exceeds `100svh` on a 320px-wide or short landscape screen while `position: sticky; top: 0` is active, the bottom hero footer could be overlapped by the incoming Statement curtain too early. → **Mitigation**: Keep `min-h-[100svh]` with compact mobile spacing and test `HeroSection` + sticky transition across `320px`, `375px`, `768px`, and `1280px` viewports (and desktop short-height viewports).
 - **Preloader Stall on Slow Font Network**: Waiting forever for `document.fonts.ready` could freeze the preloader at `90%+`. → **Mitigation**: Race `document.fonts.ready` against a hard `1500ms` timeout and attach a `2500ms` safety exit so the hero is always revealed.
 - **Smooth Scroll vs. ScrollTrigger Scrub Conflict**: `html { scroll-behavior: smooth; }` in `src/styles/global.css` can lag programmatic or scrub scrolling in some browsers. → **Mitigation**: Verify `ScrollTrigger` scrub smoothness during browser verification and keep `scroll-behavior: auto` when reduced motion is enabled (already in `global.css`).
+- **4-Letter Wordmark Overflow (`azis`) vs 85-90% Container Target**: Scaling `azis` up to span ~85-90% of a `1280px` desktop container could overflow `320px` mobile if unguarded. → **Mitigation**: Clamp `font-size` (`clamp(5.5rem, 30vw, 24rem)`) inside `overflow-x-clip` container and verify rendered bounding box width on `320px`, `375px`, `768px`, and `1280px`.
+- **`simple-icons` AWS Trademark Exclusion**: Recent `simple-icons` releases omit `siAmazonwebservices` / `siAws`. → **Mitigation**: Inspect installed `simple-icons` exports at install time and supply the exact official AWS cloud+smile SVG path inline for `aws` slugs alongside `simple-icons` marks for Linux, Docker, Kubernetes, Terraform, and fallback slugs.

@@ -42,9 +42,10 @@ export const PLACEHOLDER_SITE_PROFILE: SiteProfile = {
   ],
   contact_url: 'mailto:azis.placeholder@example.com',
   social_links: [
-    { label: 'GITHUB', url: 'https://github.com/azisfadli-placeholder' },
     { label: 'LINKEDIN', url: 'https://linkedin.com/in/azisfadli-placeholder' },
-    { label: 'EMAIL', url: 'mailto:azis.placeholder@example.com' },
+    { label: 'GITHUB', url: 'https://github.com/azisfadli-placeholder' },
+    { label: 'INSTAGRAM', url: 'https://instagram.com/azisfadli-placeholder' },
+    { label: 'THREADS', url: 'https://threads.net/@azisfadli-placeholder' },
   ],
 };
 

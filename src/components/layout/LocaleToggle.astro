@@ -19,7 +19,7 @@ const idHref = buildLocaleHref('id');
 ---
 
 <div
-  class="inline-flex items-center rounded-none border border-[var(--border-light)]"
+  class="inline-flex items-center"
   role="group"
   aria-label="Language switch"
 >
@@ -28,24 +28,24 @@ const idHref = buildLocaleHref('id');
     data-locale-link="en"
     aria-current={locale === 'en' ? 'true' : undefined}
     class:list={[
-      'inline-flex min-h-11 min-w-11 items-center justify-center rounded-none px-3 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
+      'inline-flex min-h-11 min-w-11 items-center justify-center rounded-none px-1.5 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
       locale === 'en'
-        ? 'bg-[var(--bg-inverse)] font-medium text-[var(--text-inverse)]'
-        : 'text-[var(--text-muted)] hover:bg-[var(--bg-inverse)] hover:text-[var(--text-inverse)]',
+        ? 'font-semibold text-[var(--text-primary)]'
+        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]',
     ]}
   >
     EN
   </a>
-  <span class="h-4 w-px bg-[var(--border-light)]" aria-hidden="true"></span>
+  <span class="font-mono-tech text-xs text-[var(--text-muted)] select-none" aria-hidden="true">/</span>
   <a
     href={idHref}
     data-locale-link="id"
     aria-current={locale === 'id' ? 'true' : undefined}
     class:list={[
-      'inline-flex min-h-11 min-w-11 items-center justify-center rounded-none px-3 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
+      'inline-flex min-h-11 min-w-11 items-center justify-center rounded-none px-1.5 font-mono-tech text-xs tracking-[0.1em] uppercase no-underline transition-colors',
       locale === 'id'
-        ? 'bg-[var(--bg-inverse)] font-medium text-[var(--text-inverse)]'
-        : 'text-[var(--text-muted)] hover:bg-[var(--bg-inverse)] hover:text-[var(--text-inverse)]',
+        ? 'font-semibold text-[var(--text-primary)]'
+        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]',
     ]}
   >
     ID

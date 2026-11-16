@@ -51,16 +51,16 @@ The hero footer and fixed header SHALL provide tactile monospace feedback and re
 - **WHEN** the hero section is mounted
 - **THEN** the hero footer monospace clock SHALL render and update in real time in the `Asia/Jakarta` timezone formatted as `hh:mm A (GMT +7)`.
 
-#### Scenario: Fixed translucent navbar & sharp header controls
+#### Scenario: Fixed translucent navbar & borderless header controls
 - **WHEN** the user scrolls past the initial fold
-- **THEN** the top navigation bar (`position: fixed`, `z-index: 50`) SHALL maintain a theme-adaptive translucent backdrop (`--bg-primary` at 80% opacity with `backdrop-blur-sm`) and sharp rectangular (`rounded-none`) header action controls that invert (`--bg-inverse` / `--text-inverse`) cleanly on hover, while primary page contact CTA buttons (`GET IN TOUCH →`) retain the `DESIGN.md` `33554400px` pill shape.
+- **THEN** the top navigation bar (`position: fixed`, `z-index: 50`) SHALL maintain a borderless theme-adaptive translucent backdrop (`--bg-primary` at 80% opacity with `backdrop-blur-sm`) with borderless `EN / ID` and theme toggle controls, while the `BLOG` header action retains its sharp rectangular (`rounded-none`) high-contrast inversion and primary page contact CTA buttons (`GET IN TOUCH →`) retain the `DESIGN.md` `33554400px` pill shape.
 
 ### Requirement: Sticky Hero Overlap & Scroll-Scrubbed Text Illumination
 The transition from the Hero section to the Statement/About section on `/` SHALL use layered sticky depth and scroll-linked typography contrast compatible with Light and Dark themes and WCAG AA readability.
 
 #### Scenario: Curtain-over-hero sticky scroll
 - **WHEN** the user scrolls vertically from the initial hero viewport into the Statement/About section
-- **THEN** the Hero container SHALL remain pinned (`position: sticky; top: 0; z-index: 0`, cleared below the fixed header and safe on mobile `svh` heights) while the Statement/About section (`z-index: 10`, opaque `--bg-alt` surface with a `1px solid var(--border-light)` top hairline border) and all downstream homepage sections (`z-index: 10`) slide smoothly upward over it without bleed-through or horizontal overflow.
+- **THEN** the borderless Hero container SHALL remain pinned (`position: sticky; top: 0; z-index: 0`, cleared below the fixed header and safe on mobile `svh` heights, with zero horizontal or vertical divider bars in the hero footer) while the Statement/About section (`z-index: 10`, opaque `--bg-alt` surface with a `1px solid var(--border-light)` top hairline border) and all downstream homepage sections (`z-index: 10`) slide smoothly upward over it without bleed-through or horizontal overflow.
 
 #### Scenario: Scroll-scrubbed word-by-word contrast reveal
 - **WHEN** the user scrolls through the large uppercase localized Statement (`pickLocale(profile.statement_en, profile.statement_id, locale)`)
