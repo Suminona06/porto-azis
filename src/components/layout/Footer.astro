@@ -35,7 +35,7 @@ const wordmarkCqw = Math.min(50, Math.max(10, Number((88 / (normalizedWordmark.l
 
 <footer class="relative z-10 bg-[var(--bg-primary)] text-[var(--text-primary)]">
   <div class="mx-auto flex max-w-7xl flex-col px-4 pt-12 pb-8 sm:px-6 sm:pt-16 sm:pb-12 lg:px-10">
-    <div class="font-mono-tech text-[11px] leading-relaxed tracking-[0.12em] uppercase text-[var(--text-muted)] sm:text-xs">
+    <div class="font-mono-tech text-[0.6875rem] leading-relaxed tracking-[0.12em] uppercase text-[var(--text-muted)] sm:text-xs">
       <p class="m-0">&copy; {year} — {fullName.toUpperCase()}</p>
       <p class="m-0">
         <time id="footer-gmt7-clock" data-footer-clock class="tabular-nums">{initialTime}</time>
@@ -64,7 +64,7 @@ const wordmarkCqw = Math.min(50, Math.max(10, Number((88 / (normalizedWordmark.l
                   href={item.url}
                   target={isHttp ? '_blank' : undefined}
                   rel={isHttp ? 'noopener noreferrer' : undefined}
-                  class="inline-flex min-h-11 items-center font-mono-tech text-[11px] tracking-[0.15em] uppercase text-[var(--text-muted)] no-underline transition-colors hover:text-[var(--text-primary)] sm:text-xs"
+                  class="inline-flex min-h-11 items-center font-mono-tech text-[0.6875rem] tracking-[0.15em] uppercase text-[var(--text-muted)] no-underline transition-colors hover:text-[var(--text-primary)] sm:text-xs"
                 >
                   {item.label}
                 </a>
