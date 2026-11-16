@@ -33,6 +33,7 @@ export function initLandingMotion(): () => void {
   const clockEl = document.querySelector<HTMLElement>('[data-hero-clock]');
   const statementSectionEl = document.querySelector<HTMLElement>('[data-statement-section]');
   const statementWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal-word]'));
+  const progressRingEl = document.querySelector<SVGCircleElement>('[data-progress-ring]');
 
   let activeCtx: gsap.Context | null = null;
   let heroTl: gsap.core.Timeline | null = null;
@@ -72,6 +73,9 @@ export function initLandingMotion(): () => void {
     }
     for (const word of statementWordEls) {
       word.dataset.revealed = 'true';
+    }
+    if (progressRingEl) {
+      progressRingEl.style.strokeDashoffset = '0';
     }
   };
 
@@ -126,6 +130,29 @@ export function initLandingMotion(): () => void {
 
     activeCtx = gsap.context(() => {
       setupStatementScrollTrigger();
+
+      // ScrollTrigger fallback only when CSS scroll-driven view() timeline is unsupported.
+      if (
+        progressRingEl &&
+        typeof CSS !== 'undefined' &&
+        !CSS.supports('(animation-timeline: view()) and (animation-range: entry)')
+      ) {
+        gsap.fromTo(
+          progressRingEl,
+          { strokeDashoffset: 805 },
+          {
+            strokeDashoffset: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: progressRingEl,
+              start: 'top 90%',
+              end: 'center 45%',
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+      }
 
       if (roleTextEl) {
         gsap.set(roleTextEl, { opacity: 0 });

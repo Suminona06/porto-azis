@@ -249,22 +249,56 @@
   color: #737373;
   transition:
     color var(--motion-duration-base) var(--motion-easing-standard),
-    border-color var(--motion-duration-fast) var(--motion-easing-standard),
     transform var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.tech-card .tech-aws-smile {
+  fill: currentColor;
+  transition: fill var(--motion-duration-base) var(--motion-easing-standard);
 }
 
 .tech-card:hover,
 .tech-card:focus-visible,
 .tech-card:active {
   color: var(--tech-hover-light, var(--text-primary));
-  border-color: var(--border-strong);
   transform: translateY(-2px);
+}
+
+.tech-card:hover .tech-aws-smile,
+.tech-card:focus-visible .tech-aws-smile,
+.tech-card:active .tech-aws-smile {
+  fill: #d97706;
 }
 
 [data-theme="dark"] .tech-card:hover,
 [data-theme="dark"] .tech-card:focus-visible,
 [data-theme="dark"] .tech-card:active {
   color: var(--tech-hover-dark, var(--text-primary));
+}
+
+[data-theme="dark"] .tech-card:hover .tech-aws-smile,
+[data-theme="dark"] .tech-card:focus-visible .tech-aws-smile,
+[data-theme="dark"] .tech-card:active .tech-aws-smile {
+  fill: #ff9900;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes circle-ring-draw {
+      from {
+        stroke-dashoffset: 805;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .circle-progress-ring {
+      animation: circle-ring-draw linear both;
+      animation-timeline: view();
+      animation-range: cover 5% cover 50%;
+    }
+  }
 }
 
 /* Marquee loops contained cleanly to prevent horizontal overflow */

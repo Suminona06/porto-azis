@@ -14,12 +14,12 @@ The system SHALL render a borderless Home Hero (`Azis Muhamad Fadli`, role `IT S
 - **THEN** the marquee animates smoothly inside an overflow-contained wrapper without introducing horizontal page scrollbars and pauses under `prefers-reduced-motion: reduce`
 
 ### Requirement: Circular Quote Motif and Favorite Tech Stack
-The system SHALL display a full-viewport centered circular quote motif (`min-h-screen`, `aspect-square`, uniform `2px` solid `--border-strong` stroke, no partial gradient or side-by-side offset) with the owner's motto centered dead-center inside the circle in uppercase geometric Sans-Serif (`Plus Jakarta Sans`, `font-medium`, `tracking-wide`, `leading-snug`), followed by a borderless `MOST FAVORITE TECH` grid rendering 1:1 official brand SVG silhouettes (`LINUX`, `DOCKER`, `KUBERNETES`, `TERRAFORM`, `AWS`, and configured slugs) inside square cards with muted monochrome `#737373` default state and crisp brand-accent or high-contrast highlight on hover and keyboard focus.
+The system SHALL display a full-viewport centered circular quote motif (`min-h-screen`, `aspect-square`, `2px` `--border-strong` SVG ring animating clockwise from 12 o'clock on vertical scroll over a quiet `1px` `--border-light` track, rendering static full ring under `prefers-reduced-motion: reduce`) with the owner's motto centered dead-center inside the circle in uppercase geometric Sans-Serif (`Plus Jakarta Sans`, `font-medium`, `tracking-wide`, `leading-snug`), followed by a borderless `MOST FAVORITE TECH` row rendering enlarged (`48px`-`56px`) 1:1 official brand SVGs (`LINUX`, `DOCKER`, `KUBERNETES`, `TERRAFORM`, `AWS`, and configured slugs) directly on the canvas with no surrounding square boxes, defaulting to `#737373` monochrome and revealing original brand colors on hover and keyboard focus.
 
 #### Scenario: Centered circular quote renders inside uniform 2px ring in Sans-Serif
-- **WHEN** a visitor scrolls to the circular quote section on desktop or mobile viewports
-- **THEN** the large responsive circle is centered horizontally and vertically with a uniform `2px` solid stroke (`#FFFFFF` in Dark mode, `#000000` in Light mode) and the uppercase `Plus Jakarta Sans` quote sits dead-center inside the ring without clipping or horizontal overflow
+- **WHEN** a visitor scrolls through the circular quote section on desktop or mobile viewports
+- **THEN** the large responsive circle is centered horizontally and vertically with its `2px` `--border-strong` stroke drawing clockwise on scroll until closed at center viewport (or static full ring under reduced motion), while the uppercase `Plus Jakarta Sans` quote sits dead-center inside the ring without clipping or horizontal overflow
 
 #### Scenario: Tech stack logo responds on hover and keyboard focus
-- **WHEN** a visitor hovers or focuses a favorite tech card in `MOST FAVORITE TECH`
-- **THEN** the authentic 1:1 brand SVG icon transitions smoothly (`0.4s`) from `#737373` monochrome to its brand accent color (or crisp high-contrast `--text-primary` / `#FFFFFF` highlight) alongside a crisp `--border-strong` card highlight and subtle `-2px` lift without shifting layout
+- **WHEN** a visitor hovers or focuses a favorite tech logo in `MOST FAVORITE TECH`
+- **THEN** the enlarged borderless 1:1 brand SVG icon transitions smoothly (`0.4s`) from `#737373` monochrome to its original brand colors with subtle `-2px` lift without shifting layout
