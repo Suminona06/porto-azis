@@ -11,12 +11,14 @@ interface Props {
 }
 
 const { profile, locale, copy, isPlaceholder } = Astro.props;
-const roleText = pickLocale(profile.role_en, profile.role_id, locale);
+const roleText = pickLocale(profile.role_en, profile.role_id, locale).trim().toUpperCase();
 const bioText = pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale);
 const bioWords = bioText.trim().split(/\s+/).filter(Boolean);
-const nameParts = profile.display_name.trim().split(/\s+/);
-const firstNameWords = (nameParts[0] || 'AZIS').toUpperCase().split(/\s+/).filter(Boolean);
-const restNameWords = nameParts.slice(1).map((w) => w.toUpperCase()).filter(Boolean);
+const nameWords = profile.display_name
+  .trim()
+  .toUpperCase()
+  .split(/\s+/)
+  .filter(Boolean);
 const locationLabel = profile.location.trim().toUpperCase();
 const initialJakartaClock = formatJakartaTime12h(new Date());
 ---
@@ -25,21 +27,45 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
   class="sticky top-0 z-0 min-h-[100svh] bg-[var(--bg-primary)]"
   data-hero-section
 >
-  <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between overflow-x-clip px-4 pt-24 pb-8 sm:px-6 lg:px-10 lg:pt-28 lg:pb-12">
+  <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between overflow-x-clip px-6 pt-24 pb-8 sm:px-10 lg:px-12 lg:pt-28 lg:pb-10">
     {
       isPlaceholder && (
         <div
           role="note"
-          class="mb-6 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2.5 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
+          class="mb-4 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
         >
           {copy.placeholderNotice}
         </div>
       )
     }
 
-    <div class="my-auto grid grid-cols-1 gap-10 py-6 lg:grid-cols-12 lg:items-end lg:gap-8">
-      <div class="lg:col-span-8">
-        <p class="relative mb-4 inline-block max-w-full overflow-hidden font-sans-ui text-xs font-bold tracking-[0.14em] uppercase text-[var(--text-muted)]">
+    {/* Top/Mid-Left Headline Block */}
+    <div class="mt-auto mb-auto py-6 sm:py-10">
+      <h1 class="m-0 font-display text-[clamp(2.25rem,6.8vw,5.5rem)] leading-[1.04] font-normal tracking-tight uppercase text-[var(--text-primary)]">
+        <span class="sr-only">{profile.display_name}</span>
+        <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em] gap-y-[0.06em]">
+          {
+            nameWords.map((word) => (
+              <span class="relative inline-block">
+                <span class="invisible select-none" aria-hidden="true">
+                  {word}
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
+                  data-hero-decode
+                  data-decode-target={word}
+                >
+                  {word}
+                </span>
+              </span>
+            ))
+          }
+        </span>
+      </h1>
+
+      <div class="mt-2 pl-6 sm:mt-3 sm:pl-12">
+        <p class="relative m-0 inline-block max-w-full overflow-hidden align-top font-sans-ui text-[clamp(1.15rem,3.4vw,2.85rem)] leading-[1.12] font-bold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
           <span data-hero-role-text class="inline-block">{roleText}</span>
           <span
             data-hero-role-mask
@@ -48,58 +74,17 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
             class="hero-motion-mask pointer-events-none absolute inset-0 bg-[var(--bg-inverse)]"
           ></span>
         </p>
-
-        <h1 class="m-0 font-display text-[clamp(2.75rem,8vw,6.25rem)] leading-[0.94] font-semibold tracking-[-0.03em] uppercase text-[var(--text-primary)]">
-          <span class="sr-only">{profile.display_name}</span>
-          <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em]">
-            {
-              firstNameWords.map((word) => (
-                <span class="relative inline-block">
-                  <span class="invisible select-none" aria-hidden="true">
-                    {word}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
-                    data-hero-decode
-                    data-decode-target={word}
-                  >
-                    {word}
-                  </span>
-                </span>
-              ))
-            }
-          </span>
-          {
-            restNameWords.length > 0 && (
-              <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em]">
-                {restNameWords.map((word) => (
-                  <span class="relative inline-block">
-                    <span class="invisible select-none" aria-hidden="true">
-                      {word}
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
-                      data-hero-decode
-                      data-decode-target={word}
-                    >
-                      {word}
-                    </span>
-                  </span>
-                ))}
-              </span>
-            )
-          }
-        </h1>
       </div>
+    </div>
 
-      <div class="lg:col-span-4 lg:pb-2">
-        <p class="m-0 max-w-md font-mono-tech text-xs leading-[1.75] tracking-[0.06em] uppercase text-[var(--text-secondary)] sm:text-[13px]">
+    {/* Bottom-Right Justified Intro Paragraph + Borderless 3-Slot Meta Bar */}
+    <div class="mt-auto pt-4 sm:pt-8">
+      <div class="ml-auto w-full max-w-[440px] sm:max-w-[480px]">
+        <p class="m-0 text-justify font-sans-ui text-[13px] leading-[1.65] tracking-[0.04em] uppercase text-[var(--hero-bio-color)] sm:text-[14px]">
           {
             bioWords.map((word, idx) => (
               <>
-                <span data-hero-bio-word class="inline-block">
+                <span data-hero-bio-word class="inline">
                   {word}
                 </span>
                 {idx < bioWords.length - 1 ? ' ' : ''}
@@ -108,25 +93,29 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
           }
         </p>
       </div>
-    </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 pt-4 font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-muted)]">
-      <button
-        type="button"
-        data-hero-location-btn
-        data-location-original={locationLabel}
-        aria-label={`${copy.basedIn}: ${profile.location}`}
-        class="inline-flex min-h-11 items-center border-0 bg-transparent p-0 text-left font-mono-tech text-xs tracking-[0.1em] uppercase text-[var(--text-primary)] transition-colors hover:text-[var(--text-muted)]"
-      >
-        <span aria-hidden="true" data-hero-location-text>{locationLabel}</span>
-      </button>
+      <div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-end gap-4 pt-2 font-mono-tech text-[11px] tracking-[0.12em] uppercase text-[var(--text-muted)]">
+        <button
+          type="button"
+          data-hero-location-btn
+          data-location-original={locationLabel}
+          aria-label={`${copy.basedIn}: ${profile.location}`}
+          class="inline-flex min-h-11 items-end justify-self-start border-0 bg-transparent p-0 pb-1 text-left font-mono-tech text-[11px] tracking-[0.12em] uppercase text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+        >
+          <span aria-hidden="true" data-hero-location-text>{locationLabel}</span>
+        </button>
 
-      <time
-        data-hero-clock
-        class="inline-flex min-h-11 items-center tabular-nums text-[var(--text-primary)]"
-      >
-        {initialJakartaClock}
-      </time>
+        <div class="flex items-end justify-self-center pb-1" aria-hidden="true">
+          <span class="hero-scroll-line block h-6 w-px bg-[var(--text-primary)]/80"></span>
+        </div>
+
+        <time
+          data-hero-clock
+          class="inline-flex min-h-11 items-end justify-self-end pb-1 tabular-nums text-[11px] tracking-[0.12em] uppercase text-[var(--text-muted)]"
+        >
+          {initialJakartaClock}
+        </time>
+      </div>
     </div>
   </div>
 </section>
@@ -136,4 +125,3 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
 
   initLandingMotion();
 </script>
-

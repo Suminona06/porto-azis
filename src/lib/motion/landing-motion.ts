@@ -2,7 +2,11 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { startJakartaClock } from './clock';
 import { editorialEase, getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
-import { createCipherDecodeTween, runTrailingScramble } from './text-scramble';
+import {
+  computeSeededWordDelays,
+  createAlphabetDecodeTween,
+  runTrailingScramble,
+} from './text-scramble';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -183,85 +187,79 @@ export function initLandingMotion(): () => void {
       if (bioWordEls.length > 0) {
         gsap.set(bioWordEls, {
           opacity: 0,
-          y: 5,
-          force3D: true,
-          willChange: 'transform, opacity',
+          willChange: 'opacity',
         });
       }
       if (decodeEls.length > 0) {
         gsap.set(decodeEls, {
-          opacity: 0.35,
-          willChange: 'opacity',
+          opacity: 1,
         });
       }
 
       const tl = gsap.timeline({ paused: true });
       heroTl = tl;
 
-      // Part 1 (t = 0ms): unified-ticker 800ms A-Z0-9 cipher decode + clean compositor opacity settle.
+      // Part 1 (t = 0s, ~1.0s): left-to-right uppercase A-Z alphabet decode (~35ms/tick).
       if (decodeEls.length > 0) {
-        tl.to(
-          decodeEls,
-          {
-            opacity: 1,
-            duration: 0.28,
-            ease: 'power2.out',
-            clearProps: 'willChange',
-          },
-          0,
-        );
         for (const el of decodeEls) {
           const target = el.dataset.decodeTarget ?? el.textContent ?? '';
           tl.add(
-            createCipherDecodeTween(el, target, {
-              durationMs: 800,
-              frameIntervalMs: 40,
+            createAlphabetDecodeTween(el, target, {
+              durationMs: 1000,
+              frameIntervalMs: 35,
             }),
             0,
           );
         }
       }
 
-      // Part 2 (t = 0ms): 700ms inverse rectangular block mask reveal over subtitle.
+      // Part 2 (t = 0.2s, ~0.85s): solid inverse block wipe reveal over indented role line.
+      // Phase 1 (0.20s -> 0.60s): expand left-to-right (origin-left, scaleX: 0 -> 1) while text opacity is 0.
+      // Phase 2 (0.60s -> 1.05s): flip text opacity to 1, retract left-to-right (origin-right, scaleX: 1 -> 0).
       if (roleMaskEl && roleTextEl) {
         tl.to(
           roleMaskEl,
           {
             scaleX: 1,
-            duration: 0.35,
+            duration: 0.4,
             ease: editorialEase,
             force3D: true,
           },
-          0,
+          0.2,
         )
-          .set(roleTextEl, { opacity: 1 })
-          .set(roleMaskEl, { transformOrigin: '100% 50%' })
-          .to(roleMaskEl, {
-            scaleX: 0,
-            duration: 0.35,
-            ease: editorialEase,
-            force3D: true,
-            clearProps: 'willChange',
-          });
+          .set(roleTextEl, { opacity: 1 }, 0.6)
+          .set(roleMaskEl, { transformOrigin: '100% 50%' }, 0.6)
+          .to(
+            roleMaskEl,
+            {
+              scaleX: 0,
+              duration: 0.45,
+              ease: editorialEase,
+              force3D: true,
+              clearProps: 'willChange',
+            },
+            0.6,
+          );
       } else if (roleTextEl) {
-        tl.set(roleTextEl, { opacity: 1 }, 0);
+        tl.set(roleTextEl, { opacity: 1 }, 0.2);
       }
 
-      // Part 3 (at headline settle): 900ms staggered bio word entrance.
+      // Part 3 (t = 0.4s, ~1.2s): seeded deterministic random word-by-word fade-in (0ms-900ms delays, 0.45s easeOut).
       if (bioWordEls.length > 0) {
-        tl.to(
-          bioWordEls,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.44,
-            stagger: { amount: 0.46, from: 'random' },
-            ease: 'power3.out',
-            force3D: true,
-            clearProps: 'transform,willChange',
-          },
-          0.74,
-        );
+        const randomDelays = computeSeededWordDelays(bioWordEls.length, 900);
+        bioWordEls.forEach((wordEl, idx) => {
+          const delaySec = (randomDelays[idx] ?? 0) / 1000;
+          tl.to(
+            wordEl,
+            {
+              opacity: 1,
+              duration: 0.45,
+              ease: 'power2.out',
+              clearProps: 'willChange',
+            },
+            0.4 + delaySec,
+          );
+        });
       }
     });
   };

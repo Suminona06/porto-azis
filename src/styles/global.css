@@ -16,6 +16,12 @@
   --focus-ring: #000000;
   --selection-bg: #000000;
   --selection-text: #ffffff;
+  --hero-bio-color: #52525b;
+  --work-surface: #fafafa;
+  --work-divider: rgba(0, 0, 0, 0.08);
+  --work-row-hover: rgba(0, 0, 0, 0.03);
+  --work-index-color: #52525b;
+  --work-stack-color: #3f3f46;
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
@@ -54,6 +60,12 @@
   --focus-ring: #ffffff;
   --selection-bg: #ffffff;
   --selection-text: #000000;
+  --hero-bio-color: #8a8a8a;
+  --work-surface: #0b0b0b;
+  --work-divider: rgba(255, 255, 255, 0.08);
+  --work-row-hover: rgba(255, 255, 255, 0.03);
+  --work-index-color: #a3a3a3;
+  --work-stack-color: #d4d4d4;
 
   color-scheme: dark;
 }
@@ -472,6 +484,30 @@
   color: var(--text-primary);
 }
 
+@keyframes hero-scroll-indicator {
+  0% {
+    transform-origin: top center;
+    transform: scaleY(0);
+  }
+  45% {
+    transform-origin: top center;
+    transform: scaleY(1);
+  }
+  55% {
+    transform-origin: bottom center;
+    transform: scaleY(1);
+  }
+  100% {
+    transform-origin: bottom center;
+    transform: scaleY(0);
+  }
+}
+
+.hero-scroll-line {
+  animation: hero-scroll-indicator 1.8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -480,6 +516,16 @@
   .marquee-track,
   .marquee-track-reverse {
     animation: none !important;
+  }
+
+  .hero-scroll-line {
+    animation: none !important;
+    transform: scaleY(1) !important;
+  }
+
+  .work-thumb-preview {
+    transition: opacity 150ms ease !important;
+    transform: none !important;
   }
 
   .hero-motion-mask {

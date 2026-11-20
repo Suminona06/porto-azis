@@ -3,7 +3,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Design Token Typography and Spacing Discipline
-The system SHALL apply `Playfair Display` (600 and 700) for editorial display headings and the bold footer wordmark, `Plus Jakarta Sans` (400, 500, and 600) for body copy, UI headings, and the centered circular quote motif, and `JetBrains Mono` (400 and 500) for technical labels and metadata, using the 4px base spacing scale and `33554400px` radius only on pill CTA buttons and the circular quote motif without `box-shadow` elevation.
+The system SHALL apply `Playfair Display` (400, 600, and 700) for editorial display headings (`400` normal on Hero Line 1 and `SELECTED`, `700` bold on `WORK` and the lowercase footer wordmark), `Plus Jakarta Sans` (400, 500, 600, and 700) for body copy, UI headings, Hero Line 2 role, Hero justified intro paragraph, Selected Work project titles, and the centered circular quote motif, and `JetBrains Mono` (400 and 500) for technical labels and metadata, using the 4px base spacing scale and `33554400px` radius only on pill CTA buttons and the circular quote motif without `box-shadow` elevation.
 
 #### Scenario: Typography and elevation tokens are applied consistently
 - **WHEN** any public portfolio or blog page is rendered at desktop or mobile viewports

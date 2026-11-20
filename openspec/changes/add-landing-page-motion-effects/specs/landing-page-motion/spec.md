@@ -28,17 +28,32 @@ The system SHALL display a full-screen `#000000` preloader overlay on every init
 ### Requirement: Hero Entrance Choreography
 The system SHALL execute a synchronized 3-part GSAP entrance sequence on the homepage hero immediately after the preloader curtain exits (or immediately render static text when `prefers-reduced-motion: reduce` is active), binding animations to Azis Muhamad Fadli's localized CMS profile fields (`site_profile`) with zero layout reflow jitter.
 
-#### Scenario: Primary serif title cipher decode
-- **WHEN** the hero section enters the viewport
-- **THEN** the primary serif headline (`profile.display_name`, defaulting to `AZIS MUHAMAD FADLI`) SHALL animate on GSAP's unified ticker using a progressive left-to-right character scramble/decode effect (`A-Z`, `0-9` uppercase glyphs) rendered inside layout-locked word boxes (`0px` height/wrap shift) resolving into the exact final characters over `800ms`, while preserving the exact final text in the accessible name for assistive technologies.
+#### Scenario: Primary serif name left-to-right alphabet decode
+- **WHEN** the hero section enters after preloader exit
+- **THEN** Line 1 (`profile.display_name`, uppercase `Playfair Display` `font-normal`) SHALL animate on GSAP's unified ticker using a progressive left-to-right uppercase alphabetic scramble (`A-Z`, `~35ms`/tick) rendered inside layout-locked word boxes (`0px` height/wrap shift) resolving into the exact final characters over `~1.0s`, while preserving the exact final text in the accessible name for assistive technologies.
 
-#### Scenario: Secondary subtitle block mask reveal
-- **WHEN** the primary title decode begins
-- **THEN** an opaque high-contrast rectangular mask (`--bg-inverse`: `#000000` in Light mode, `#FFFFFF` in Dark mode) SHALL expand horizontally across the hero role subtitle (`pickLocale(profile.role_en, profile.role_id, locale)`) bounding box (`scaleX: 0 -> 1`, `originX: 0`) and retract (`scaleX: 1 -> 0`, `originX: 1`) over `700ms` (easing `[0.77, 0, 0.175, 1]`) to uncover the subtitle text.
+#### Scenario: Indented role solid block wipe reveal
+- **WHEN** `~0.2s` has elapsed since hero entrance start
+- **THEN** Line 2 (`pickLocale(profile.role_en, profile.role_id, locale)`, indented `pl-6 sm:pl-12` in large uppercase bold `Plus Jakarta Sans`) SHALL reveal via an opaque inverse rectangular block (`--bg-inverse`: `#FFFFFF` in Dark mode, `#000000` in Light mode) that expands left-to-right (`origin-left`, `scaleX: 0 -> 1`, `0.4s`) while text is hidden (`opacity: 0`), flips text to `opacity: 1`, and retracts left-to-right (`origin-right`, `scaleX: 1 -> 0`, `0.45s`) using `cubic-bezier(0.77, 0, 0.175, 1)`.
 
-#### Scenario: Bio paragraph staggered word fade-in
-- **WHEN** the hero headlines settle
-- **THEN** individual words in the localized hero bio paragraph (`pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale)`) SHALL transition from `opacity: 0` to `opacity: 1` in randomized/staggered intervals (`duration: 900ms`), settling cleanly at full theme contrast.
+#### Scenario: Bottom-right justified intro paragraph seeded-random word fade-in
+- **WHEN** `~0.4s` has elapsed since hero entrance start
+- **THEN** individual words in the bottom-right justified intro paragraph (`pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale)`, uppercase geometric Sans-Serif, `text-justify`, `#8A8A8A` in Dark mode) SHALL fade individually from `opacity: 0` to `opacity: 1` (`duration: 0.45s`, `easeOut`) using deterministic seeded randomized delays between `0ms` and `900ms` (non-sequential), preserving inter-word spacing so `text-justify` remains intact.
+
+#### Scenario: Bottom-center looping vertical scroll indicator
+- **WHEN** the hero section is rendered with reduced motion disabled
+- **THEN** a `1px × 24px` vertical scroll indicator line centered in the borderless bottom meta bar SHALL animate in a smooth `~1.8s` continuous loop (`scaleY: 0 -> 1` from `origin-top`, then `scaleY: 1 -> 0` from `origin-bottom`), pausing statically when `prefers-reduced-motion: reduce` is enabled.
+
+### Requirement: Selected Work Simultaneous ASCII Symbol-Cipher Scramble & Inline Thumbnail Reveal
+The Selected Work section SHALL trigger a simultaneous 3-column ASCII symbol-cipher scramble on viewport entry and on row hover/focus, paired with a smooth inline right-column thumbnail reveal and zero layout shift.
+
+#### Scenario: Simultaneous 3-column ASCII symbol scramble on viewport entry and hover
+- **WHEN** a Selected Work row enters the viewport for the first time (`IntersectionObserver`) or receives pointer hover (`mouseenter`) or keyboard focus (`focus`)
+- **THEN** all three text columns of that row (Index `01`, uppercase Sans-Serif Project Title, and monospace Tech Stack) SHALL simultaneously scramble using a symbol-heavy ASCII charset (`!@#$%^&*()_+-=[]{}|;:',.<>?/~0123456789`) via throttled `requestAnimationFrame` (`~32ms`/frame over `~460ms`), preserving spaces and resolving progressively back to the exact original strings without layout jump, and cleanly cancelling prior runs on rapid re-entry or unmount.
+
+#### Scenario: Inline right-column thumbnail preview reveal on hover
+- **WHEN** the visitor hovers or focuses a Selected Work row on desktop (`lg+`)
+- **THEN** the row background SHALL highlight subtly (`white/[0.03]` in Dark mode / `black/[0.03]` in Light mode) and the project's inline right-column preview image (`w-[180px] lg:w-[230px] h-[72px] lg:h-[84px]`) SHALL smoothly reveal from `opacity-0 scale-95 translate-x-2` to `opacity-100 scale-100 translate-x-0` (`duration-300 ease-out`) inside the row itself, or remain cleanly empty when no preview image URL is configured.
 
 ### Requirement: Interactive Monospace Micro-Interactions & Live Metadata
 The hero footer and fixed header SHALL provide tactile monospace feedback and real-time timezone metadata across both Light and Dark themes while maintaining WCAG AA contrast and `DESIGN.md` button hierarchy.

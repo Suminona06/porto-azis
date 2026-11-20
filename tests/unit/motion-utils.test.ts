@@ -7,8 +7,13 @@ import {
 } from '../../src/lib/motion/easing';
 import { formatJakartaTime12h } from '../../src/lib/motion/clock';
 import {
+  ALPHABET_CHARSET,
   CIPHER_ALPHABET,
+  SYMBOL_CIPHER_CHARSET,
+  computeAlphabetDecodeFrame,
   computeCipherFrame,
+  computeSeededWordDelays,
+  computeSymbolCipherFrame,
   computeTrailingScrambleFrame,
 } from '../../src/lib/motion/text-scramble';
 
@@ -87,5 +92,53 @@ describe('text scramble frames', () => {
     expect(lateScramble.length).toBe(location.length);
 
     expect(computeTrailingScrambleFrame(location, 1, numericGlyphs)).toBe(location);
+  });
+
+  it('decodes left-to-right using uppercase A-Z alphabet charset for Hero name', () => {
+    const target = 'AZIS MUHAMAD FADLI';
+    const alphaPicker = (idx: number) => ALPHABET_CHARSET[idx % ALPHABET_CHARSET.length] ?? 'A';
+
+    const start = computeAlphabetDecodeFrame(target, 0, alphaPicker);
+    expect(start.length).toBe(target.length);
+    expect(start[4]).toBe(' ');
+    expect(start[12]).toBe(' ');
+    expect(start).toMatch(/^[A-Z]{4} [A-Z]{7} [A-Z]{5}$/);
+
+    const mid = computeAlphabetDecodeFrame(target, 0.5, alphaPicker);
+    expect(mid.slice(0, 9)).toBe('AZIS MUHA');
+    expect(computeAlphabetDecodeFrame(target, 1, alphaPicker)).toBe(target);
+  });
+
+  it('scrambles with ASCII symbol-cipher charset while preserving spaces and exact length', () => {
+    const target = 'DOCKER, PROMETHEUS, GRAFANA';
+    const symbolPicker = (idx: number) =>
+      SYMBOL_CIPHER_CHARSET[idx % SYMBOL_CIPHER_CHARSET.length] ?? '#';
+
+    const start = computeSymbolCipherFrame(target, 0, symbolPicker);
+    expect(start.length).toBe(target.length);
+    expect(start[7]).toBe(' ');
+    expect(start[19]).toBe(' ');
+    expect(start).not.toBe(target);
+
+    const mid = computeSymbolCipherFrame(target, 0.5, symbolPicker);
+    expect(mid.startsWith('DOCKER, PROME')).toBe(true);
+    expect(mid.length).toBe(target.length);
+
+    expect(computeSymbolCipherFrame(target, 1, symbolPicker)).toBe(target);
+  });
+
+  it('generates deterministic non-sequential seeded word delays within [0, 900ms]', () => {
+    const delaysA = computeSeededWordDelays(18, 900);
+    const delaysB = computeSeededWordDelays(18, 900);
+    expect(delaysA).toEqual(delaysB);
+    expect(delaysA).toHaveLength(18);
+    for (const d of delaysA) {
+      expect(d).toBeGreaterThanOrEqual(0);
+      expect(d).toBeLessThanOrEqual(900);
+    }
+
+    // Must not be monotonically sorted left-to-right
+    const isSortedAsc = delaysA.every((val, i) => i === 0 || delaysA[i - 1]! <= val);
+    expect(isSortedAsc).toBe(false);
   });
 });
