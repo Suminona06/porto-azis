@@ -12,8 +12,6 @@ export const ALPHABET_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const CIPHER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 export const SYMBOL_CIPHER_CHARSET = "!@#$%^&*()_+-=[]{}|;:',.<>?/~";
 
-const SYMBOL_CIPHER_POOL = "!@#$%^&*()_+-=[]{}|;:',.<>?/~\\`";
-
 function easeOutCubic(t: number): number {
   const clamped = Math.min(1, Math.max(0, t));
   return 1 - Math.pow(1 - clamped, 3);
@@ -33,7 +31,7 @@ function randomAlphabetGlyph(): string {
 }
 
 function randomSymbolGlyph(): string {
-  return randomFrom(SYMBOL_CIPHER_POOL);
+  return randomFrom(SYMBOL_CIPHER_CHARSET);
 }
 
 /**
@@ -99,9 +97,9 @@ export function computeCipherFrame(
 }
 
 /**
- * Computes a single 2-phase ASCII symbol-cipher frame for `target` (preserving spaces & exact length):
- * - Phase 1 (0% -> 38%): full symbol-cipher shimmer across all non-space characters
- * - Phase 2 (38% -> 100%): smooth easeOutCubic progressive left-to-right lock-in back to `target`
+ * Computes a single full-string pure ASCII punctuation/symbol burst frame for `target`:
+ * - While `progress < 1`: scrambles ALL non-space characters simultaneously (preserving spaces & exact length)
+ * - At `progress >= 1`: snaps 100% back to the exact `target` string all at once.
  */
 export function computeSymbolCipherFrame(
   target: string,
@@ -112,20 +110,10 @@ export function computeSymbolCipherFrame(
     return target;
   }
 
-  const clamped = Math.max(0, progress);
-  const holdPhase = 0.38;
-  const resolveProgress =
-    clamped <= holdPhase ? 0 : easeOutCubic((clamped - holdPhase) / (1 - holdPhase));
-  const resolvedCount = Math.floor(resolveProgress * target.length);
   let output = '';
-
   for (let i = 0; i < target.length; i += 1) {
     const ch = target[i];
-    if (/\s/.test(ch) || i < resolvedCount) {
-      output += ch;
-    } else {
-      output += pickGlyph(i);
-    }
+    output += /\s/.test(ch) ? ch : pickGlyph(i);
   }
 
   return output;
@@ -328,9 +316,9 @@ export interface SymbolScrambleTarget {
 }
 
 /**
- * Runs a throttled requestAnimationFrame ASCII symbol-cipher scramble simultaneously across
- * all provided `targets` (e.g., index, project title, and tech stack of a Selected Work row).
- * Returns a cancel function that immediately stops the loop and restores exact original strings.
+ * Runs a snappy throttled requestAnimationFrame full-string ASCII punctuation/symbol scramble
+ * simultaneously across all provided `targets` (index, project title, tech stack) for ~400ms,
+ * snapping cleanly back to exact original strings at completion or immediately upon cancellation.
  */
 export function runSymbolCipherScramble(
   targets: SymbolScrambleTarget[],
@@ -340,8 +328,8 @@ export function runSymbolCipherScramble(
     return () => {};
   }
 
-  const durationMs = options.durationMs ?? 780;
-  const frameIntervalMs = options.frameIntervalMs ?? 46;
+  const durationMs = options.durationMs ?? 400;
+  const frameIntervalMs = options.frameIntervalMs ?? 48;
   let rafId = 0;
   let cancelled = false;
   let startTime = 0;
@@ -355,14 +343,14 @@ export function runSymbolCipherScramble(
     }
   };
 
-  const renderAt = (progress: number) => {
+  const renderBurstFrame = () => {
     for (const { element, originalText } of targets) {
-      element.textContent = computeSymbolCipherFrame(originalText, progress);
+      element.textContent = computeSymbolCipherFrame(originalText, 0);
     }
   };
 
-  // Paint initial scrambled frame immediately on trigger
-  renderAt(0);
+  // Paint initial full-string scrambled frame immediately on trigger
+  renderBurstFrame();
 
   const step = (now: number) => {
     if (cancelled) return;
@@ -372,9 +360,7 @@ export function runSymbolCipherScramble(
     }
 
     const elapsed = now - startTime;
-    const progress = Math.min(1, elapsed / durationMs);
-
-    if (progress >= 1) {
+    if (elapsed >= durationMs) {
       restoreAll();
       options.onComplete?.();
       return;
@@ -382,7 +368,7 @@ export function runSymbolCipherScramble(
 
     if (now - lastFrameTime >= frameIntervalMs) {
       lastFrameTime = now;
-      renderAt(progress);
+      renderBurstFrame();
     }
 
     rafId = window.requestAnimationFrame(step);
@@ -399,3 +385,5 @@ export function runSymbolCipherScramble(
     restoreAll();
   };
 }
+
+export const useSymbolScramble = runSymbolCipherScramble;

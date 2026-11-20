@@ -16,6 +16,7 @@ import {
   computeSymbolCipherFrame,
   computeTrailingScrambleFrame,
 } from '../../src/lib/motion/text-scramble';
+import { resolveRowEdge } from '../../src/lib/motion/selected-work-motion';
 
 describe('editorial cubic-bezier easing', () => {
   it('uses [0.77, 0, 0.175, 1] control points and satisfies boundary and monotonic progression', () => {
@@ -115,28 +116,46 @@ describe('text scramble frames', () => {
     expect(computeAlphabetDecodeFrame(target, 1, alphaPicker)).toBe(target);
   });
 
-  it('scrambles with 2-phase pure ASCII symbol-cipher charset while preserving spaces and exact length', () => {
+  it('scrambles all non-space characters with pure ASCII punctuation symbols and snaps 100% back on completion', () => {
     const target = 'DOCKER, PROMETHEUS, GRAFANA';
     const symbolPicker = (idx: number) =>
       SYMBOL_CIPHER_CHARSET[idx % SYMBOL_CIPHER_CHARSET.length] ?? '#';
+
+    expect(SYMBOL_CIPHER_CHARSET).not.toMatch(/[A-Za-z0-9]/);
 
     const start = computeSymbolCipherFrame(target, 0, symbolPicker);
     expect(start.length).toBe(target.length);
     expect(start[7]).toBe(' ');
     expect(start[19]).toBe(' ');
-    expect(start).not.toBe(target);
+    expect(start).not.toMatch(/[A-Za-z0-9]/);
 
-    // Phase 1 (<= 38%): full symbol cipher shimmer across all non-space characters
-    const phase1 = computeSymbolCipherFrame(target, 0.3, symbolPicker);
-    expect(phase1.length).toBe(target.length);
-    expect(phase1.startsWith('DOCKER')).toBe(false);
+    // Throughout the burst (progress < 1), all non-space characters stay scrambled simultaneously
+    const lateBurst = computeSymbolCipherFrame(target, 0.9, symbolPicker);
+    expect(lateBurst.length).toBe(target.length);
+    expect(lateBurst[7]).toBe(' ');
+    expect(lateBurst[19]).toBe(' ');
+    expect(lateBurst).not.toMatch(/[A-Za-z0-9]/);
 
-    // Phase 2 (> 38%): smooth easeOutCubic left-to-right resolve
-    const phase2 = computeSymbolCipherFrame(target, 0.72, symbolPicker);
-    expect(phase2.startsWith('DOCKER, PROMETHEUS')).toBe(true);
-    expect(phase2.length).toBe(target.length);
-
+    // At progress >= 1 (t >= 400ms), snaps 100% back to the exact original text simultaneously
     expect(computeSymbolCipherFrame(target, 1, symbolPicker)).toBe(target);
+  });
+
+  it('resolves direction-aware vertical edges for row-to-row and external list entry/exit', () => {
+    const rect = { top: 100, height: 120 }; // midpoint = 160
+
+    // Moving down across rows: Row 0 -> Row 1
+    expect(resolveRowEdge({ mode: 'leave', currentIndex: 0, otherIndex: 1, clientY: 220, rect })).toBe('bottom');
+    expect(resolveRowEdge({ mode: 'enter', currentIndex: 1, otherIndex: 0, clientY: 220, rect })).toBe('top');
+
+    // Moving up across rows: Row 2 -> Row 1
+    expect(resolveRowEdge({ mode: 'leave', currentIndex: 2, otherIndex: 1, clientY: 105, rect })).toBe('top');
+    expect(resolveRowEdge({ mode: 'enter', currentIndex: 1, otherIndex: 2, clientY: 215, rect })).toBe('bottom');
+
+    // Entering/exiting from outside the list using cursor vs row midpoint
+    expect(resolveRowEdge({ mode: 'enter', currentIndex: 0, otherIndex: null, clientY: 110, rect })).toBe('top');
+    expect(resolveRowEdge({ mode: 'leave', currentIndex: 0, otherIndex: null, clientY: 110, rect })).toBe('top');
+    expect(resolveRowEdge({ mode: 'enter', currentIndex: 3, otherIndex: null, clientY: 210, rect })).toBe('bottom');
+    expect(resolveRowEdge({ mode: 'leave', currentIndex: 3, otherIndex: null, clientY: 210, rect })).toBe('bottom');
   });
 
   it('generates deterministic non-sequential seeded word delays within [0, 900ms]', () => {

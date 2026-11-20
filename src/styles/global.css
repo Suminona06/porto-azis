@@ -19,7 +19,7 @@
   --hero-bio-color: #52525b;
   --work-surface: #fafafa;
   --work-divider: rgba(0, 0, 0, 0.08);
-  --work-row-hover: rgba(0, 0, 0, 0.03);
+  --work-row-hover: rgba(0, 0, 0, 0.02);
   --work-index-color: #52525b;
   --work-stack-color: #3f3f46;
 
@@ -63,7 +63,7 @@
   --hero-bio-color: #8a8a8a;
   --work-surface: #0b0b0b;
   --work-divider: rgba(255, 255, 255, 0.08);
-  --work-row-hover: rgba(255, 255, 255, 0.045);
+  --work-row-hover: rgba(255, 255, 255, 0.02);
   --work-index-color: #a3a3a3;
   --work-stack-color: #a3a3a3;
 
@@ -508,6 +508,18 @@
   will-change: transform;
 }
 
+.work-thumb-preview {
+  opacity: 1;
+  clip-path: inset(0% 0% 100% 0%);
+  transition: clip-path 340ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: clip-path;
+}
+
+[data-work-section]:not([data-work-motion-ready]) .group:hover .work-thumb-preview,
+[data-work-section]:not([data-work-motion-ready]) .group:focus-visible .work-thumb-preview {
+  clip-path: inset(0% 0% 0% 0%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -524,8 +536,14 @@
   }
 
   .work-thumb-preview {
+    clip-path: none !important;
+    opacity: 0;
     transition: opacity 150ms ease !important;
-    transform: none !important;
+  }
+
+  .group:hover .work-thumb-preview,
+  .group:focus-visible .work-thumb-preview {
+    opacity: 1;
   }
 
   .hero-motion-mask {

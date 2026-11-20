@@ -49,7 +49,7 @@ const yearSpanLabel =
       )
     }
 
-    <ul class="m-0 list-none bg-[var(--work-surface)] p-0">
+    <ul class="m-0 flex list-none flex-col gap-0 bg-[var(--work-surface)] p-0">
       {
         projects.map((project, index) => {
           const num = String(index + 1).padStart(2, '0');
@@ -58,33 +58,34 @@ const yearSpanLabel =
           const hasBanner = Boolean(project.banner_url && project.banner_url.trim().length > 0);
 
           return (
-            <li class="border-b border-[var(--work-divider)] last:border-b-0">
+            <li class="group/item m-0 p-0">
               <a
                 href={project.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-project-row
+                data-row-index={index}
                 aria-label={`${project.title} (${project.tech_stack.join(', ')})`}
-                class="group flex min-h-[116px] items-center gap-4 px-6 py-6 no-underline transition-colors duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--work-row-hover)] focus-visible:bg-[var(--work-row-hover)] sm:min-h-[132px] sm:gap-6 sm:px-8"
+                class="group relative flex min-h-[104px] items-center gap-4 border-b border-[var(--work-divider)] py-5 pl-6 pr-6 no-underline transition-colors duration-200 hover:bg-[var(--work-row-hover)] focus-visible:bg-[var(--work-row-hover)] group-last/item:border-b-0 md:h-[120px] md:gap-5 md:py-0 md:pl-8 md:pr-0 lg:h-[128px] lg:gap-5"
               >
                 <span
                   aria-hidden="true"
                   data-symbol-scramble={num}
-                  class="w-10 shrink-0 font-mono-tech text-[11px] tabular-nums whitespace-pre text-[var(--work-index-color)] sm:w-12 sm:text-xs"
+                  class="w-12 shrink-0 font-mono-tech text-xs tabular-nums whitespace-pre text-[var(--work-index-color)]"
                 >
                   {num}
                 </span>
 
-                <div class="min-w-0 flex-1 pr-4">
-                  <h3 class="m-0 truncate font-sans-ui text-lg font-normal tracking-[0.01em] uppercase text-[var(--text-primary)] sm:text-2xl lg:text-[26px]">
-                    <span class="whitespace-pre" data-symbol-scramble={titleUpper}>
+                <div class="min-w-0 flex-1">
+                  <h3 class="m-0 overflow-hidden whitespace-nowrap font-sans-ui text-base font-normal tracking-normal uppercase text-[var(--text-primary)] sm:text-lg lg:text-[15px] xl:text-[16px]">
+                    <span class="block overflow-hidden whitespace-nowrap" data-symbol-scramble={titleUpper}>
                       {titleUpper}
                     </span>
                   </h3>
                   {stackText && (
                     <p
                       aria-hidden="true"
-                      class="m-0 mt-1.5 truncate font-mono-tech text-[11px] tracking-[0.14em] uppercase text-[var(--work-stack-color)] md:hidden"
+                      class="m-0 mt-1.5 overflow-hidden whitespace-nowrap font-mono-tech text-[11px] tracking-[0.08em] uppercase text-[var(--work-stack-color)] lg:hidden"
                     >
                       {stackText}
                     </p>
@@ -94,24 +95,25 @@ const yearSpanLabel =
                 <span
                   aria-hidden="true"
                   data-symbol-scramble={stackText}
-                  class="hidden w-[220px] shrink-0 truncate font-mono-tech text-[11px] tracking-[0.14em] uppercase whitespace-pre text-[var(--work-stack-color)] md:block lg:w-[290px]"
+                  class="hidden shrink-0 font-mono-tech text-[11px] tracking-[0.05em] uppercase whitespace-nowrap text-[var(--work-stack-color)] lg:block lg:w-[255px] xl:w-[270px]"
                 >
                   {stackText}
                 </span>
 
                 <div
-                  class="hidden h-[80px] w-[196px] shrink-0 items-center justify-end overflow-hidden lg:flex lg:h-[94px] lg:w-[248px]"
+                  class="relative my-2 mr-2 hidden h-[calc(100%-16px)] w-[220px] shrink-0 overflow-hidden md:block lg:w-[270px]"
                   aria-hidden="true"
                 >
                   {hasBanner && (
                     <img
                       src={project.banner_url}
                       alt=""
-                      width="248"
-                      height="94"
+                      width="270"
+                      height="112"
                       loading="lazy"
                       decoding="async"
-                      class="work-thumb-preview pointer-events-none h-full w-full translate-x-3 scale-[0.96] rounded-[2px] object-cover opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,transform] group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                      data-work-thumb
+                      class="work-thumb-preview pointer-events-none block h-full w-full object-cover"
                     />
                   )}
                 </div>
