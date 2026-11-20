@@ -10,10 +10,14 @@ import gsap from 'gsap';
 
 export const ALPHABET_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const CIPHER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-export const SYMBOL_CIPHER_CHARSET = "!@#$%^&*()_+-=[]{}|;:',.<>?/~0123456789";
+export const SYMBOL_CIPHER_CHARSET = "!@#$%^&*()_+-=[]{}|;:',.<>?/~";
 
-const SYMBOL_CIPHER_POOL =
-  "!@#$%^&*()_+-=[]{}|;:',.<>?/~!@#$%^&*()[];:,.<>?/~0123456789";
+const SYMBOL_CIPHER_POOL = "!@#$%^&*()_+-=[]{}|;:',.<>?/~\\`";
+
+function easeOutCubic(t: number): number {
+  const clamped = Math.min(1, Math.max(0, t));
+  return 1 - Math.pow(1 - clamped, 3);
+}
 
 function randomFrom(charset: string): string {
   const idx = Math.floor(Math.random() * charset.length);
@@ -34,7 +38,8 @@ function randomSymbolGlyph(): string {
 
 /**
  * Computes a single progressive left-to-right A-Z alphabet decode frame for `target`.
- * Guarantees exact `target` convergence at `progress >= 1` and preserves all whitespace positions.
+ * Holds a brief full-alphabet shimmer for the first 15% of progress before resolving smoothly
+ * left-to-right, guaranteeing exact `target` convergence at `progress >= 1` and preserving whitespace.
  */
 export function computeAlphabetDecodeFrame(
   target: string,
@@ -46,7 +51,10 @@ export function computeAlphabetDecodeFrame(
   }
 
   const clamped = Math.max(0, progress);
-  const resolvedCount = Math.floor(clamped * target.length);
+  const holdPhase = 0.15;
+  const resolveProgress =
+    clamped <= holdPhase ? 0 : easeOutCubic((clamped - holdPhase) / (1 - holdPhase));
+  const resolvedCount = Math.floor(resolveProgress * target.length);
   let output = '';
 
   for (let i = 0; i < target.length; i += 1) {
@@ -91,8 +99,9 @@ export function computeCipherFrame(
 }
 
 /**
- * Computes a single ASCII symbol-cipher frame for `target` (preserving spaces & exact length).
- * Progressively resolves left-to-right back into `target` as `progress` approaches 1.
+ * Computes a single 2-phase ASCII symbol-cipher frame for `target` (preserving spaces & exact length):
+ * - Phase 1 (0% -> 38%): full symbol-cipher shimmer across all non-space characters
+ * - Phase 2 (38% -> 100%): smooth easeOutCubic progressive left-to-right lock-in back to `target`
  */
 export function computeSymbolCipherFrame(
   target: string,
@@ -104,7 +113,10 @@ export function computeSymbolCipherFrame(
   }
 
   const clamped = Math.max(0, progress);
-  const resolvedCount = Math.floor(clamped * target.length);
+  const holdPhase = 0.38;
+  const resolveProgress =
+    clamped <= holdPhase ? 0 : easeOutCubic((clamped - holdPhase) / (1 - holdPhase));
+  const resolvedCount = Math.floor(resolveProgress * target.length);
   let output = '';
 
   for (let i = 0; i < target.length; i += 1) {
@@ -328,8 +340,8 @@ export function runSymbolCipherScramble(
     return () => {};
   }
 
-  const durationMs = options.durationMs ?? 460;
-  const frameIntervalMs = options.frameIntervalMs ?? 32;
+  const durationMs = options.durationMs ?? 780;
+  const frameIntervalMs = options.frameIntervalMs ?? 46;
   let rafId = 0;
   let cancelled = false;
   let startTime = 0;

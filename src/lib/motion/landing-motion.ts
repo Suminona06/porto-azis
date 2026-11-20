@@ -199,61 +199,61 @@ export function initLandingMotion(): () => void {
       const tl = gsap.timeline({ paused: true });
       heroTl = tl;
 
-      // Part 1 (t = 0s, ~1.0s): left-to-right uppercase A-Z alphabet decode (~35ms/tick).
+      // Part 1 (t = 0s, ~1.1s): left-to-right uppercase A-Z alphabet decode (~42ms/tick) with smooth hold+resolve.
       if (decodeEls.length > 0) {
         for (const el of decodeEls) {
           const target = el.dataset.decodeTarget ?? el.textContent ?? '';
           tl.add(
             createAlphabetDecodeTween(el, target, {
-              durationMs: 1000,
-              frameIntervalMs: 35,
+              durationMs: 1100,
+              frameIntervalMs: 42,
             }),
             0,
           );
         }
       }
 
-      // Part 2 (t = 0.2s, ~0.85s): solid inverse block wipe reveal over indented role line.
-      // Phase 1 (0.20s -> 0.60s): expand left-to-right (origin-left, scaleX: 0 -> 1) while text opacity is 0.
-      // Phase 2 (0.60s -> 1.05s): flip text opacity to 1, retract left-to-right (origin-right, scaleX: 1 -> 0).
+      // Part 2 (t = 0.2s, ~0.95s): solid inverse block wipe reveal over indented role line.
+      // Phase 1 (0.20s -> 0.65s): expand left-to-right (origin-left, scaleX: 0 -> 1) while text opacity is 0.
+      // Phase 2 (0.65s -> 1.15s): flip text opacity to 1, retract left-to-right (origin-right, scaleX: 1 -> 0).
       if (roleMaskEl && roleTextEl) {
         tl.to(
           roleMaskEl,
           {
             scaleX: 1,
-            duration: 0.4,
+            duration: 0.45,
             ease: editorialEase,
             force3D: true,
           },
           0.2,
         )
-          .set(roleTextEl, { opacity: 1 }, 0.6)
-          .set(roleMaskEl, { transformOrigin: '100% 50%' }, 0.6)
+          .set(roleTextEl, { opacity: 1 }, 0.65)
+          .set(roleMaskEl, { transformOrigin: '100% 50%' }, 0.65)
           .to(
             roleMaskEl,
             {
               scaleX: 0,
-              duration: 0.45,
+              duration: 0.5,
               ease: editorialEase,
               force3D: true,
               clearProps: 'willChange',
             },
-            0.6,
+            0.65,
           );
       } else if (roleTextEl) {
         tl.set(roleTextEl, { opacity: 1 }, 0.2);
       }
 
-      // Part 3 (t = 0.4s, ~1.2s): seeded deterministic random word-by-word fade-in (0ms-900ms delays, 0.45s easeOut).
+      // Part 3 (t = 0.4s): seeded deterministic random word-by-word fade-in (0ms-950ms delays, 0.65s silky easeOut).
       if (bioWordEls.length > 0) {
-        const randomDelays = computeSeededWordDelays(bioWordEls.length, 900);
+        const randomDelays = computeSeededWordDelays(bioWordEls.length, 950);
         bioWordEls.forEach((wordEl, idx) => {
           const delaySec = (randomDelays[idx] ?? 0) / 1000;
           tl.to(
             wordEl,
             {
               opacity: 1,
-              duration: 0.45,
+              duration: 0.65,
               ease: 'power2.out',
               clearProps: 'willChange',
             },

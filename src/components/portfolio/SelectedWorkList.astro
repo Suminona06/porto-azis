@@ -65,18 +65,18 @@ const yearSpanLabel =
                 rel="noopener noreferrer"
                 data-project-row
                 aria-label={`${project.title} (${project.tech_stack.join(', ')})`}
-                class="group flex min-h-[108px] items-center gap-4 px-6 py-6 no-underline transition-colors duration-200 hover:bg-[var(--work-row-hover)] focus-visible:bg-[var(--work-row-hover)] sm:min-h-[120px] sm:gap-6 sm:px-8"
+                class="group flex min-h-[116px] items-center gap-4 px-6 py-6 no-underline transition-colors duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--work-row-hover)] focus-visible:bg-[var(--work-row-hover)] sm:min-h-[132px] sm:gap-6 sm:px-8"
               >
                 <span
                   aria-hidden="true"
                   data-symbol-scramble={num}
-                  class="w-10 shrink-0 font-mono-tech text-xs tabular-nums whitespace-pre text-[var(--work-index-color)] sm:w-12"
+                  class="w-10 shrink-0 font-mono-tech text-[11px] tabular-nums whitespace-pre text-[var(--work-index-color)] sm:w-12 sm:text-xs"
                 >
                   {num}
                 </span>
 
                 <div class="min-w-0 flex-1 pr-4">
-                  <h3 class="m-0 truncate font-sans-ui text-lg font-medium tracking-[-0.01em] uppercase text-[var(--text-primary)] sm:text-2xl lg:text-[26px]">
+                  <h3 class="m-0 truncate font-sans-ui text-lg font-normal tracking-[0.01em] uppercase text-[var(--text-primary)] sm:text-2xl lg:text-[26px]">
                     <span class="whitespace-pre" data-symbol-scramble={titleUpper}>
                       {titleUpper}
                     </span>
@@ -84,7 +84,7 @@ const yearSpanLabel =
                   {stackText && (
                     <p
                       aria-hidden="true"
-                      class="m-0 mt-1.5 truncate font-mono-tech text-[11px] tracking-[0.12em] uppercase text-[var(--work-stack-color)] md:hidden"
+                      class="m-0 mt-1.5 truncate font-mono-tech text-[11px] tracking-[0.14em] uppercase text-[var(--work-stack-color)] md:hidden"
                     >
                       {stackText}
                     </p>
@@ -94,24 +94,24 @@ const yearSpanLabel =
                 <span
                   aria-hidden="true"
                   data-symbol-scramble={stackText}
-                  class="hidden w-[220px] shrink-0 truncate font-mono-tech text-[11px] tracking-[0.12em] uppercase whitespace-pre text-[var(--work-stack-color)] sm:text-xs md:block lg:w-[280px]"
+                  class="hidden w-[220px] shrink-0 truncate font-mono-tech text-[11px] tracking-[0.14em] uppercase whitespace-pre text-[var(--work-stack-color)] md:block lg:w-[290px]"
                 >
                   {stackText}
                 </span>
 
                 <div
-                  class="hidden h-[72px] w-[180px] shrink-0 items-center justify-end overflow-hidden lg:flex lg:h-[84px] lg:w-[230px]"
+                  class="hidden h-[80px] w-[196px] shrink-0 items-center justify-end overflow-hidden lg:flex lg:h-[94px] lg:w-[248px]"
                   aria-hidden="true"
                 >
                   {hasBanner && (
                     <img
                       src={project.banner_url}
                       alt=""
-                      width="230"
-                      height="84"
+                      width="248"
+                      height="94"
                       loading="lazy"
                       decoding="async"
-                      class="work-thumb-preview pointer-events-none h-full w-full translate-x-2 scale-95 rounded-[2px] object-cover opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                      class="work-thumb-preview pointer-events-none h-full w-full translate-x-3 scale-[0.96] rounded-[2px] object-cover opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,transform] group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:scale-100 group-focus-visible:opacity-100"
                     />
                   )}
                 </div>

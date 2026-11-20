@@ -63,9 +63,9 @@
   --hero-bio-color: #8a8a8a;
   --work-surface: #0b0b0b;
   --work-divider: rgba(255, 255, 255, 0.08);
-  --work-row-hover: rgba(255, 255, 255, 0.03);
+  --work-row-hover: rgba(255, 255, 255, 0.045);
   --work-index-color: #a3a3a3;
-  --work-stack-color: #d4d4d4;
+  --work-stack-color: #a3a3a3;
 
   color-scheme: dark;
 }
@@ -504,7 +504,7 @@
 }
 
 .hero-scroll-line {
-  animation: hero-scroll-indicator 1.8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  animation: hero-scroll-indicator 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   will-change: transform;
 }
 

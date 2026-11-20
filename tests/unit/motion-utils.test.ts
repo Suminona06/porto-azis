@@ -104,12 +104,18 @@ describe('text scramble frames', () => {
     expect(start[12]).toBe(' ');
     expect(start).toMatch(/^[A-Z]{4} [A-Z]{7} [A-Z]{5}$/);
 
-    const mid = computeAlphabetDecodeFrame(target, 0.5, alphaPicker);
-    expect(mid.slice(0, 9)).toBe('AZIS MUHA');
+    // During initial 15% shimmer hold, text stays scrambled while preserving spaces
+    const hold = computeAlphabetDecodeFrame(target, 0.1, alphaPicker);
+    expect(hold.length).toBe(target.length);
+    expect(hold[4]).toBe(' ');
+
+    // Mid-resolve progressively locks in left-to-right
+    const mid = computeAlphabetDecodeFrame(target, 0.6, alphaPicker);
+    expect(mid.startsWith('AZIS MUHAMAD')).toBe(true);
     expect(computeAlphabetDecodeFrame(target, 1, alphaPicker)).toBe(target);
   });
 
-  it('scrambles with ASCII symbol-cipher charset while preserving spaces and exact length', () => {
+  it('scrambles with 2-phase pure ASCII symbol-cipher charset while preserving spaces and exact length', () => {
     const target = 'DOCKER, PROMETHEUS, GRAFANA';
     const symbolPicker = (idx: number) =>
       SYMBOL_CIPHER_CHARSET[idx % SYMBOL_CIPHER_CHARSET.length] ?? '#';
@@ -120,9 +126,15 @@ describe('text scramble frames', () => {
     expect(start[19]).toBe(' ');
     expect(start).not.toBe(target);
 
-    const mid = computeSymbolCipherFrame(target, 0.5, symbolPicker);
-    expect(mid.startsWith('DOCKER, PROME')).toBe(true);
-    expect(mid.length).toBe(target.length);
+    // Phase 1 (<= 38%): full symbol cipher shimmer across all non-space characters
+    const phase1 = computeSymbolCipherFrame(target, 0.3, symbolPicker);
+    expect(phase1.length).toBe(target.length);
+    expect(phase1.startsWith('DOCKER')).toBe(false);
+
+    // Phase 2 (> 38%): smooth easeOutCubic left-to-right resolve
+    const phase2 = computeSymbolCipherFrame(target, 0.72, symbolPicker);
+    expect(phase2.startsWith('DOCKER, PROMETHEUS')).toBe(true);
+    expect(phase2.length).toBe(target.length);
 
     expect(computeSymbolCipherFrame(target, 1, symbolPicker)).toBe(target);
   });

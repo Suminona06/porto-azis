@@ -59,8 +59,8 @@ export function initSelectedWorkMotion(): () => void {
 
     activeCancels.get(row)?.();
     const cancel = runSymbolCipherScramble(targets, {
-      durationMs: 460,
-      frameIntervalMs: 32,
+      durationMs: 780,
+      frameIntervalMs: 46,
       onComplete: () => {
         if (activeCancels.get(row) === cancel) {
           activeCancels.delete(row);
