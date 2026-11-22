@@ -12,6 +12,12 @@ const { eyebrow, title, subtitle, ctaLabel, ctaUrl, locationLabel } = Astro.prop
 const isHttp = /^https?:\/\//i.test(ctaUrl);
 const arrowSplit = ctaLabel.replace(/\s*→\s*$/, '');
 const hasArrow = ctaLabel.includes('→');
+
+const titleWords = title.trim().split(/\s+/).filter(Boolean);
+const splitIndex =
+  titleWords.length <= 1 ? 0 : titleWords.length >= 4 ? titleWords.length - 2 : 1;
+const titleItalic = splitIndex > 0 ? titleWords.slice(0, splitIndex).join(' ') : '';
+const titleBold = titleWords.slice(splitIndex).join(' ');
 ---
 
 <section class="bg-[var(--bg-primary)] py-20 sm:py-28 lg:py-32">
@@ -24,8 +30,14 @@ const hasArrow = ctaLabel.includes('→');
       )
     }
 
-    <h2 class="m-0 font-display text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
-      {title}
+    <h2 class="m-0 text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.04] tracking-[-0.02em] uppercase text-[var(--text-primary)]">
+      {
+        titleItalic && (
+          <>
+            <span class="font-display font-normal italic">{titleItalic}</span>{' '}
+          </>
+        )
+      }<span class="font-sans-ui font-bold">{titleBold}</span>
     </h2>
 
     {
@@ -44,7 +56,23 @@ const hasArrow = ctaLabel.includes('→');
         class="button-primary"
       >
         <span>{arrowSplit}</span>
-        {hasArrow && <span aria-hidden="true" class="button-primary-arrow">&rarr;</span>}
+        {
+          hasArrow && (
+            <svg
+              aria-hidden="true"
+              class="button-primary-arrow h-3 w-[18px] shrink-0"
+              viewBox="0 0 18 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M1 6h15" />
+              <path d="M11.5 1.5L16 6l-4.5 4.5" />
+            </svg>
+          )
+        }
       </a>
     </div>
 
