@@ -52,7 +52,7 @@ export const PLACEHOLDER_SITE_PROFILE: SiteProfile = {
 export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
   {
     id: '33333333-3333-4333-8333-333333333301',
-    title: '[SAMPLE] Multi-Node Docker Observability Stack',
+    title: 'Docker Observability Stack',
     tech_stack: ['DOCKER', 'PROMETHEUS', 'GRAFANA', 'NGINX'],
     external_url: 'https://github.com/azisfadli-placeholder/observability-stack',
     banner_url: '/placeholders/work-placeholder.svg',
@@ -62,7 +62,7 @@ export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
   },
   {
     id: '33333333-3333-4333-8333-333333333302',
-    title: '[SAMPLE] AWS VPC & Bastion Terraform Blueprint',
+    title: 'AWS VPC Terraform Blueprint',
     tech_stack: ['TERRAFORM', 'AWS', 'IAM', 'VPC'],
     external_url: 'https://github.com/azisfadli-placeholder/aws-vpc-blueprint',
     banner_url: '/placeholders/work-placeholder.svg',
@@ -72,7 +72,7 @@ export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
   },
   {
     id: '33333333-3333-4333-8333-333333333303',
-    title: '[SAMPLE] GitHub Actions Self-Hosted Runner Setup',
+    title: 'Self-Hosted CI/CD Runner',
     tech_stack: ['GITHUB ACTIONS', 'LINUX', 'SYSTEMD', 'CADDY'],
     external_url: 'https://github.com/azisfadli-placeholder/actions-runner-setup',
     banner_url: '/placeholders/work-placeholder.svg',
@@ -82,7 +82,7 @@ export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
   },
   {
     id: '33333333-3333-4333-8333-333333333304',
-    title: '[SAMPLE] IT Support Workstation Audit & Onboarding CLI',
+    title: 'Workstation Audit & Setup CLI',
     tech_stack: ['BASH', 'POWERSHELL', 'SSH', 'WIREGUARD'],
     external_url: 'https://github.com/azisfadli-placeholder/support-audit-cli',
     banner_url: '/placeholders/work-placeholder.svg',
@@ -92,7 +92,7 @@ export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
   },
   {
     id: '33333333-3333-4333-8333-333333333305',
-    title: '[SAMPLE] Automated PostgreSQL Backup & Restore Pipeline',
+    title: 'PostgreSQL Backup Pipeline',
     tech_stack: ['POSTGRESQL', 'S3', 'CRON', 'ENCRYPTION'],
     external_url: 'https://github.com/azisfadli-placeholder/pg-backup-pipeline',
     banner_url: '/placeholders/work-placeholder.svg',

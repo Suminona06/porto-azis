@@ -184,7 +184,7 @@ insert into public.projects (
 values
   (
     '33333333-3333-4333-8333-333333333301',
-    '[SAMPLE] Multi-Node Docker Observability Stack',
+    'Docker Observability Stack',
     array['DOCKER', 'PROMETHEUS', 'GRAFANA', 'NGINX'],
     'https://github.com/azisfadli-placeholder/observability-stack',
     '',
@@ -194,7 +194,7 @@ values
   ),
   (
     '33333333-3333-4333-8333-333333333302',
-    '[SAMPLE] AWS VPC & Bastion Terraform Blueprint',
+    'AWS VPC Terraform Blueprint',
     array['TERRAFORM', 'AWS', 'IAM', 'VPC'],
     'https://github.com/azisfadli-placeholder/aws-vpc-blueprint',
     '',
@@ -204,7 +204,7 @@ values
   ),
   (
     '33333333-3333-4333-8333-333333333303',
-    '[SAMPLE] GitHub Actions Self-Hosted Runner Setup',
+    'Self-Hosted CI/CD Runner',
     array['GITHUB ACTIONS', 'LINUX', 'SYSTEMD', 'CADDY'],
     'https://github.com/azisfadli-placeholder/actions-runner-setup',
     '',
@@ -214,7 +214,7 @@ values
   ),
   (
     '33333333-3333-4333-8333-333333333304',
-    '[SAMPLE] IT Support Workstation Audit & Onboarding CLI',
+    'Workstation Audit & Setup CLI',
     array['BASH', 'POWERSHELL', 'SSH', 'WIREGUARD'],
     'https://github.com/azisfadli-placeholder/support-audit-cli',
     '',
@@ -224,7 +224,7 @@ values
   ),
   (
     '33333333-3333-4333-8333-333333333305',
-    '[SAMPLE] Automated PostgreSQL Backup & Restore Pipeline',
+    'PostgreSQL Backup Pipeline',
     array['POSTGRESQL', 'S3', 'CRON', 'ENCRYPTION'],
     'https://github.com/azisfadli-placeholder/pg-backup-pipeline',
     '',
