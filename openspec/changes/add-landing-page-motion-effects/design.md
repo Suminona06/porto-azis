@@ -15,7 +15,7 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 **Non-Goals:**
 - Installing React, `@astrojs/react`, or `framer-motion` (unnecessary bundle overhead for an Astro site without React islands).
 - Changing Supabase schema, `/admin` CMS fields, `/blog` pages, or showing the preloader overlay inside `/admin` or `/admin/login`.
-- Dropping Light mode or altering `ContactBanner.astro`'s `DESIGN.md` pill CTA (`33554400px`).
+- Dropping Light mode or removing `ContactBanner.astro`'s `DESIGN.md` `33554400px` pill CTA shape (only its headline typography, arrow icon, and rightward hover expansion are refined).
 
 ## Decisions
 
@@ -54,7 +54,7 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
   - Give `HeroSection.astro` `sticky top-0 z-0 min-h-[100svh] pt-20 sm:pt-24` so it pins cleanly at `top: 0` while giving hero content clearance below the `64px` fixed navbar (`h-16`) and adapting safely on mobile viewports (`100svh` prevents iOS/Android address-bar clipping).
   - Wrap `StatementReveal` and all subsequent homepage sections (`TiltedMarquee`, `QuoteTechCircle`, `SelectedWorkList`, `ContactBanner`) in `<div class="relative z-10 bg-[var(--bg-primary)]">` (and give `Footer.astro` `relative z-10`), with `StatementReveal` bearing `border-t border-[var(--border-light)]` (mapping to `#1F1F1F` in Dark mode and `rgba(0,0,0,0.12)` in Light mode) and opaque `bg-[var(--bg-alt)]`.
   - Keep `overflow-x: clip` on `body` (never `overflow: hidden` on `body` or `<main>`), because `overflow: hidden` disables `position: sticky` in CSS.
-  - Update `Navbar.astro` header backdrop to `bg-[var(--bg-primary)]/80 backdrop-blur-sm` and sharpen header action hover inversion (`nav-link-blog`, `ThemeToggle`, `LocaleToggle` remain `rounded-none` and invert cleanly to `bg-[var(--bg-inverse)] text-[var(--text-inverse)]` on hover), while keeping `.button-primary` (`GET IN TOUCH →` / `CONTACT ME →`) `rounded-full` (`33554400px`) per `DESIGN.md`.
+  - Update `Navbar.astro` header backdrop to `bg-[var(--bg-primary)]/80 backdrop-blur-sm` and sharpen header action hover inversion (`nav-link-blog`, `ThemeToggle`, `LocaleToggle` remain `rounded-none` and invert cleanly to `bg-[var(--bg-inverse)] text-[var(--text-inverse)]` on hover), while keeping `.button-primary` (`GET IN TOUCH` / `CONTACT ME`) `rounded-full` (`33554400px`) per `DESIGN.md` with its inline SVG arrow and rightward hover expansion.
 
 ### 6. Reduced Motion Fallback (`prefers-reduced-motion: reduce`)
 - **Decision**: Centralize `prefersReducedMotion()` check in `src/lib/motion/landing-motion.ts`. When `true`, skip preloader activation, skip GSAP timelines and `ScrollTrigger` registration, ensure all hero titles, subtitles, bio words, and statement words stay at `opacity: 1` and `var(--text-primary)`, and only run the text-only `hh:mm A (GMT +7)` clock interval. Also add a `matchMedia('(prefers-reduced-motion: reduce)')` change listener to revert GSAP context (`ctx.revert()`) if the user enables reduced motion mid-session.
@@ -75,9 +75,16 @@ See [proposal.md](./proposal.md) for motivation and capability boundaries. The c
 - **Decision**: Refactor `Footer.astro` to match Reference Image 6 1:1:
   - Remove the `/admin` (`CMS`) link and `BASED IN INDONESIA` bottom-left text.
   - Render top-left two stacked uppercase monospace lines (`font-mono-tech text-[11px] sm:text-xs tracking-[0.12em] text-[var(--text-muted)] uppercase`): `© 2026 — AZIS MUHAMAD FADLI` (explicit owner override recorded under `antislop` R-37 against R-02) and live `hh:mm A (GMT +7)` clock driven by `formatJakartaTime12h` / `startJakartaClock` from `src/lib/motion/clock.ts`.
-  - Load `Playfair Display` `700` weight in `BaseLayout.astro` (`Playfair+Display:ital,wght@0,600;0,700;1,600`) and render `azis` centered in lowercase bold serif (`font-display font-bold lowercase leading-none tracking-[-0.03em] text-[clamp(5.5rem,30vw,24rem)] text-[var(--text-primary)] select-none my-8 sm:my-12`) so the 4-character wordmark spans ~85-90% of the container width like 10-character `ammaricano` in Image 6 without exceeding `max-w-7xl` or causing overflow on `320px`.
+  - Load `Playfair Display` `400`, `600`, `700` normal and `400`, `600` italic weights in `BaseLayout.astro` (`Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600`) and render `azis` centered in lowercase bold serif (`font-display font-bold lowercase leading-none tracking-[-0.03em] text-[clamp(5.5rem,30vw,24rem)] text-[var(--text-primary)] select-none my-8 sm:my-12`) so the 4-character wordmark spans ~85-90% of the container width like 10-character `ammaricano` in Image 6 without exceeding `max-w-7xl` or causing overflow on `320px`.
   - Render bottom-right horizontal uppercase monospace social links (`LINKEDIN`, `GITHUB`, `INSTAGRAM`, `THREADS`) in `placeholder.ts`, `0002_seed_placeholder.sql`, and `Footer.astro` defaults, styled `text-[11px] sm:text-xs tracking-[0.15em] text-[var(--text-muted)] hover:text-[var(--text-primary)] uppercase` with `44px` accessible touch targets (`min-h-11`).
 - **Rationale**: Reusing `clock.ts` eliminates duplicate clock formatting (`en-GB` 24h vs `hh:mm A (GMT +7)`), while scaling `azis` via `clamp` + `Playfair Display` `700` achieves authentic visual proportion parity with Image 6 across both desktop and mobile viewports.
+
+### 11. Contact Banner Mixed Typography, Inline SVG Arrow & Rightward Pill Hover (`ContactBanner.astro`, `global.css`, `BaseLayout.astro`)
+- **Decision**:
+  - **Mixed Headline Typography (`ContactBanner.astro`)**: Split the incoming `title` into leading italic serif and trailing bold sans-serif segments so `"LET'S HAVE A CHAT"` renders `"LET'S HAVE"` in `Playfair Display` italic (`font-display italic font-normal`, supported by `1,400` loaded in `BaseLayout.astro`) and `"A CHAT"` in `Plus Jakarta Sans` bold (`font-sans-ui font-bold`). For other multi-word titles passed into `ContactBanner.astro` (e.g., Indonesian `"MARI BERDISKUSI"` or `/work`'s `"HAVE A PROJECT IN MIND?"`), split cleanly into a leading italic serif segment (`words.slice(0, Math.max(1, words.length - 2))` when `words.length >= 4`, or `words.slice(0, 1)` for 2–3 words, with explicit 2+2 split for `"LET'S HAVE A CHAT"`) and a trailing bold sans-serif segment so every route using `ContactBanner.astro` stays visually balanced.
+  - **Crisp Inline SVG Arrow**: Replace the `&rarr;` monospace character inside `.button-primary-arrow` with a dedicated inline `<svg aria-hidden="true">` horizontal right-arrow icon (`width="16" height="16"` / `w-4 h-4`, `viewBox="0 0 16 16"`, `stroke="currentColor"`, `stroke-width="1.5"`, `fill="none"`, clean horizontal shaft + crisp chevron head) vertically centered with the uppercase `12px` `JetBrains Mono` label.
+  - **Rightward-Expanding Pill Hover (`.button-primary`)**: Keep the `DESIGN.md` `33554400px` pill radius and `44px+` minimum height, and on `:hover` / `:focus-visible` widen the button strictly rightward toward the arrow direction—increasing `padding-right` (e.g. `32px -> 48px`) while compensating `margin-right` (`0 -> -16px`) or shifting the right edge cleanly so the left edge and label stay anchored instead of expanding symmetrically leftward, paired with smooth `.button-primary-arrow` rightward travel (`translateX(4px)` -> `translateX(6px)`). Under `prefers-reduced-motion: reduce`, skip width/translation motion while keeping high-contrast hover inversion.
+- **Rationale**: Matches the reference Contact Banner's editorial contrast (`LET'S HAVE` serif italic + `A CHAT` bold sans-serif), replaces the small/off-baseline monospace `&rarr;` glyph with a sharp vector arrow, and ensures the pill expansion visually points and grows exclusively toward the right arrow without layout jitter on centered containers.
 
 ## Architecture & File Map
 
@@ -93,6 +100,7 @@ src/
     HeroSection.astro       # Borderless sticky hero, cipher H1, mask subtitle, staggered bio, scramble location, live clock
     StatementReveal.astro   # z-10 opaque curtain band + top hairline + ScrollTrigger word illumination
     QuoteTechCircle.astro   # min-h-screen centered 2px uniform circle + Sans-Serif quote + simple-icons/AWS tech grid
+    ContactBanner.astro     # Mixed italic-serif/bold-sans CTA heading + crisp SVG arrow + rightward pill hover
   components/layout/
     Navbar.astro            # Borderless translucent bg-[var(--bg-primary)]/80 backdrop-blur-sm + inverted BLOG link
     LocaleToggle.astro      # Borderless EN / ID slash toggle

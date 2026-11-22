@@ -68,7 +68,11 @@ The hero footer and fixed header SHALL provide tactile monospace feedback and re
 
 #### Scenario: Fixed translucent navbar & borderless header controls
 - **WHEN** the user scrolls past the initial fold
-- **THEN** the top navigation bar (`position: fixed`, `z-index: 50`) SHALL maintain a borderless theme-adaptive translucent backdrop (`--bg-primary` at 80% opacity with `backdrop-blur-sm`) with borderless `EN / ID` and theme toggle controls, while the `BLOG` header action retains its sharp rectangular (`rounded-none`) high-contrast inversion and primary page contact CTA buttons (`GET IN TOUCH →`) retain the `DESIGN.md` `33554400px` pill shape.
+- **THEN** the top navigation bar (`position: fixed`, `z-index: 50`) SHALL maintain a borderless theme-adaptive translucent backdrop (`--bg-primary` at 80% opacity with `backdrop-blur-sm`) with borderless `EN / ID` and theme toggle controls, while the `BLOG` header action retains its sharp rectangular (`rounded-none`) high-contrast inversion and primary page contact CTA buttons (`GET IN TOUCH`) retain the `DESIGN.md` `33554400px` pill shape with a crisp inline SVG arrow.
+
+#### Scenario: Primary contact pill CTA expands rightward on hover and focus
+- **WHEN** the visitor hovers over or focuses a `.button-primary` contact CTA (`GET IN TOUCH` / `CONTACT ME`) with reduced motion disabled
+- **THEN** the pill button SHALL widen smoothly toward its right arrow edge (anchoring the left side so only the right edge expands in the arrow's direction) while translating the inline SVG arrow subtly rightward and inverting surface/text contrast cleanly.
 
 ### Requirement: Sticky Hero Overlap & Scroll-Scrubbed Text Illumination
 The transition from the Hero section to the Statement/About section on `/` SHALL use layered sticky depth and scroll-linked typography contrast compatible with Light and Dark themes and WCAG AA readability.
@@ -86,4 +90,4 @@ The homepage motion system SHALL respect user motion preferences and remain resi
 
 #### Scenario: Reduced motion renders static high-contrast states immediately
 - **WHEN** `prefers-reduced-motion: reduce` is enabled on the user's device
-- **THEN** the system SHALL bypass the preloader overlay, vertical curtain wipe, title cipher decode, subtitle block mask, bio staggered fade-in, location hover scramble, and scroll-scrubbing, rendering all hero and statement typography immediately at full `--text-primary` contrast while still displaying live `hh:mm A (GMT +7)` clock updates.
+- **THEN** the system SHALL bypass the preloader overlay, vertical curtain wipe, title cipher decode, subtitle block mask, bio staggered fade-in, location hover scramble, rightward CTA pill width expansion, and scroll-scrubbing, rendering all hero and statement typography immediately at full `--text-primary` contrast while still displaying live `hh:mm A (GMT +7)` clock updates.

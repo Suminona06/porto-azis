@@ -34,3 +34,18 @@ The system SHALL display a full-viewport centered circular quote motif (`min-h-s
 #### Scenario: Tech stack logo responds on hover and keyboard focus
 - **WHEN** a visitor hovers or focuses a favorite tech logo in `MOST FAVORITE TECH`
 - **THEN** the enlarged borderless 1:1 brand SVG icon transitions smoothly (`0.4s`) from `#737373` monochrome to its original brand colors with subtle `-2px` lift without shifting layout
+
+### Requirement: Direct External Contact CTAs Across Portfolio Pages
+The system SHALL render the Contact Banner (`LET'S HAVE A CHAT` on Home/About and `HAVE A PROJECT IN MIND?` on Work, plus localized `ID` equivalents) with mixed display typography—leading phrase (`LET'S HAVE`) in `Playfair Display` italic (`font-display italic font-normal`) and trailing emphasis (`A CHAT`) in `Plus Jakarta Sans` bold (`font-sans-ui font-bold`)—and route `GET IN TOUCH` (Home and Work) and `CONTACT ME` (About) directly to the owner's configured external contact URL (`mailto:` or preferred link) inside a `33554400px` pill CTA featuring a crisp proportional inline SVG right-arrow icon and a rightward-expanding hover/focus transition.
+
+#### Scenario: Contact banner displays mixed italic serif and bold sans-serif headline
+- **WHEN** a visitor views the `LET'S HAVE A CHAT` contact banner on `/` (or localized/route CTA headings using `ContactBanner.astro`)
+- **THEN** `"LET'S HAVE"` SHALL render in `Playfair Display` italic (`font-normal italic`) and `"A CHAT"` SHALL render in `Plus Jakarta Sans` bold (`font-bold`) on the same editorial display baseline without clipping or horizontal overflow on `320px+` viewports
+
+#### Scenario: Contact CTA pill displays crisp SVG arrow and expands rightward on hover
+- **WHEN** a visitor hovers over or keyboard-focuses the `GET IN TOUCH` / `CONTACT ME` pill button (with reduced motion disabled)
+- **THEN** the button SHALL display a crisp inline SVG right-arrow icon aligned cleanly with the monospace label and smoothly widen its right edge rightward toward the arrow direction without shifting surrounding elements or breaking `>= 44px` tap target height and WCAG AA contrast
+
+#### Scenario: Visitor activates a Contact CTA button
+- **WHEN** a visitor clicks `GET IN TOUCH` or `CONTACT ME`
+- **THEN** the link invokes the configured external contact URL directly (`mailto:` or external URL)

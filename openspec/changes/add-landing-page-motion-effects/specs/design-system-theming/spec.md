@@ -3,11 +3,11 @@
 ## MODIFIED Requirements
 
 ### Requirement: Design Token Typography and Spacing Discipline
-The system SHALL apply `Playfair Display` (400, 600, and 700) for editorial display headings (`400` normal on Hero Line 1 and `SELECTED`, `700` bold on `WORK` and the lowercase footer wordmark), `Plus Jakarta Sans` (400, 500, 600, and 700) for body copy, UI headings, Hero Line 2 role, Hero justified intro paragraph, Selected Work project titles, and the centered circular quote motif, and `JetBrains Mono` (400 and 500) for technical labels and metadata, using the 4px base spacing scale and `33554400px` radius only on pill CTA buttons and the circular quote motif without `box-shadow` elevation.
+The system SHALL apply `Playfair Display` (400, 600, and 700 normal; 400 and 600 italic) for editorial display headings (`400` normal on Hero Line 1 and `SELECTED`, `700` bold on `WORK` and the lowercase footer wordmark, `400` italic on the `LET'S HAVE` contact banner prefix), `Plus Jakarta Sans` (400, 500, 600, and 700) for body copy, UI headings, Hero Line 2 role, Hero justified intro paragraph, Selected Work project titles, the centered circular quote motif, and bold `A CHAT` contact banner emphasis (`700`), and `JetBrains Mono` (400 and 500) for technical labels and metadata, using the 4px base spacing scale and `33554400px` radius only on pill CTA buttons and the circular quote motif without `box-shadow` elevation.
 
 #### Scenario: Typography and elevation tokens are applied consistently
 - **WHEN** any public portfolio or blog page is rendered at desktop or mobile viewports
-- **THEN** display titles use `Playfair Display` (600, with 700 bold on the lowercase footer wordmark), body copy and the circular quote use `Plus Jakarta Sans` (`font-medium` 500 inside the circle motif), technical labels use `JetBrains Mono`, and no component uses `box-shadow`
+- **THEN** display titles use `Playfair Display` (600, with 700 bold on the lowercase footer wordmark and 400 italic on the `LET'S HAVE` contact heading prefix), body copy, the circular quote (`font-medium` 500), and the `A CHAT` contact heading emphasis (`font-bold` 700) use `Plus Jakarta Sans`, technical labels use `JetBrains Mono`, and no component uses `box-shadow`
 
 ### Requirement: Responsive Navigation Bar, Blog Replacement, and Mobile Drawer
 The system SHALL render a borderless fixed header containing the owner wordmark (`azis`), desktop links `HOME`, `ABOUT`, `WORK`, `BLOG` (replacing the reference `API` button with a sharp rectangular inverted box), a borderless `EN / ID` slash language switcher, and a borderless Light/Dark toggle, collapsing into a full-screen mobile drawer on narrow viewports with labeled menu trigger and `Escape` dismissal.
@@ -28,8 +28,8 @@ The system SHALL render a borderless footer (`#000000` canvas in Dark mode, them
 - **THEN** the footer renders borderlessly with top-left `© 2026 — AZIS MUHAMAD FADLI` stacked above the live `hh:mm A (GMT +7)` clock, the centered bold lowercase `azis` serif wordmark scaled cleanly within 320px+ viewports without overflow, and bottom-right `LINKEDIN`, `GITHUB`, `INSTAGRAM`, `THREADS` links opening safely in new tabs
 
 ### Requirement: Copy Hygiene without Em Dashes and Preserved CTA Arrows
-The system SHALL prohibit the em dash character (`—`) in all UI copy and sample text, replacing it with commas or standard hyphens (`-`), except for the explicitly owner-approved footer copyright string `© 2026 — AZIS MUHAMAD FADLI` (`antislop` R-37 override), while preserving the `→` directional arrow on primary contact CTAs.
+The system SHALL prohibit the em dash character (`—`) in all UI copy and sample text, replacing it with commas or standard hyphens (`-`), except for the explicitly owner-approved footer copyright string `© 2026 — AZIS MUHAMAD FADLI` (`antislop` R-37 override), while preserving the `→` directional arrow cue on primary contact CTAs rendered via a crisp inline SVG arrow icon (`aria-hidden="true"`).
 
 #### Scenario: UI copy and CTA buttons follow copywriting rules
 - **WHEN** any public or admin page renders headlines, descriptions, or CTAs
-- **THEN** no unapproved em dash (`—`) appears outside `© 2026 — AZIS MUHAMAD FADLI` and primary contact CTAs (`GET IN TOUCH →` / `CONTACT ME →`) display the `→` cue
+- **THEN** no unapproved em dash (`—`) appears outside `© 2026 — AZIS MUHAMAD FADLI` and primary contact CTAs (`GET IN TOUCH` / `CONTACT ME`) display a crisp proportional inline SVG right-arrow cue
