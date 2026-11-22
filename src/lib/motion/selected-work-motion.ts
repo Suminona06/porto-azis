@@ -1,3 +1,4 @@
+import gsap from 'gsap';
 import { getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
 import { useSymbolScramble, type SymbolScrambleTarget } from './text-scramble';
 
@@ -10,6 +11,9 @@ export interface RowEdgeInput {
   clientY: number;
   rect: Pick<DOMRect, 'top' | 'height'>;
 }
+
+const ENTER_DURATION_SEC = 0.55;
+const LEAVE_DURATION_SEC = 0.45;
 
 /**
  * Resolves which vertical edge ('top' or 'bottom') the pointer crossed when entering or leaving a row.
@@ -34,8 +38,8 @@ export function resolveRowEdge({
   return clientY < midpointY ? 'top' : 'bottom';
 }
 
-function isClipFullyHidden(thumb: HTMLElement): boolean {
-  const raw = window.getComputedStyle(thumb).clipPath;
+function isClipFullyHidden(layer: HTMLElement): boolean {
+  const raw = window.getComputedStyle(layer).clipPath;
   if (!raw || raw === 'none') {
     return false;
   }
@@ -54,7 +58,7 @@ function isClipFullyHidden(thumb: HTMLElement): boolean {
     }
     if (token.endsWith('px')) {
       const px = Number.parseFloat(token);
-      const height = thumb.getBoundingClientRect().height || thumb.offsetHeight;
+      const height = layer.getBoundingClientRect().height || layer.offsetHeight;
       if (!Number.isFinite(px) || height <= 0) return null;
       return (px / height) * 100;
     }
@@ -71,39 +75,43 @@ function isClipFullyHidden(thumb: HTMLElement): boolean {
   return topPct + bottomPct >= 99;
 }
 
-function openThumbCurtain(thumb: HTMLElement | null, entryEdge: RowVerticalEdge): void {
-  if (!thumb || prefersReducedMotion()) return;
+function openLayerCurtain(layer: HTMLElement | null, entryEdge: RowVerticalEdge): void {
+  if (!layer || prefersReducedMotion()) return;
 
   const startClip = entryEdge === 'top' ? 'inset(0% 0% 100% 0%)' : 'inset(100% 0% 0% 0%)';
-  if (isClipFullyClippedOrInitial(thumb)) {
-    thumb.style.transition = 'none';
-    thumb.style.clipPath = startClip;
-    // Commit hidden edge start frame synchronously before triggering the 340ms clip-path wipe
-    void thumb.getBoundingClientRect();
-    thumb.style.transition = '';
+  gsap.killTweensOf(layer);
+
+  if (!layer.style.clipPath || isClipFullyHidden(layer)) {
+    gsap.set(layer, { clipPath: startClip });
   }
 
-  thumb.style.clipPath = 'inset(0% 0% 0% 0%)';
+  gsap.to(layer, {
+    clipPath: 'inset(0% 0% 0% 0%)',
+    duration: ENTER_DURATION_SEC,
+    ease: 'power3.out',
+    overwrite: 'auto',
+  });
 }
 
-function isClipFullyClippedOrInitial(thumb: HTMLElement): boolean {
-  return !thumb.style.clipPath || isClipFullyHidden(thumb);
-}
-
-function closeThumbCurtain(thumb: HTMLElement | null, exitEdge: RowVerticalEdge): void {
-  if (!thumb || prefersReducedMotion()) return;
+function closeLayerCurtain(layer: HTMLElement | null, exitEdge: RowVerticalEdge): void {
+  if (!layer || prefersReducedMotion()) return;
 
   const endClip = exitEdge === 'bottom' ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)';
-  thumb.style.transition = '';
-  thumb.style.clipPath = endClip;
+  gsap.killTweensOf(layer);
+  gsap.to(layer, {
+    clipPath: endClip,
+    duration: LEAVE_DURATION_SEC,
+    ease: 'power3.inOut',
+    overwrite: 'auto',
+  });
 }
 
 /**
- * Orchestrates Selected Work interactions:
- * - Direction-aware vertical clip-path curtain wipe on row thumbnails (zero opacity fade, 340ms exponential out)
- *   with smooth mid-flight reversal continuity.
- * - Snappy ~400ms full-string pure ASCII symbol scramble across Index, Title, and Tech Stack on hover/focus
- *   with instant rAF cancellation & restore on mouseleave/blur so non-hovered rows never scramble.
+ * Orchestrates Selected Work interactions (1:1 Ammar reference parity):
+ * - Full-row GSAP vertical clip-path curtain sweep (`.work-layer`) paired with `mix-blend-difference`
+ *   text inversion (`0.55s power3.out` enter, `0.45s power3.inOut` leave) and smooth mid-flight reversals.
+ * - Snappy ~420ms (`40ms` tick) full-string pure ASCII symbol scramble across Index, Title, and Tech Stack
+ *   on hover/focus with instant rAF cancellation & restore on mouseleave/blur.
  */
 export function initSelectedWorkMotion(): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -121,7 +129,7 @@ export function initSelectedWorkMotion(): () => void {
   const activeCancels = new Map<HTMLElement, () => void>();
   const rowTargets = new Map<HTMLElement, SymbolScrambleTarget[]>();
   const rowIndexMap = new Map<HTMLElement, number>();
-  const rowThumbMap = new Map<HTMLElement, HTMLElement | null>();
+  const rowLayerMap = new Map<HTMLElement, HTMLElement | null>();
   const cleanups: Array<() => void> = [];
 
   let activeHoveredIndex: number | null = null;
@@ -129,7 +137,7 @@ export function initSelectedWorkMotion(): () => void {
 
   rows.forEach((row, index) => {
     rowIndexMap.set(row, index);
-    rowThumbMap.set(row, row.querySelector<HTMLElement>('[data-work-thumb]'));
+    rowLayerMap.set(row, row.querySelector<HTMLElement>('[data-work-layer]'));
   });
 
   const getTargetsForRow = (row: HTMLElement): SymbolScrambleTarget[] => {
@@ -183,8 +191,8 @@ export function initSelectedWorkMotion(): () => void {
     activeCancels.get(row)?.();
 
     const cancel = useSymbolScramble(targets, {
-      durationMs: 400,
-      frameIntervalMs: 48,
+      durationMs: 420,
+      frameIntervalMs: 40,
       onComplete: () => {
         if (activeCancels.get(row) === cancel) {
           activeCancels.delete(row);
@@ -194,12 +202,12 @@ export function initSelectedWorkMotion(): () => void {
     activeCancels.set(row, cancel);
   };
 
-  const resetAllThumbnails = () => {
+  const resetAllLayers = () => {
     for (const row of rows) {
-      const thumb = rowThumbMap.get(row) ?? null;
-      if (thumb) {
-        thumb.style.transition = '';
-        thumb.style.clipPath = '';
+      const layer = rowLayerMap.get(row) ?? null;
+      if (layer) {
+        gsap.killTweensOf(layer);
+        layer.style.clipPath = 'inset(100% 0% 0% 0%)';
       }
     }
   };
@@ -213,7 +221,7 @@ export function initSelectedWorkMotion(): () => void {
 
   for (const row of rows) {
     const currentIndex = rowIndexMap.get(row) ?? 0;
-    const thumb = rowThumbMap.get(row) ?? null;
+    const layer = rowLayerMap.get(row) ?? null;
 
     const onMouseEnter = (event: MouseEvent) => {
       const relatedIdx = getRelatedRowIndex(event.relatedTarget);
@@ -227,7 +235,7 @@ export function initSelectedWorkMotion(): () => void {
       });
 
       activeHoveredIndex = currentIndex;
-      openThumbCurtain(thumb, entryEdge);
+      openLayerCurtain(layer, entryEdge);
       triggerRowScramble(row);
     };
 
@@ -246,7 +254,7 @@ export function initSelectedWorkMotion(): () => void {
       }
 
       cancelRowScramble(row);
-      closeThumbCurtain(thumb, exitEdge);
+      closeLayerCurtain(layer, exitEdge);
     };
 
     const onFocus = () => {
@@ -257,7 +265,7 @@ export function initSelectedWorkMotion(): () => void {
       const entryEdge: RowVerticalEdge =
         lastFocusedIndex !== null && currentIndex < lastFocusedIndex ? 'bottom' : 'top';
       lastFocusedIndex = currentIndex;
-      openThumbCurtain(thumb, entryEdge);
+      openLayerCurtain(layer, entryEdge);
       triggerRowScramble(row);
     };
 
@@ -272,7 +280,7 @@ export function initSelectedWorkMotion(): () => void {
       const exitEdge: RowVerticalEdge =
         nextFocusedIdx !== null && nextFocusedIdx < currentIndex ? 'top' : 'bottom';
       cancelRowScramble(row);
-      closeThumbCurtain(thumb, exitEdge);
+      closeLayerCurtain(layer, exitEdge);
     };
 
     row.addEventListener('mouseenter', onMouseEnter);
@@ -292,21 +300,21 @@ export function initSelectedWorkMotion(): () => void {
   const handleReducedMotionChange = (event: MediaQueryListEvent) => {
     if (event.matches) {
       cancelAllScrambles();
-      resetAllThumbnails();
+      resetAllLayers();
     }
   };
   mql?.addEventListener('change', handleReducedMotionChange);
 
   const onPageHide = () => {
     cancelAllScrambles();
-    resetAllThumbnails();
+    resetAllLayers();
   };
   window.addEventListener('pagehide', onPageHide);
 
   return () => {
     delete section.dataset.workMotionReady;
     cancelAllScrambles();
-    resetAllThumbnails();
+    resetAllLayers();
     for (const cleanup of cleanups) {
       cleanup();
     }

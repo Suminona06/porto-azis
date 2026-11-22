@@ -18,8 +18,9 @@
   --selection-text: #ffffff;
   --hero-bio-color: #52525b;
   --work-surface: #fafafa;
+  --work-curtain-bg: #000000;
   --work-divider: rgba(0, 0, 0, 0.08);
-  --work-row-hover: rgba(0, 0, 0, 0.02);
+  --work-row-hover: rgba(0, 0, 0, 0.04);
   --work-index-color: #52525b;
   --work-stack-color: #3f3f46;
 
@@ -62,8 +63,9 @@
   --selection-text: #000000;
   --hero-bio-color: #8a8a8a;
   --work-surface: #0b0b0b;
+  --work-curtain-bg: #ffffff;
   --work-divider: rgba(255, 255, 255, 0.08);
-  --work-row-hover: rgba(255, 255, 255, 0.02);
+  --work-row-hover: rgba(255, 255, 255, 0.06);
   --work-index-color: #a3a3a3;
   --work-stack-color: #a3a3a3;
 
@@ -508,16 +510,18 @@
   will-change: transform;
 }
 
-.work-thumb-preview {
-  opacity: 1;
-  clip-path: inset(0% 0% 100% 0%);
-  transition: clip-path 340ms cubic-bezier(0.22, 1, 0.36, 1);
+.work-layer {
   will-change: clip-path;
 }
 
-[data-work-section]:not([data-work-motion-ready]) .group:hover .work-thumb-preview,
-[data-work-section]:not([data-work-motion-ready]) .group:focus-visible .work-thumb-preview {
-  clip-path: inset(0% 0% 0% 0%);
+.work-thumb-preview {
+  opacity: 1;
+}
+
+[data-work-section]:not([data-work-motion-ready]) .group:hover .work-layer,
+[data-work-section]:not([data-work-motion-ready]) .group:focus-visible .work-layer {
+  clip-path: inset(0% 0% 0% 0%) !important;
+  transition: clip-path 550ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -535,14 +539,14 @@
     transform: scaleY(1) !important;
   }
 
-  .work-thumb-preview {
-    clip-path: none !important;
+  .work-layer {
+    clip-path: inset(0% 0% 0% 0%) !important;
     opacity: 0;
     transition: opacity 150ms ease !important;
   }
 
-  .group:hover .work-thumb-preview,
-  .group:focus-visible .work-thumb-preview {
+  .group:hover .work-layer,
+  .group:focus-visible .work-layer {
     opacity: 1;
   }
 

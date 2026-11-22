@@ -66,56 +66,73 @@ const yearSpanLabel =
                 data-project-row
                 data-row-index={index}
                 aria-label={`${project.title} (${project.tech_stack.join(', ')})`}
-                class="group relative flex min-h-[104px] items-center gap-4 border-b border-[var(--work-divider)] py-5 pl-6 pr-6 no-underline transition-colors duration-200 hover:bg-[var(--work-row-hover)] focus-visible:bg-[var(--work-row-hover)] group-last/item:border-b-0 md:h-[120px] md:gap-5 md:py-0 md:pl-8 md:pr-0 lg:h-[128px] lg:gap-5"
+                class="work-row group relative isolate flex min-h-[104px] items-center overflow-hidden border-b border-[var(--work-divider)] no-underline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--focus-ring)] group-last/item:border-b-0 md:h-[120px] lg:h-[128px]"
               >
-                <span
+                <div
                   aria-hidden="true"
-                  data-symbol-scramble={num}
-                  class="w-12 shrink-0 font-mono-tech text-xs tabular-nums whitespace-pre text-[var(--work-index-color)]"
-                >
-                  {num}
-                </span>
-
-                <div class="min-w-0 flex-1">
-                  <h3 class="m-0 overflow-hidden whitespace-nowrap font-sans-ui text-base font-normal tracking-normal uppercase text-[var(--text-primary)] sm:text-lg lg:text-[15px] xl:text-[16px]">
-                    <span class="block overflow-hidden whitespace-nowrap" data-symbol-scramble={titleUpper}>
-                      {titleUpper}
-                    </span>
-                  </h3>
-                  {stackText && (
-                    <p
-                      aria-hidden="true"
-                      class="m-0 mt-1.5 overflow-hidden whitespace-nowrap font-mono-tech text-[11px] tracking-[0.08em] uppercase text-[var(--work-stack-color)] lg:hidden"
-                    >
-                      {stackText}
-                    </p>
-                  )}
-                </div>
-
-                <span
-                  aria-hidden="true"
-                  data-symbol-scramble={stackText}
-                  class="hidden shrink-0 font-mono-tech text-[11px] tracking-[0.05em] uppercase whitespace-nowrap text-[var(--work-stack-color)] lg:block lg:w-[255px] xl:w-[270px]"
-                >
-                  {stackText}
-                </span>
+                  class="pointer-events-none absolute inset-0 z-0 bg-[var(--work-surface)]"
+                />
 
                 <div
-                  class="relative my-2 mr-2 hidden h-[calc(100%-16px)] w-[220px] shrink-0 overflow-hidden md:block lg:w-[270px]"
                   aria-hidden="true"
+                  data-work-layer
+                  class="work-layer pointer-events-none absolute inset-0 z-10 flex items-center justify-end"
+                  style="clip-path: inset(100% 0% 0% 0%);"
                 >
-                  {hasBanner && (
-                    <img
-                      src={project.banner_url}
-                      alt=""
-                      width="270"
-                      height="112"
-                      loading="lazy"
-                      decoding="async"
-                      data-work-thumb
-                      class="work-thumb-preview pointer-events-none block h-full w-full object-cover"
-                    />
-                  )}
+                  <div class="absolute inset-0 bg-[var(--work-curtain-bg)]" />
+                  <div class="relative z-10 my-2 mr-2 hidden h-[calc(100%-16px)] w-[220px] shrink-0 overflow-hidden md:block lg:w-[270px]">
+                    {hasBanner && (
+                      <img
+                        src={project.banner_url}
+                        alt=""
+                        width="270"
+                        height="112"
+                        loading="lazy"
+                        decoding="async"
+                        data-work-thumb
+                        class="work-thumb-preview pointer-events-none block h-full w-full object-cover"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div class="relative z-20 flex w-full items-center gap-4 py-5 pl-6 pr-6 text-white mix-blend-difference md:h-full md:gap-5 md:py-0 md:pl-8 md:pr-0 lg:gap-5">
+                  <span
+                    aria-hidden="true"
+                    data-symbol-scramble={num}
+                    class="w-12 shrink-0 font-mono-tech text-xs tabular-nums whitespace-pre text-[#a3a3a3] underline-offset-4 group-hover:underline"
+                  >
+                    {num}
+                  </span>
+
+                  <div class="min-w-0 flex-1">
+                    <h3 class="m-0 overflow-hidden whitespace-nowrap font-sans-ui text-base font-normal tracking-normal uppercase text-white sm:text-lg lg:text-[15px] xl:text-[16px]">
+                      <span class="block overflow-hidden whitespace-nowrap" data-symbol-scramble={titleUpper}>
+                        {titleUpper}
+                      </span>
+                    </h3>
+                    {stackText && (
+                      <p
+                        aria-hidden="true"
+                        class="m-0 mt-1.5 overflow-hidden whitespace-nowrap font-mono-tech text-[11px] tracking-[0.05em] uppercase text-[#a3a3a3] lg:hidden"
+                      >
+                        {stackText}
+                      </p>
+                    )}
+                  </div>
+
+                  <span
+                    aria-hidden="true"
+                    data-symbol-scramble={stackText}
+                    class="hidden shrink-0 font-mono-tech text-[11px] tracking-[0.05em] uppercase whitespace-nowrap text-[#a3a3a3] lg:block lg:w-[255px] xl:w-[270px]"
+                  >
+                    {stackText}
+                  </span>
+
+                  <div
+                    aria-hidden="true"
+                    class="hidden shrink-0 md:block md:w-[228px] lg:w-[278px]"
+                  />
                 </div>
               </a>
             </li>

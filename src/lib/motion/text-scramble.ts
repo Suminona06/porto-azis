@@ -328,8 +328,8 @@ export function runSymbolCipherScramble(
     return () => {};
   }
 
-  const durationMs = options.durationMs ?? 400;
-  const frameIntervalMs = options.frameIntervalMs ?? 48;
+  const durationMs = options.durationMs ?? 420;
+  const frameIntervalMs = options.frameIntervalMs ?? 40;
   let rafId = 0;
   let cancelled = false;
   let startTime = 0;
