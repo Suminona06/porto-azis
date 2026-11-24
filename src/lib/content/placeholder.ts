@@ -113,9 +113,9 @@ export const PLACEHOLDER_ABOUT: AboutBundle = {
     journey_id:
       'Memulai karier di garis depan IT Support mengajarkan saya bagaimana gangguan infrastruktur berdampak langsung pada pekerjaan pengguna. Setiap kendala VPN, kesalahan DNS, atau perangkat kerja yang bermasalah menjadi latihan triase yang tenang dan isolasi akar masalah.\n\nSeiring waktu, penyelesaian tiket berulang berkembang menjadi upaya otomasi. Saya mulai mengganti perbaikan manual dengan skrip Bash dan Python yang terstandar, kontainerisasi layanan internal dengan Docker, serta pipeline CI/CD agar deployment tetap terprediksi.\n\nKini fokus saya menjembatani keandalan sistem dan rekayasa cloud, mulai dari penyediaan beban kerja Linux yang reprodusibel menggunakan Terraform dan AWS hingga observabilitas Prometheus dan Grafana agar tim dapat pulih cepat dan merilis dengan tenang.',
     philosophy_en:
-      '[PLACEHOLDER] CLEAR RUNBOOKS, VERSIONED INFRASTRUCTURE, AND HONEST MONITORING REDUCE INCIDENT STRESS FOR THE ENTIRE TEAM.',
+      'I build resilient systems where clear runbooks, versioned infrastructure, and honest monitoring turn complex operations into calm, repeatable engineering.',
     philosophy_id:
-      '[PLACEHOLDER] RUNBOOK YANG JELAS, INFRASTRUKTUR TERKONTROL VERSI, DAN MONITORING YANG JUJUR MENURUNKAN BEBAN SAAT INSIDEN TERJADI.',
+      'Saya merancang sistem yang tangguh, di mana runbook yang jelas, infrastruktur terkontrol versi, dan monitoring yang jujur mengubah operasi kompleks menjadi proses yang tenang dan terprediksi.',
     interest_en:
       '[PLACEHOLDER] Outside daily operations, I document homelab experiments with Proxmox, self-hosted backups, network segmentation, and post-incident notes to share practical troubleshooting paths.',
     interest_id:

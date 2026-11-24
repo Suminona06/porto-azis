@@ -10,48 +10,60 @@ interface Props {
 const { groups, locale } = Astro.props;
 ---
 
-<div class="border-t border-[var(--border-strong)]" data-accordion-group>
+<div class="border-t border-[var(--tech-divider)]" data-tech-accordion-group data-tech-reveal>
   {
-    groups.map((group, idx) => {
+    groups.map((group) => {
       const title = pickLocale(group.title_en, group.title_id, locale);
       const panelId = `skill-panel-${group.id}`;
-      const num = String(idx + 1).padStart(2, '0');
-      const expanded = idx === 0;
       return (
-        <div class="border-b border-[var(--border-light)]" data-accordion-item>
+        <div class="border-b border-[var(--tech-divider)]" data-tech-accordion-item>
           <button
             type="button"
-            aria-expanded={expanded ? 'true' : 'false'}
+            aria-expanded="false"
             aria-controls={panelId}
-            data-accordion-trigger
-            class="flex min-h-16 w-full items-center justify-between gap-4 bg-transparent px-2 py-5 text-left text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-primary)] sm:px-4"
+            data-tech-accordion-trigger
+            class="group flex w-full items-center justify-between gap-6 bg-transparent px-0 py-5 text-left text-[var(--tech-row-muted)] transition-colors duration-300 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] aria-expanded:text-[var(--text-primary)] lg:py-6"
           >
-            <span class="flex items-baseline gap-4">
-              <span class="font-mono-tech text-xs tracking-[0.1em] text-[var(--text-muted)]">
-                /{num}
-              </span>
-              <span class="font-sans-ui text-lg font-semibold sm:text-xl">
-                {title}
-              </span>
+            <span class="font-sans-ui text-base font-medium uppercase tracking-[0.02em] sm:text-lg lg:text-[19px]">
+              {title}
             </span>
-            <span
-              data-accordion-symbol
-              aria-hidden="true"
-              class="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[var(--border-light)] font-mono-tech text-base"
-            >
-              {expanded ? '-' : '+'}
+
+            <span aria-hidden="true" class="inline-flex shrink-0 items-center justify-center">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="square"
+                class="block h-[15px] w-[15px]"
+              >
+                <line x1="2" y1="8" x2="14" y2="8" />
+                <line
+                  data-accordion-symbol-vert
+                  x1="8"
+                  y1="2"
+                  x2="8"
+                  y2="14"
+                  class="origin-center transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-aria-expanded:rotate-90 group-aria-expanded:opacity-0"
+                />
+              </svg>
             </span>
           </button>
 
           <div
             id={panelId}
-            data-accordion-panel
-            hidden={!expanded}
-            class="px-2 pb-6 sm:px-4 sm:pl-14"
+            data-tech-accordion-panel
+            hidden
+            class="overflow-hidden"
           >
-            <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+            <ul class="m-0 flex list-none flex-col items-start space-y-2.5 p-0 pt-1 pb-6">
               {group.items.map((item) => (
-                <li class="border border-[var(--border-light)] bg-[var(--bg-primary)] px-3.5 py-2 font-mono-tech text-xs tracking-[0.06em] uppercase text-[var(--text-secondary)]">
+                <li
+                  data-tech-item
+                  class="font-mono-tech text-[11px] leading-relaxed tracking-[0.08em] uppercase text-[var(--tech-item-muted)] transition-colors duration-200 hover:text-[var(--text-primary)] sm:text-xs"
+                >
                   {item}
                 </li>
               ))}
@@ -62,30 +74,3 @@ const { groups, locale } = Astro.props;
     })
   }
 </div>
-
-<script is:inline>
-  (function () {
-    document.querySelectorAll('[data-accordion-trigger]').forEach(function (btn) {
-      if (btn.getAttribute('data-bound') === 'true') return;
-      btn.setAttribute('data-bound', 'true');
-
-      btn.addEventListener('click', function () {
-        const isOpen = btn.getAttribute('aria-expanded') === 'true';
-        const panelId = btn.getAttribute('aria-controls');
-        const panel = panelId ? document.getElementById(panelId) : null;
-        const symbol = btn.querySelector('[data-accordion-symbol]');
-
-        btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-        if (symbol) symbol.textContent = isOpen ? '+' : '-';
-        if (panel) {
-          if (isOpen) {
-            panel.setAttribute('hidden', '');
-          } else {
-            panel.removeAttribute('hidden');
-          }
-        }
-      });
-    });
-  })();
-</script>
-

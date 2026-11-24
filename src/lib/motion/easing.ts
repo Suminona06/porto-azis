@@ -76,6 +76,15 @@ export function createCubicBezierEase(
  */
 export const editorialEase = createCubicBezierEase(...EDITORIAL_EASE_POINTS);
 
+export const TECH_ACCORDION_EASE_POINTS: readonly [number, number, number, number] = [
+  0.22, 1, 0.36, 1,
+];
+
+/**
+ * Fluid deceleration ease for Tech Stack accordion drawers & + / - morph: cubic-bezier(0.22, 1, 0.36, 1).
+ */
+export const techAccordionEase = createCubicBezierEase(...TECH_ACCORDION_EASE_POINTS);
+
 export function getReducedMotionMediaQuery(): MediaQueryList | null {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return null;

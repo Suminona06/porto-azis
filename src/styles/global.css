@@ -26,6 +26,9 @@
   --about-meta-ink: #52525b;
   --about-divider: rgba(0, 0, 0, 0.12);
   --journey-word-dim: #a1a1aa;
+  --tech-divider: rgba(0, 0, 0, 0.14);
+  --tech-row-muted: #52525b;
+  --tech-item-muted: #52525b;
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
@@ -74,6 +77,9 @@
   --about-meta-ink: #666666;
   --about-divider: #262626;
   --journey-word-dim: #333333;
+  --tech-divider: #222222;
+  --tech-row-muted: #a3a3a3;
+  --tech-item-muted: #8a8a8a;
 
   color-scheme: dark;
 }
@@ -590,6 +596,18 @@
   [data-journey-word] {
     color: var(--text-primary) !important;
     opacity: 1 !important;
+  }
+
+  [data-tech-reveal],
+  [data-tech-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  [data-tech-accordion-trigger],
+  [data-tech-item],
+  [data-accordion-symbol-vert] {
+    transition: none !important;
   }
 
   .button-primary,

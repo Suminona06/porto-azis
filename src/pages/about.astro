@@ -115,7 +115,7 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
       </div>
 
       <div
-        class="max-w-[52ch] space-y-6 font-sans-ui text-[14px] leading-[1.68] md:text-[15px] lg:col-span-5 lg:col-start-8"
+        class="flex max-w-[52ch] flex-col gap-6 font-sans-ui text-[14px] leading-[1.68] md:text-[15px] lg:col-span-5 lg:col-start-8"
         data-journey-journal
       >
         {
@@ -139,11 +139,22 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
     </div>
   </section>
 
-  <section class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-16 sm:py-24">
+  <section class="border-b border-[var(--about-divider)] bg-[var(--bg-primary)] pb-20 lg:pb-28" data-tech-stack-section>
     <div class="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
-      <h2 class="m-0 mb-12 max-w-5xl font-display text-[clamp(1.65rem,3.6vw,3rem)] leading-[1.18] font-semibold uppercase text-[var(--text-primary)]">
-        {philosophy}
-      </h2>
+      <div class="pt-20 pb-14 lg:pt-28 lg:pb-16">
+        <p
+          class="m-0 mb-4 font-mono-tech text-[11px] tracking-[0.08em] uppercase text-[var(--about-meta-ink)]"
+          data-tech-reveal
+        >
+          /00-2
+        </p>
+        <h2
+          class="m-0 max-w-[44ch] font-sans-ui text-xl leading-[1.38] font-normal tracking-[-0.01em] text-[var(--text-primary)] sm:text-2xl lg:text-[26px]"
+          data-tech-reveal
+        >
+          {philosophy}
+        </h2>
+      </div>
 
       <SkillsAccordion groups={skillGroups} locale={locale} />
     </div>

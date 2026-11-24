@@ -94,3 +94,29 @@ const { activities, locale } = Astro.props;
     })
   }
 </div>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-accordion-trigger]').forEach(function (btn) {
+      if (btn.getAttribute('data-bound') === 'true') return;
+      btn.setAttribute('data-bound', 'true');
+
+      btn.addEventListener('click', function () {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        const panelId = btn.getAttribute('aria-controls');
+        const panel = panelId ? document.getElementById(panelId) : null;
+        const symbol = btn.querySelector('[data-accordion-symbol]');
+
+        btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        if (symbol) symbol.textContent = isOpen ? '+' : '-';
+        if (panel) {
+          if (isOpen) {
+            panel.setAttribute('hidden', '');
+          } else {
+            panel.removeAttribute('hidden');
+          }
+        }
+      });
+    });
+  })();
+</script>

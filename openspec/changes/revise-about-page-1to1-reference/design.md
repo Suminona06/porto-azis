@@ -11,13 +11,13 @@ See `proposal.md` for motivation and scope. Technically, this repository is an *
 
 **Goals:**
 - Extract reusable Astro motion primitives under `src/components/motion/` (`CipherText.astro`, `BlockMaskReveal.astro`, `ImageCurtainReveal.astro`) powered by shared GSAP lifecycle helpers in `src/lib/motion/`, so `/` and `/about` share one animation implementation.
-- Overhaul `/about` Hero and "A Journey of Progression" to 1:1 layout, density, and motion parity with the reference video while keeping Light/Dark CSS theme tokens, `EN`/`ID` CMS fields, and `prefers-reduced-motion` support intact.
+- Overhaul `/about` Hero, "A Journey of Progression", and the Tech Stack (`/00-2` intro + `SkillsAccordion.astro`) to 1:1 layout, density, and motion parity with the reference video while keeping Light/Dark CSS theme tokens, `EN`/`ID` CMS fields, and `prefers-reduced-motion` support intact.
 - Keep `gsap` + `ScrollTrigger` as the sole motion runtime with `gsap.context()` cleanup and zero layout shift.
 
 **Non-Goals:**
 - Installing React, `@astrojs/react`, or `framer-motion`.
-- Redesigning `/about` downstream sections (`SkillsAccordion`, `ActivitiesList`, `Personal Interest`, `ContactBanner`) beyond preserving them cleanly below the Journey section's `1px` bottom hairline divider.
-- Changing database schema columns in Supabase (`about_sections` already stores `headline_en`, `headline_id`, `profile_image_url`, `journey_en`, `journey_id`).
+- Redesigning `/about` downstream sections (`ActivitiesList`, `Personal Interest`, `ContactBanner`) beyond preserving them cleanly below the Tech Stack section.
+- Changing database schema columns in Supabase (`about_sections` already stores `headline_en`, `headline_id`, `profile_image_url`, `journey_en`, `journey_id`, `philosophy_en`, `philosophy_id`, and `skill_groups` already stores IT/DevOps/Cloud categories & items).
 
 ## Decisions
 
@@ -48,8 +48,17 @@ See `proposal.md` for motivation and scope. Technically, this repository is an *
 
 ### 4. Reduced Motion (`prefers-reduced-motion: reduce`)
 - **Decision:** Both CSS (`@media (prefers-reduced-motion: reduce)` in `src/styles/global.css`) and JS (`prefersReducedMotion()` + `MediaQueryList` `'change'` listener in `primitives.ts` and `about-motion.ts`) enforce instant static full-contrast states:
-  - CSS fallback ensures `[data-block-mask-box]` is hidden, `[data-image-curtain]` uses `clip-path: inset(0% 0 0 0)`, and `[data-journey-word]` renders `color: var(--text-primary) !important; opacity: 1 !important;` even before JS hydrates.
+  - CSS fallback ensures `[data-block-mask-box]` is hidden, `[data-image-curtain]` uses `clip-path: inset(0% 0 0 0)`, `[data-journey-word]` renders `color: var(--text-primary) !important; opacity: 1 !important;`, and Tech Stack reveal/accordion items render at `opacity: 1` without height/transform transitions even before JS hydrates.
   - JS teardown/fallback restores original unscrambled text on `<CipherText />`, kills any running GSAP timelines/ScrollTriggers, and locks final properties cleanly.
+
+### 5. Tech Stack Section (`/00-2` Intro) & GSAP Multi-Open Accordion
+- **Decision:** Place the Tech Stack section directly below `A JOURNEY OF PROGRESSION` on `bg-[var(--bg-primary)]` (`#000000` Dark / `#ffffff` Light) with `pt-20 pb-14 lg:pt-28 lg:pb-16` intro spacing and no thick `#FFFFFF` top divider:
+  - **Editorial Intro:** Render `/00-2` in `font-mono-tech text-[11px] tracking-[0.08em] uppercase text-[var(--about-meta-ink)] mb-4` (`#666666` Dark), followed by `philosophy` (`philosophy_en`/`philosophy_id`, seeded in clean Sentence-Case without `[PLACEHOLDER]` tags) in `font-sans-ui font-normal text-[var(--text-primary)] text-xl sm:text-2xl lg:text-[26px] leading-[1.38] tracking-[-0.01em] max-w-[44ch]`.
+  - **Borderless Accordion Rows & Bare `+`/`-` SVG Icon:** Remove `/01`–`/04` prefixes and square bordered icon wrappers in `SkillsAccordion.astro`. Separate rows with `1px solid var(--tech-divider)` (`#222222` Dark, `rgba(0,0,0,0.14)` Light) and `py-5 lg:py-6`. Style buttons with `group` so row hover OR `[aria-expanded="true"]` smoothly transitions both the ALL-CAPS category title (`font-sans-ui font-medium uppercase text-base sm:text-lg lg:text-[19px] tracking-[0.02em]`) and the bare `15px` (`1.5px` stroke) SVG `+`/`-` icon from `var(--tech-row-muted)` (`#A3A3A3` Dark) to `var(--text-primary)` (`#FFFFFF` Dark) via `transition-colors duration-300 ease-out`. Morph `+` <-> `-` by smoothly rotating/collapsing the vertical SVG bar over `300ms` using `cubic-bezier(0.22, 1, 0.36, 1)`.
+  - **Single-Column Vertical Monospace Stack:** Replace wrapped pill badges with `<ul class="m-0 flex list-none flex-col items-start space-y-2.5 p-0 pt-1 pb-6">` of `font-mono-tech uppercase text-[11px] sm:text-xs tracking-[0.08em] text-[var(--tech-item-muted)] hover:text-[var(--text-primary)] transition-colors duration-200` (`#8A8A8A` -> `#FFFFFF` Dark), preserving all IT/DevOps/Cloud `skillGroups` items and independent multi-open state.
+  - **GSAP Drawer & Entrance Choreography:** Instead of `framer-motion` (non-goal), implement a `techAccordionEase` (`createCubicBezierEase(0.22, 1, 0.36, 1)` in `src/lib/motion/easing.ts`) controller inside `src/lib/motion/about-motion.ts` (replacing `SkillsAccordion.astro`'s inline `<script is:inline>`):
+    - Expand animates `[data-accordion-panel]` from `height: 0, opacity: 0` to `height: "auto", opacity: 1` (`0.38s`, `techAccordionEase`, `overflow: hidden`) while staggering `[data-tech-item]` (`y: -4 -> 0`, `opacity: 0 -> 1`, `0.025s` stagger). Collapse reverses smoothly to `height: 0, opacity: 0` (`0.38s`, `techAccordionEase`) before setting `hidden`.
+    - Register a `ScrollTrigger` (`once: true`) entrance on `[data-tech-stack-section]` revealing `/00-2`, the intro statement, and category dividers cleanly without affecting `aria-expanded` or `prefers-reduced-motion` static state.
 
 ## Risks / Trade-offs
 

@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
+import { getReducedMotionMediaQuery, prefersReducedMotion, techAccordionEase } from './easing';
 import {
   applyPrimitivesReducedMotion,
   createBlockMaskTween,
@@ -15,6 +15,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const JOURNEY_DIM_OPACITY = 0.22;
 const JOURNEY_FEATHER_WORDS = 4;
+export const TECH_ACCORDION_DURATION_SEC = 0.38;
+export const TECH_ACCORDION_STAGGER_SEC = 0.025;
 
 /**
  * Pure helper computing `[0..total]` per-word opacity for bidirectional scroll-scrubbed
@@ -53,11 +55,20 @@ export function initAboutMotion(): () => void {
   const aboutCurtainEl = document.querySelector<HTMLElement>('[data-about-curtain]');
   const journeyJournalEl = document.querySelector<HTMLElement>('[data-journey-journal]');
   const journeyWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-journey-word]'));
+  const techStackSectionEl = document.querySelector<HTMLElement>('[data-tech-stack-section]');
+  const techRevealEls = Array.from(
+    techStackSectionEl?.querySelectorAll<HTMLElement>('[data-tech-reveal]') ?? [],
+  );
+  const techTriggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-tech-accordion-trigger]'),
+  );
 
   let activeCtx: gsap.Context | null = null;
   let heroTl: gsap.core.Timeline | null = null;
   let cancelPreloaderWait: (() => void) | null = null;
   let entrancePlayed = false;
+  const panelTimelines = new Map<HTMLElement, gsap.core.Timeline>();
+  const cleanups: Array<() => void> = [];
 
   const applyJourneyProgress = (progress: number) => {
     const total = journeyWordEls.length;
@@ -71,6 +82,10 @@ export function initAboutMotion(): () => void {
   const applyStaticReducedState = () => {
     heroTl?.kill();
     heroTl = null;
+    for (const panelTl of panelTimelines.values()) {
+      panelTl.kill();
+    }
+    panelTimelines.clear();
     activeCtx?.revert();
     activeCtx = null;
 
@@ -78,6 +93,27 @@ export function initAboutMotion(): () => void {
 
     for (const word of journeyWordEls) {
       word.style.opacity = '1';
+    }
+
+    for (const el of techRevealEls) {
+      gsap.set(el, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+    }
+
+    for (const trigger of techTriggers) {
+      const panelId = trigger.getAttribute('aria-controls');
+      const panel = panelId ? document.getElementById(panelId) : null;
+      if (!panel) continue;
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+      if (isOpen) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.setAttribute('hidden', '');
+      }
+      gsap.set(panel, { clearProps: 'height,opacity' });
+      const items = Array.from(panel.querySelectorAll<HTMLElement>('[data-tech-item]'));
+      for (const item of items) {
+        gsap.set(item, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+      }
     }
   };
 
@@ -149,8 +185,129 @@ export function initAboutMotion(): () => void {
           },
         });
       }
+
+      if (techStackSectionEl && techRevealEls.length > 0) {
+        gsap.fromTo(
+          techRevealEls,
+          { opacity: 0, y: 12 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.08,
+            ease: techAccordionEase,
+            clearProps: 'opacity,transform',
+            scrollTrigger: {
+              trigger: techStackSectionEl,
+              start: 'top 85%',
+              once: true,
+            },
+          },
+        );
+      }
     });
   };
+
+  const toggleTechAccordion = (trigger: HTMLButtonElement) => {
+    const panelId = trigger.getAttribute('aria-controls');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) return;
+
+    const currentlyOpen = trigger.getAttribute('aria-expanded') === 'true';
+    const nextOpen = !currentlyOpen;
+    trigger.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+
+    const items = Array.from(panel.querySelectorAll<HTMLElement>('[data-tech-item]'));
+    panelTimelines.get(panel)?.kill();
+    panelTimelines.delete(panel);
+
+    if (prefersReducedMotion()) {
+      if (nextOpen) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.setAttribute('hidden', '');
+      }
+      gsap.set(panel, { clearProps: 'height,opacity' });
+      for (const item of items) {
+        gsap.set(item, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+      }
+      return;
+    }
+
+    if (nextOpen) {
+      panel.removeAttribute('hidden');
+      const tl = gsap.timeline({
+        onComplete: () => {
+          panelTimelines.delete(panel);
+          ScrollTrigger.refresh();
+        },
+      });
+      tl.fromTo(
+        panel,
+        { height: 0, opacity: 0 },
+        {
+          height: 'auto',
+          opacity: 1,
+          duration: TECH_ACCORDION_DURATION_SEC,
+          ease: techAccordionEase,
+          clearProps: 'height,opacity',
+        },
+        0,
+      );
+      if (items.length > 0) {
+        tl.fromTo(
+          items,
+          { opacity: 0, y: -4 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.24,
+            stagger: TECH_ACCORDION_STAGGER_SEC,
+            ease: techAccordionEase,
+            clearProps: 'opacity,transform',
+          },
+          0.05,
+        );
+      }
+      panelTimelines.set(panel, tl);
+    } else {
+      const startHeight = panel.offsetHeight;
+      const tl = gsap.timeline({
+        onComplete: () => {
+          panel.setAttribute('hidden', '');
+          gsap.set(panel, { clearProps: 'height,opacity' });
+          for (const item of items) {
+            gsap.set(item, { clearProps: 'opacity,transform' });
+          }
+          panelTimelines.delete(panel);
+          ScrollTrigger.refresh();
+        },
+      });
+      tl.fromTo(
+        panel,
+        { height: startHeight, opacity: 1 },
+        {
+          height: 0,
+          opacity: 0,
+          duration: TECH_ACCORDION_DURATION_SEC,
+          ease: techAccordionEase,
+        },
+        0,
+      );
+      panelTimelines.set(panel, tl);
+    }
+  };
+
+  for (const trigger of techTriggers) {
+    if (trigger.getAttribute('data-tech-bound') === 'true') continue;
+    trigger.setAttribute('data-tech-bound', 'true');
+    const onClick = () => toggleTechAccordion(trigger);
+    trigger.addEventListener('click', onClick);
+    cleanups.push(() => {
+      trigger.removeEventListener('click', onClick);
+      trigger.removeAttribute('data-tech-bound');
+    });
+  }
 
   const playAboutEntrance = () => {
     if (entrancePlayed) return;
@@ -185,6 +342,13 @@ export function initAboutMotion(): () => void {
   return () => {
     cancelPreloaderWait?.();
     cancelPreloaderWait = null;
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
+    for (const panelTl of panelTimelines.values()) {
+      panelTl.kill();
+    }
+    panelTimelines.clear();
     heroTl?.kill();
     heroTl = null;
     activeCtx?.revert();

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   EDITORIAL_EASE_POINTS,
+  TECH_ACCORDION_EASE_POINTS,
   createCubicBezierEase,
   editorialEase,
   prefersReducedMotion,
+  techAccordionEase,
 } from '../../src/lib/motion/easing';
 import { formatJakartaTime12h } from '../../src/lib/motion/clock';
 import {
@@ -23,7 +25,11 @@ import {
   DEFAULT_IMAGE_CURTAIN_DURATION_MS,
   getBlockMaskPhaseDurations,
 } from '../../src/lib/motion/primitives';
-import { computeJourneyWordOpacity } from '../../src/lib/motion/about-motion';
+import {
+  TECH_ACCORDION_DURATION_SEC,
+  TECH_ACCORDION_STAGGER_SEC,
+  computeJourneyWordOpacity,
+} from '../../src/lib/motion/about-motion';
 
 describe('editorial cubic-bezier easing', () => {
   it('uses [0.77, 0, 0.175, 1] control points and satisfies boundary and monotonic progression', () => {
@@ -201,5 +207,14 @@ describe('shared motion primitives timing', () => {
     expect(computeJourneyWordOpacity(0, 60, 0.5)).toBe(1);
     expect(computeJourneyWordOpacity(59, 60, 0.5)).toBeCloseTo(0.22, 2);
     expect(computeJourneyWordOpacity(59, 60, 1)).toBe(1);
+  });
+
+  it('defines [0.22, 1, 0.36, 1] easing and 380ms / 25ms Tech Stack accordion timing', () => {
+    expect(TECH_ACCORDION_EASE_POINTS).toEqual([0.22, 1, 0.36, 1]);
+    expect(techAccordionEase(0)).toBe(0);
+    expect(techAccordionEase(1)).toBe(1);
+    expect(techAccordionEase(0.3)).toBeGreaterThan(0.5);
+    expect(TECH_ACCORDION_DURATION_SEC).toBe(0.38);
+    expect(TECH_ACCORDION_STAGGER_SEC).toBe(0.025);
   });
 });

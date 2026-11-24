@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
+Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, minimalist `/00-2` Tech Stack intro and borderless vertical monospace accordion, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
 
 ## ADDED Requirements
 
@@ -45,15 +45,67 @@ The system SHALL render a second section below the About Hero with generous vert
 - **THEN** words entering from the lower viewport SHALL start dimmed (`#333333` / `opacity: 0.25` in Dark mode, theme-adapted dimmed ink in Light mode) and progressively illuminate to full primary contrast (`#FFFFFF` / `opacity: 1` in Dark mode, `#000000` in Light mode) word-by-word in sync with vertical scroll progress, and reverse smoothly back to the dimmed state when scrolling upward
 
 ### Requirement: Bilingual CMS Continuity & Downstream About Sections
-The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections` and `site_profile`), render Light and Dark themes legibly across all refactored sections, and preserve the downstream Philosophy & Skills Accordion, Activities & Milestones, Personal Interest, and closing Contact CTA sections below the Journey section's bottom hairline divider.
+The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections`, `skill_groups`, and `site_profile`), render Light and Dark themes legibly across all refactored sections, drive the overhauled Tech Stack section with `philosophy_en`/`philosophy_id` and existing IT/DevOps/Cloud `skill_groups`, and preserve Activities & Milestones, Personal Interest, and closing Contact CTA sections downstream.
 
-#### Scenario: Switching locale updates About Hero metadata, headline, and 3-paragraph journal
+#### Scenario: Switching locale updates About Hero metadata, headline, 3-paragraph journal, and Tech Stack
 - **WHEN** a visitor toggles between `EN` and `ID` on `/about`
-- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, and downstream CMS sections SHALL render in the active language with automatic fallback if a translation is empty
+- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, Tech Stack philosophy intro and category titles, and downstream CMS sections SHALL render in the active language with automatic fallback if a translation is empty
 
 ### Requirement: Reduced-Motion Accessibility for About Motion & Primitives
-The system SHALL respect `prefers-reduced-motion: reduce` across all shared entrance primitives and the scroll-scrubbed journal, rendering full-contrast static states from first paint and responding immediately if the user's motion preference changes at runtime.
+The system SHALL respect `prefers-reduced-motion: reduce` across all shared entrance primitives, the scroll-scrubbed journal, and the Tech Stack section, rendering full-contrast static states from first paint and responding immediately if the user's motion preference changes at runtime.
 
-#### Scenario: Reduced motion bypasses scrambles, wipes, clip-paths, and scroll scrubbing
+#### Scenario: Reduced motion bypasses scrambles, wipes, clip-paths, scroll scrubbing, and accordion transitions
 - **WHEN** `prefers-reduced-motion: reduce` is enabled
-- **THEN** the About Hero headline lines, monochrome portrait, and all 3 paragraphs of the Journey journal SHALL bypass character scrambles, block mask wipes, vertical clip-path transitions, and scroll-scrubbed dimming, rendering immediately at crisp full primary contrast
+- **THEN** the About Hero headline lines, monochrome portrait, all 3 paragraphs of the Journey journal, and the Tech Stack header, dividers, and accordion expand/collapse states SHALL bypass character scrambles, block mask wipes, vertical clip-path transitions, scroll-scrubbed dimming, and height/stagger/rotation animations, rendering immediately at crisp static contrast
+
+### Requirement: Tech Stack Section Header & Introductory Statement (1:1 Parity)
+The Tech Stack section SHALL replace the oversized uppercase serif block and thick white divider with the exact minimalist left-aligned editorial intro from the reference.
+
+#### Scenario: Micro-index label & sentence-case sans-serif intro
+- **WHEN** the user scrolls past the Journey section into the Tech Stack section
+- **THEN** the section SHALL render a small uppercase monospace index label `/00-2` (`font-mono text-[11px] tracking-[0.08em] text-[#666666] mb-4` in Dark mode, theme-adapted muted ink in Light mode), followed immediately by a concise engineering philosophy statement in clean **Sentence-Case Sans-Serif** (`font-sans font-normal text-xl sm:text-2xl lg:text-[26px] leading-[1.38] tracking-[-0.01em] max-w-[44ch]`, `#FFFFFF` in Dark mode / `#000000` in Light mode) left-aligned within the main container (`pt-20 pb-14 lg:pt-28 lg:pb-16`), with NO thick `#FFFFFF` horizontal divider rule beneath it
+
+### Requirement: Borderless Accordion Category Rows & Hover Illumination
+The expandable category rows SHALL match the exact typography, alignment, hairline dividers, and hover state transitions of the reference while preserving existing IT/DevOps/Cloud engineering domain categories.
+
+#### Scenario: Category row typography & borderless layout
+- **WHEN** the category list renders
+- **THEN** each category row SHALL omit numeric prefixes (`/01`, `/02`, `/03`, `/04`) and display its title flush-left in **ALL-CAPS geometric Sans-Serif** (`font-sans font-medium uppercase text-base sm:text-lg lg:text-[19px] tracking-[0.02em]`), separated by crisp dark hairline borders (`1px solid #222222` top/bottom dividers in Dark mode, theme-adapted hairline in Light mode) with generous vertical row padding (`py-5 lg:py-6`)
+
+#### Scenario: Row hover & active text color transition
+- **WHEN** a category row is idle and collapsed
+- **THEN** its title text color SHALL be muted neutral gray (`#A3A3A3` in Dark mode, theme-adapted muted ink in Light mode)
+- **WHEN** the user hovers over the row OR expands the category
+- **THEN** the category title text color SHALL transition smoothly (`transition-colors duration-300 ease-out`) to pure crisp primary ink (`#FFFFFF` in Dark mode, `#000000` in Light mode) with zero horizontal layout shift
+
+### Requirement: Bare Minimalist + / - Toggle Icon
+The accordion toggle indicator SHALL match the bare, borderless vector icon in the reference.
+
+#### Scenario: Borderless + icon and smooth - state transition
+- **WHEN** a category row renders on the right edge
+- **THEN** it SHALL display a **bare, borderless thin `+` icon** (`14px`–`16px` size, `1.5px` stroke width, `#A3A3A3` idle color transitioning to `#FFFFFF` on row hover or active state in Dark mode, theme-adapted in Light mode)—completely removing the bordered square box wrapper around the icon
+- **WHEN** the user clicks the row to expand or collapse it
+- **THEN** the `+` icon SHALL smoothly morph/rotate (`duration: 300ms`, `ease: [0.22, 1, 0.36, 1]`) into a horizontal `-` minus sign (`#FFFFFF` / primary ink) when open and back to `+` when closed
+
+### Requirement: Single-Column Vertical Monospace Tech Stack List
+The expanded content inside each category SHALL replace horizontal bordered pill boxes with a clean vertical monospace stack preserving all domain items.
+
+#### Scenario: Vertical single-column layout & typography
+- **WHEN** a category row is expanded
+- **THEN** its tech stack items SHALL render as a **single-column vertical list** (`flex flex-col items-start space-y-2.5 pt-1 pb-6`) aligned flush-left directly beneath the category title, with **zero borders, zero background boxes, and zero horizontal wrapping**
+- **AND** each item SHALL be styled in **ALL-CAPS Monospace** (`font-mono uppercase text-[11px] sm:text-xs tracking-[0.08em] text-[#8A8A8A]` in Dark mode, theme-adapted in Light mode), transitioning smoothly on individual item hover (`hover:text-[#FFFFFF]` / primary ink, `transition-colors duration-200`)
+
+#### Scenario: Independent multi-open accordion behavior
+- **WHEN** the user clicks multiple category rows sequentially
+- **THEN** multiple categories SHALL be able to remain open simultaneously (independent toggle state per category) without force-closing previously opened rows
+
+### Requirement: Smooth Accordion & Entrance Choreography
+All motion in the Tech Stack section SHALL be fluid, GPU-accelerated, and consistent with the rest of the About page.
+
+#### Scenario: Smooth height & staggered item reveal on expand/collapse
+- **WHEN** a category row toggles open or closed
+- **THEN** the drawer container SHALL animate smoothly between `height: 0, opacity: 0` and `height: "auto", opacity: 1` (`duration: 380ms`, `ease: [0.22, 1, 0.36, 1]`, `overflow: hidden`), while the vertical monospace items inside reveal with a subtle staggered fade/slide (`y: -4px -> 0`, `25ms` stagger per item)
+
+#### Scenario: Viewport entrance & reduced-motion accessibility
+- **WHEN** the Tech Stack section enters the viewport
+- **THEN** the `/00-2` label, intro statement, and category dividers SHALL enter smoothly using the shared About page reveal timing (`once: true`), and when `prefers-reduced-motion` is enabled, all animations SHALL bypass transitions to render static `#FFFFFF` / `#A3A3A3` (or Light theme equivalent) states immediately
