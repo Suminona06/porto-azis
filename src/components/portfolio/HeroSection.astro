@@ -2,6 +2,8 @@
 import { pickLocale, type Locale, type UiCopy } from '../../lib/content/i18n';
 import type { SiteProfile } from '../../lib/content/types';
 import { formatJakartaTime12h } from '../../lib/motion/clock';
+import CipherText from '../motion/CipherText.astro';
+import BlockMaskReveal from '../motion/BlockMaskReveal.astro';
 
 interface Props {
   profile: SiteProfile;
@@ -14,11 +16,7 @@ const { profile, locale, copy, isPlaceholder } = Astro.props;
 const roleText = pickLocale(profile.role_en, profile.role_id, locale).trim().toUpperCase();
 const bioText = pickLocale(profile.hero_bio_en, profile.hero_bio_id, locale);
 const bioWords = bioText.trim().split(/\s+/).filter(Boolean);
-const nameWords = profile.display_name
-  .trim()
-  .toUpperCase()
-  .split(/\s+/)
-  .filter(Boolean);
+const displayName = profile.display_name.trim().toUpperCase();
 const locationLabel = profile.location.trim().toUpperCase();
 const initialJakartaClock = formatJakartaTime12h(new Date());
 ---
@@ -42,37 +40,27 @@ const initialJakartaClock = formatJakartaTime12h(new Date());
     {/* Top/Mid-Left Headline Block */}
     <div class="mt-auto mb-auto py-6 sm:py-10">
       <h1 class="m-0 font-display text-[clamp(2.25rem,6.8vw,5.5rem)] leading-[1.04] font-normal tracking-tight uppercase text-[var(--text-primary)]">
-        <span class="sr-only">{profile.display_name}</span>
-        <span aria-hidden="true" class="flex flex-wrap gap-x-[0.26em] gap-y-[0.06em]">
-          {
-            nameWords.map((word) => (
-              <span class="relative inline-block">
-                <span class="invisible select-none" aria-hidden="true">
-                  {word}
-                </span>
-                <span
-                  aria-hidden="true"
-                  class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
-                  data-hero-decode
-                  data-decode-target={word}
-                >
-                  {word}
-                </span>
-              </span>
-            ))
-          }
-        </span>
+        <CipherText
+          text={displayName}
+          as="span"
+          charset="alphabet"
+          durationMs={1100}
+          frameIntervalMs={42}
+          trigger="manual"
+          data-hero-cipher
+        />
       </h1>
 
       <div class="mt-2 pl-6 sm:mt-3 sm:pl-12">
-        <p class="relative m-0 inline-block max-w-full overflow-hidden align-top font-sans-ui text-[clamp(1.15rem,3.4vw,2.85rem)] leading-[1.12] font-bold tracking-[-0.02em] uppercase text-[var(--text-primary)]">
-          <span data-hero-role-text class="inline-block">{roleText}</span>
-          <span
-            data-hero-role-mask
-            aria-hidden="true"
-            style="transform: scaleX(0);"
-            class="hero-motion-mask pointer-events-none absolute inset-0 bg-[var(--bg-inverse)]"
-          ></span>
+        <p class="m-0">
+          <BlockMaskReveal
+            durationMs={950}
+            trigger="manual"
+            data-hero-role-reveal
+            class="font-sans-ui text-[clamp(1.15rem,3.4vw,2.85rem)] leading-[1.12] font-bold tracking-[-0.02em] uppercase text-[var(--text-primary)]"
+          >
+            {roleText}
+          </BlockMaskReveal>
         </p>
       </div>
     </div>

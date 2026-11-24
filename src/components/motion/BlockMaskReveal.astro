@@ -1,0 +1,42 @@
+---
+interface Props {
+  durationMs?: number;
+  delaySec?: number;
+  trigger?: 'entrance' | 'manual';
+  class?: string;
+  contentClass?: string;
+  maskClass?: string;
+}
+
+const {
+  durationMs = 700,
+  delaySec = 0,
+  trigger = 'entrance',
+  class: className = '',
+  contentClass = 'inline-block',
+  maskClass = '',
+  ...rest
+} = Astro.props;
+---
+
+<span
+  class:list={['relative inline-block max-w-full overflow-hidden align-top', className]}
+  data-motion-primitive="block-mask"
+  data-motion-trigger={trigger}
+  data-motion-delay={String(delaySec)}
+  data-mask-duration={String(durationMs)}
+  {...rest}
+>
+  <span data-block-mask-content class={contentClass}>
+    <slot />
+  </span>
+  <span
+    data-block-mask-box
+    aria-hidden="true"
+    style="transform: scaleX(0);"
+    class:list={[
+      'hero-motion-mask pointer-events-none absolute inset-0 bg-[var(--bg-inverse)]',
+      maskClass,
+    ]}
+  ></span>
+</span>

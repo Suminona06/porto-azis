@@ -1,0 +1,62 @@
+---
+import type { CipherCharset } from '../../lib/motion/primitives';
+
+interface Props {
+  text: string;
+  as?: 'span' | 'h1' | 'h2' | 'p';
+  durationMs?: number;
+  frameIntervalMs?: number;
+  charset?: CipherCharset;
+  delaySec?: number;
+  trigger?: 'entrance' | 'manual';
+  class?: string;
+  wordGapClass?: string;
+}
+
+const {
+  text,
+  as: Tag = 'span',
+  durationMs = 800,
+  frameIntervalMs = 36,
+  charset = 'alnum',
+  delaySec = 0,
+  trigger = 'entrance',
+  class: className = '',
+  wordGapClass = 'gap-x-[0.26em] gap-y-[0.06em]',
+  ...rest
+} = Astro.props;
+
+const words = text.trim().split(/\s+/).filter(Boolean);
+---
+
+<Tag
+  class={className}
+  data-motion-primitive="cipher"
+  data-motion-trigger={trigger}
+  data-motion-delay={String(delaySec)}
+  data-cipher-duration={String(durationMs)}
+  data-cipher-interval={String(frameIntervalMs)}
+  data-cipher-charset={charset}
+  {...rest}
+>
+  <span class="sr-only">{text}</span>
+  <span aria-hidden="true" class:list={['flex flex-wrap', wordGapClass]}>
+    {
+      words.map((word) => (
+        <span class="relative inline-block">
+          <span class="invisible select-none" aria-hidden="true">
+            {word}
+          </span>
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-y-0 left-0 whitespace-nowrap"
+            data-cipher-word
+            data-cipher-target={word}
+          >
+            {word}
+          </span>
+        </span>
+      ))
+    }
+  </span>
+</Tag>

@@ -1,0 +1,29 @@
+---
+interface Props {
+  durationMs?: number;
+  delaySec?: number;
+  trigger?: 'entrance' | 'manual';
+  class?: string;
+}
+
+const {
+  durationMs = 700,
+  delaySec = 0,
+  trigger = 'entrance',
+  class: className = '',
+  ...rest
+} = Astro.props;
+---
+
+<div
+  class:list={['relative overflow-hidden rounded-none', className]}
+  data-motion-primitive="image-curtain"
+  data-motion-trigger={trigger}
+  data-motion-delay={String(delaySec)}
+  data-curtain-duration={String(durationMs)}
+  {...rest}
+>
+  <div data-image-curtain class="h-full w-full rounded-none">
+    <slot />
+  </div>
+</div>

@@ -1,24 +1,24 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { startJakartaClock } from './clock';
-import { editorialEase, getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
+import { getReducedMotionMediaQuery, prefersReducedMotion } from './easing';
+import {
+  applyPrimitivesReducedMotion,
+  createBlockMaskTween,
+  createCipherTextTween,
+  onPreloaderReady,
+  prepareBlockMaskState,
+} from './primitives';
 import {
   computeSeededWordDelays,
-  createAlphabetDecodeTween,
   runTrailingScramble,
 } from './text-scramble';
 
 gsap.registerPlugin(ScrollTrigger);
 
-declare global {
-  interface Window {
-    __azisPreloaderDone?: boolean;
-  }
-}
-
 /**
  * Orchestrates homepage motion on `/`:
- * - Pre-staged GSAP 3-part Hero entrance timeline triggered cleanly upon preloader curtain exit
+ * - Pre-staged GSAP 3-part Hero entrance timeline using shared primitives upon preloader exit
  * - Interactive 350ms GSAP trailing scramble & live GMT +7 clock in Hero footer
  * - Bidirectional ScrollTrigger statement illumination
  * - Strict prefers-reduced-motion static fallback + live media-query listener
@@ -28,9 +28,9 @@ export function initLandingMotion(): () => void {
     return () => {};
   }
 
-  const decodeEls = Array.from(document.querySelectorAll<HTMLElement>('[data-hero-decode]'));
-  const roleTextEl = document.querySelector<HTMLElement>('[data-hero-role-text]');
-  const roleMaskEl = document.querySelector<HTMLElement>('[data-hero-role-mask]');
+  const heroSectionEl = document.querySelector<HTMLElement>('[data-hero-section]');
+  const heroCipherEl = document.querySelector<HTMLElement>('[data-hero-cipher]');
+  const heroRoleRevealEl = document.querySelector<HTMLElement>('[data-hero-role-reveal]');
   const bioWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-hero-bio-word]'));
   const locationBtnEl = document.querySelector<HTMLButtonElement>('[data-hero-location-btn]');
   const locationTextEl = document.querySelector<HTMLElement>('[data-hero-location-text]');
@@ -42,6 +42,7 @@ export function initLandingMotion(): () => void {
   let activeCtx: gsap.Context | null = null;
   let heroTl: gsap.core.Timeline | null = null;
   let cancelLocationScramble: (() => void) | null = null;
+  let cancelPreloaderWait: (() => void) | null = null;
   let entrancePlayed = false;
 
   const stopClock = clockEl ? startJakartaClock(clockEl) : () => {};
@@ -58,20 +59,8 @@ export function initLandingMotion(): () => void {
       locationBtnEl.style.minWidth = '';
     }
 
-    for (const el of decodeEls) {
-      const target = el.dataset.decodeTarget;
-      if (target) {
-        el.textContent = target;
-      }
-      gsap.set(el, { opacity: 1, clearProps: 'opacity,willChange' });
-    }
+    applyPrimitivesReducedMotion(heroSectionEl ?? document);
 
-    if (roleTextEl) {
-      gsap.set(roleTextEl, { opacity: 1, clearProps: 'opacity' });
-    }
-    if (roleMaskEl) {
-      gsap.set(roleMaskEl, { scaleX: 0, clearProps: 'transform,transformOrigin,willChange' });
-    }
     for (const word of bioWordEls) {
       gsap.set(word, { opacity: 1, y: 0, clearProps: 'opacity,transform,willChange' });
     }
@@ -173,16 +162,8 @@ export function initLandingMotion(): () => void {
         syncRingOpacity();
       }
 
-      if (roleTextEl) {
-        gsap.set(roleTextEl, { opacity: 0 });
-      }
-      if (roleMaskEl) {
-        gsap.set(roleMaskEl, {
-          scaleX: 0,
-          transformOrigin: '0% 50%',
-          force3D: true,
-          willChange: 'transform',
-        });
+      if (heroRoleRevealEl) {
+        prepareBlockMaskState(heroRoleRevealEl);
       }
       if (bioWordEls.length > 0) {
         gsap.set(bioWordEls, {
@@ -190,58 +171,31 @@ export function initLandingMotion(): () => void {
           willChange: 'opacity',
         });
       }
-      if (decodeEls.length > 0) {
-        gsap.set(decodeEls, {
-          opacity: 1,
-        });
-      }
 
       const tl = gsap.timeline({ paused: true });
       heroTl = tl;
 
-      // Part 1 (t = 0s, ~1.1s): left-to-right uppercase A-Z alphabet decode (~42ms/tick) with smooth hold+resolve.
-      if (decodeEls.length > 0) {
-        for (const el of decodeEls) {
-          const target = el.dataset.decodeTarget ?? el.textContent ?? '';
-          tl.add(
-            createAlphabetDecodeTween(el, target, {
-              durationMs: 1100,
-              frameIntervalMs: 42,
-            }),
-            0,
-          );
-        }
+      // Part 1 (t = 0s, ~1.1s): shared CipherText left-to-right uppercase A-Z alphabet decode (~42ms/tick).
+      if (heroCipherEl) {
+        tl.add(
+          createCipherTextTween(heroCipherEl, {
+            charset: 'alphabet',
+            durationMs: 1100,
+            frameIntervalMs: 42,
+          }),
+          0,
+        );
       }
 
-      // Part 2 (t = 0.2s, ~0.95s): solid inverse block wipe reveal over indented role line.
-      // Phase 1 (0.20s -> 0.65s): expand left-to-right (origin-left, scaleX: 0 -> 1) while text opacity is 0.
-      // Phase 2 (0.65s -> 1.15s): flip text opacity to 1, retract left-to-right (origin-right, scaleX: 1 -> 0).
-      if (roleMaskEl && roleTextEl) {
-        tl.to(
-          roleMaskEl,
-          {
-            scaleX: 1,
-            duration: 0.45,
-            ease: editorialEase,
-            force3D: true,
-          },
+      // Part 2 (t = 0.2s, 0.95s): shared BlockMaskReveal inverse wipe over indented role line.
+      if (heroRoleRevealEl) {
+        tl.add(
+          createBlockMaskTween(heroRoleRevealEl, {
+            durationMs: 950,
+            expandShare: 0.45 / 0.95,
+          }),
           0.2,
-        )
-          .set(roleTextEl, { opacity: 1 }, 0.65)
-          .set(roleMaskEl, { transformOrigin: '100% 50%' }, 0.65)
-          .to(
-            roleMaskEl,
-            {
-              scaleX: 0,
-              duration: 0.5,
-              ease: editorialEase,
-              force3D: true,
-              clearProps: 'willChange',
-            },
-            0.65,
-          );
-      } else if (roleTextEl) {
-        tl.set(roleTextEl, { opacity: 1 }, 0.2);
+        );
       }
 
       // Part 3 (t = 0.4s): seeded deterministic random word-by-word fade-in (0ms-950ms delays, 0.65s silky easeOut).
@@ -301,25 +255,14 @@ export function initLandingMotion(): () => void {
   locationBtnEl?.addEventListener('focus', triggerLocationScramble);
   locationBtnEl?.addEventListener('click', triggerLocationScramble);
 
-  const onPreloaderComplete = () => {
-    playHeroEntrance();
-  };
-
   stageMotionContext();
-
-  if (
-    window.__azisPreloaderDone ||
-    !document.documentElement.classList.contains('preloader-active')
-  ) {
-    playHeroEntrance();
-  } else {
-    window.addEventListener('azis:preloader-complete', onPreloaderComplete, { once: true });
-  }
+  cancelPreloaderWait = onPreloaderReady(playHeroEntrance);
 
   const mql = getReducedMotionMediaQuery();
   const handleReducedMotionChange = (event: MediaQueryListEvent) => {
     if (event.matches) {
-      window.removeEventListener('azis:preloader-complete', onPreloaderComplete);
+      cancelPreloaderWait?.();
+      cancelPreloaderWait = null;
       entrancePlayed = true;
       applyStaticReducedState();
     }
@@ -330,10 +273,11 @@ export function initLandingMotion(): () => void {
     stopClock();
     cancelLocationScramble?.();
     cancelLocationScramble = null;
+    cancelPreloaderWait?.();
+    cancelPreloaderWait = null;
     heroTl?.kill();
     heroTl = null;
     activeCtx?.revert();
-    window.removeEventListener('azis:preloader-complete', onPreloaderComplete);
     mql?.removeEventListener('change', handleReducedMotionChange);
     locationBtnEl?.removeEventListener('mouseenter', triggerLocationScramble);
     locationBtnEl?.removeEventListener('focus', triggerLocationScramble);

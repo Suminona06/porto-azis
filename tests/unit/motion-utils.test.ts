@@ -17,6 +17,12 @@ import {
   computeTrailingScrambleFrame,
 } from '../../src/lib/motion/text-scramble';
 import { resolveRowEdge } from '../../src/lib/motion/selected-work-motion';
+import {
+  DEFAULT_BLOCK_MASK_DURATION_MS,
+  DEFAULT_CIPHER_DURATION_MS,
+  DEFAULT_IMAGE_CURTAIN_DURATION_MS,
+  getBlockMaskPhaseDurations,
+} from '../../src/lib/motion/primitives';
 
 describe('editorial cubic-bezier easing', () => {
   it('uses [0.77, 0, 0.175, 1] control points and satisfies boundary and monotonic progression', () => {
@@ -171,5 +177,20 @@ describe('text scramble frames', () => {
     // Must not be monotonically sorted left-to-right
     const isSortedAsc = delaysA.every((val, i) => i === 0 || delaysA[i - 1]! <= val);
     expect(isSortedAsc).toBe(false);
+  });
+});
+
+describe('shared motion primitives timing', () => {
+  it('defines reference default durations (800ms cipher, 700ms block mask, 700ms image curtain)', () => {
+    expect(DEFAULT_CIPHER_DURATION_MS).toBe(800);
+    expect(DEFAULT_BLOCK_MASK_DURATION_MS).toBe(700);
+    expect(DEFAULT_IMAGE_CURTAIN_DURATION_MS).toBe(700);
+  });
+
+  it('splits block mask expand and retract phases accurately across default and custom durations', () => {
+    expect(getBlockMaskPhaseDurations()).toEqual({ expandSec: 0.35, retractSec: 0.35 });
+    const homeSplit = getBlockMaskPhaseDurations(950, 0.45 / 0.95);
+    expect(homeSplit.expandSec).toBeCloseTo(0.45, 3);
+    expect(homeSplit.retractSec).toBeCloseTo(0.5, 3);
   });
 });
