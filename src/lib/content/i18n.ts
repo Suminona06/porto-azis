@@ -195,3 +195,54 @@ export function getUiCopy(locale: Locale): UiCopy {
   return locale === 'id' ? ID_COPY : EN_COPY;
 }
 
+/**
+ * Splits a CMS About headline into a 2-line staggered display lockup (`\n` or `|`),
+ * falling back to `fallbackLine1` / `fallbackLine2` when a legacy single-line bio sentence is stored.
+ */
+export function splitHeadlineLockup(
+  headline: string | null | undefined,
+  fallbackLine1: string,
+  fallbackLine2: string,
+): [string, string] {
+  const cleanFallback1 = fallbackLine1.trim().toUpperCase();
+  const cleanFallback2 = fallbackLine2.trim().toUpperCase();
+  const raw = (headline ?? '').trim();
+  if (!raw) {
+    return [cleanFallback1, cleanFallback2];
+  }
+
+  const explicitParts = raw
+    .split(/\r?\n|\|/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (explicitParts.length >= 2) {
+    return [explicitParts[0]!.toUpperCase(), explicitParts[1]!.toUpperCase()];
+  }
+
+  // Legacy single-line long bio sentences fall back to the concise 2-line display lockup
+  // so the About Hero never overlaps the bottom-right monochrome portrait.
+  if (raw.length > 48 || raw.includes('[PLACEHOLDER]') || raw.includes('[SAMPLE]')) {
+    return [cleanFallback1, cleanFallback2];
+  }
+
+  const words = raw.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    const splitIdx = Math.ceil(words.length / 2);
+    return [
+      words.slice(0, splitIdx).join(' ').toUpperCase(),
+      words.slice(splitIdx).join(' ').toUpperCase(),
+    ];
+  }
+
+  return [raw.toUpperCase(), cleanFallback2];
+}
+
+/** Splits localized Journey copy into trimmed non-empty paragraphs. */
+export function splitJourneyParagraphs(journey: string | null | undefined): string[] {
+  return (journey ?? '')
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+}
+

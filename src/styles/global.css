@@ -23,6 +23,9 @@
   --work-row-hover: rgba(0, 0, 0, 0.04);
   --work-index-color: #52525b;
   --work-stack-color: #3f3f46;
+  --about-meta-ink: #52525b;
+  --about-divider: rgba(0, 0, 0, 0.12);
+  --journey-word-dim: #a1a1aa;
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
@@ -68,6 +71,9 @@
   --work-row-hover: rgba(255, 255, 255, 0.06);
   --work-index-color: #a3a3a3;
   --work-stack-color: #a3a3a3;
+  --about-meta-ink: #666666;
+  --about-divider: #262626;
+  --journey-word-dim: #333333;
 
   color-scheme: dark;
 }
@@ -496,6 +502,10 @@
   color: var(--text-primary);
 }
 
+[data-journey-word] {
+  color: var(--text-primary);
+}
+
 @keyframes hero-scroll-indicator {
   0% {
     transform-origin: top center;
@@ -564,12 +574,22 @@
     display: none !important;
   }
 
+  [data-block-mask-content] {
+    opacity: 1 !important;
+  }
+
+  [data-image-curtain] {
+    clip-path: inset(0% 0% 0% 0%) !important;
+  }
+
   [data-hero-bio-word] {
     opacity: 1 !important;
   }
 
-  [data-reveal-word] {
+  [data-reveal-word],
+  [data-journey-word] {
     color: var(--text-primary) !important;
+    opacity: 1 !important;
   }
 
   .button-primary,

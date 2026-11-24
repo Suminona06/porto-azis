@@ -23,6 +23,7 @@ import {
   DEFAULT_IMAGE_CURTAIN_DURATION_MS,
   getBlockMaskPhaseDurations,
 } from '../../src/lib/motion/primitives';
+import { computeJourneyWordOpacity } from '../../src/lib/motion/about-motion';
 
 describe('editorial cubic-bezier easing', () => {
   it('uses [0.77, 0, 0.175, 1] control points and satisfies boundary and monotonic progression', () => {
@@ -192,5 +193,13 @@ describe('shared motion primitives timing', () => {
     const homeSplit = getBlockMaskPhaseDurations(950, 0.45 / 0.95);
     expect(homeSplit.expandSec).toBeCloseTo(0.45, 3);
     expect(homeSplit.retractSec).toBeCloseTo(0.5, 3);
+  });
+
+  it('computes reversible scroll-scrubbed journey word opacity from dimmed to full contrast', () => {
+    expect(computeJourneyWordOpacity(0, 60, 0)).toBeCloseTo(0.22, 2);
+    expect(computeJourneyWordOpacity(59, 60, 0)).toBeCloseTo(0.22, 2);
+    expect(computeJourneyWordOpacity(0, 60, 0.5)).toBe(1);
+    expect(computeJourneyWordOpacity(59, 60, 0.5)).toBeCloseTo(0.22, 2);
+    expect(computeJourneyWordOpacity(59, 60, 1)).toBe(1);
   });
 });

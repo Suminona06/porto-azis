@@ -105,15 +105,13 @@ export const PLACEHOLDER_PROJECTS: ProjectItem[] = [
 export const PLACEHOLDER_ABOUT: AboutBundle = {
   sections: {
     id: 1,
-    headline_en:
-      '[PLACEHOLDER] Azis Muhamad Fadli is an IT Support, DevOps, and Cloud Engineer focused on pragmatic systems and repeatable operations.',
-    headline_id:
-      '[PLACEHOLDER] Azis Muhamad Fadli adalah seorang IT Support, DevOps, dan Cloud Engineer yang berfokus pada infrastruktur praktis dan operasi sistem yang andal.',
+    headline_en: 'AZIS MUHAMAD FADLI\nCLOUD & DEVOPS ENGINEER',
+    headline_id: 'AZIS MUHAMAD FADLI\nCLOUD & DEVOPS ENGINEER',
     profile_image_url: '/placeholders/profile-placeholder.svg',
     journey_en:
-      '[PLACEHOLDER] Starting on the frontline of IT Support taught me how real people experience infrastructure failures. Every slow VPN, misconfigured DNS record, or broken workstation was a lesson in patience and root-cause isolation.\n\n[PLACEHOLDER] Over time, those support tickets became the foundation for automation: repeatable Bash scripts, containerized internal services, CI/CD runners, and structured Linux server provisioning across cloud VMs.',
+      'Starting on the frontline of IT Support taught me how real people experience infrastructure failures. Every slow VPN tunnel, misconfigured DNS record, or unresponsive workstation was a lesson in calm triage and root-cause isolation.\n\nOver time, resolving recurring tickets evolved into building automation. I began replacing manual fixes with repeatable Bash and Python scripts, containerized internal services with Docker, and CI/CD pipelines that keep deployments predictable.\n\nToday, my focus bridges systems reliability and cloud engineering, from provisioning reproducible Linux workloads with Terraform and AWS to instrumenting Prometheus and Grafana observability so teams can recover fast and ship with confidence.',
     journey_id:
-      '[PLACEHOLDER] Memulai karier di garis depan IT Support mengajarkan bagaimana gangguan sistem berdampak langsung pada pekerjaan pengguna. Setiap kendala jaringan, DNS, atau perangkat menjadi latihan analisis akar masalah.\n\n[PLACEHOLDER] Dari tiket harian itu lahir kebutuhan akan otomasi: skrip pemulihan terstandar, kontainerisasi layanan internal, pipeline CI/CD, dan pengelolaan infrastruktur cloud yang terstruktur.',
+      'Memulai karier di garis depan IT Support mengajarkan saya bagaimana gangguan infrastruktur berdampak langsung pada pekerjaan pengguna. Setiap kendala VPN, kesalahan DNS, atau perangkat kerja yang bermasalah menjadi latihan triase yang tenang dan isolasi akar masalah.\n\nSeiring waktu, penyelesaian tiket berulang berkembang menjadi upaya otomasi. Saya mulai mengganti perbaikan manual dengan skrip Bash dan Python yang terstandar, kontainerisasi layanan internal dengan Docker, serta pipeline CI/CD agar deployment tetap terprediksi.\n\nKini fokus saya menjembatani keandalan sistem dan rekayasa cloud, mulai dari penyediaan beban kerja Linux yang reprodusibel menggunakan Terraform dan AWS hingga observabilitas Prometheus dan Grafana agar tim dapat pulih cepat dan merilis dengan tenang.',
     philosophy_en:
       '[PLACEHOLDER] CLEAR RUNBOOKS, VERSIONED INFRASTRUCTURE, AND HONEST MONITORING REDUCE INCIDENT STRESS FOR THE ENTIRE TEAM.',
     philosophy_id:

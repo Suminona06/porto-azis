@@ -1,9 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CipherText from '../components/motion/CipherText.astro';
+import BlockMaskReveal from '../components/motion/BlockMaskReveal.astro';
+import ImageCurtainReveal from '../components/motion/ImageCurtainReveal.astro';
 import SkillsAccordion from '../components/portfolio/SkillsAccordion.astro';
 import ActivitiesList from '../components/portfolio/ActivitiesList.astro';
 import ContactBanner from '../components/portfolio/ContactBanner.astro';
-import { getUiCopy, pickLocale } from '../lib/content/i18n';
+import {
+  getUiCopy,
+  pickLocale,
+  splitHeadlineLockup,
+  splitJourneyParagraphs,
+} from '../lib/content/i18n';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 import { fetchAboutData, fetchSiteProfile } from '../lib/supabase/queries';
 
@@ -20,98 +28,119 @@ const [profileRes, aboutRes] = await Promise.all([
 
 const profile = profileRes.data;
 const { sections, skillGroups, activities } = aboutRes.data;
-const isPlaceholder = profileRes.isPlaceholder || aboutRes.isPlaceholder;
 
-const headline = pickLocale(sections.headline_en, sections.headline_id, locale);
-const journeyParagraphs = pickLocale(sections.journey_en, sections.journey_id, locale)
-  .split(/\n\n+/)
-  .map((p) => p.trim())
-  .filter(Boolean);
+const rawHeadline = pickLocale(sections.headline_en, sections.headline_id, locale);
+const [heroLine1, heroLine2] = splitHeadlineLockup(
+  rawHeadline,
+  profile.display_name,
+  pickLocale(profile.role_en, profile.role_id, locale),
+);
+
+const journeyParagraphs = splitJourneyParagraphs(
+  pickLocale(sections.journey_en, sections.journey_id, locale),
+);
 const philosophy = pickLocale(sections.philosophy_en, sections.philosophy_id, locale);
 const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
 ---
 
 <BaseLayout
   title={`${copy.navAbout} - ${profile.display_name}`}
-  description={headline}
+  description={`${heroLine1} - ${heroLine2}`}
   locale={locale}
   currentPath={Astro.url.pathname + Astro.url.search}
   fullName="Azis Muhamad Fadli"
   wordmark={profile.wordmark}
   socialLinks={profile.social_links}
+  flushTop={true}
 >
-  <section class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] py-14 sm:py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-      {
-        isPlaceholder && (
-          <div
-            role="note"
-            class="mb-8 border border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-2.5 font-mono-tech text-xs tracking-[0.06em] text-[var(--text-muted)]"
-          >
-            {copy.placeholderNotice}
-          </div>
-        )
-      }
-
-      <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end">
-        <div class="lg:col-span-7">
-          <p class="m-0 mb-4 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
-            /02 {copy.aboutTagEngineer}
-          </p>
-          <h1 class="m-0 font-display text-[clamp(2rem,4.5vw,3.75rem)] leading-[1.1] font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
-            {headline}
-          </h1>
+  <section class="bg-[var(--bg-primary)]" data-about-hero>
+    <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between gap-10 px-6 pt-24 pb-8 sm:px-10 lg:px-12 lg:pt-28 lg:pb-10">
+      <div>
+        <div class="flex items-center justify-between gap-4 font-mono-tech text-xs tracking-[0.2em] uppercase text-[var(--about-meta-ink)]">
+          <span>{copy.basedIn}</span>
+          <span>{copy.aboutTagEngineer}</span>
         </div>
 
-        <div class="lg:col-span-5">
-          <div class="mx-auto max-w-sm border border-[var(--border-light)] bg-[var(--bg-alt)] p-3 lg:ml-auto lg:mr-0">
-            <div class="aspect-[3/4] w-full overflow-hidden border border-[var(--border-light)]">
-              <img
-                src={sections.profile_image_url || '/placeholders/profile-placeholder.svg'}
-                alt="Azis Muhamad Fadli portrait"
-                width="600"
-                height="800"
-                fetchpriority="high"
-                decoding="async"
-                class="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
+        <h1 class="m-0 mt-6 sm:mt-8">
+          <CipherText
+            text={heroLine1}
+            as="span"
+            durationMs={800}
+            frameIntervalMs={36}
+            charset="alnum"
+            trigger="manual"
+            data-about-cipher
+            class="block font-display text-[clamp(2.25rem,6vw,4.75rem)] leading-[1.04] font-normal tracking-tight uppercase text-[var(--text-primary)]"
+          />
+          <span class="mt-2 ml-[12%] block sm:mt-3 md:ml-[16%]">
+            <BlockMaskReveal
+              durationMs={700}
+              trigger="manual"
+              data-about-mask
+              class="font-sans-ui text-[clamp(1.75rem,4.8vw,4rem)] leading-[1.08] font-bold tracking-tight uppercase text-[var(--text-primary)]"
+            >
+              {heroLine2}
+            </BlockMaskReveal>
+          </span>
+        </h1>
+      </div>
+
+      <div class="mt-auto flex justify-end">
+        <ImageCurtainReveal
+          durationMs={700}
+          trigger="manual"
+          data-about-curtain
+          class="aspect-[3/4] w-[220px] rounded-none sm:w-[250px] lg:w-[290px]"
+        >
+          <img
+            src={sections.profile_image_url || '/placeholders/profile-placeholder.svg'}
+            alt="Azis Muhamad Fadli portrait"
+            width="580"
+            height="773"
+            fetchpriority="high"
+            decoding="async"
+            class="h-full w-full rounded-none object-cover grayscale contrast-105"
+          />
+        </ImageCurtainReveal>
       </div>
     </div>
   </section>
 
-  <section class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] py-16 sm:py-24">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-10">
-      <div class="lg:col-span-5">
-        <div class="lg:sticky lg:top-24">
-          <p class="m-0 mb-3 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
-            /00-1
-          </p>
-          <h2 class="m-0 font-display text-3xl leading-[1.12] font-semibold uppercase text-[var(--text-primary)] sm:text-4xl">
-            {copy.aboutProgressionHeading}
-          </h2>
-        </div>
+  <section class="border-b border-[var(--about-divider)] bg-[var(--bg-primary)] py-24 lg:py-36">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-y-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-12 lg:px-12">
+      <div class="self-start lg:sticky lg:top-32 lg:col-span-5">
+        <h2 class="m-0 font-display text-3xl leading-[1.1] font-normal tracking-tight uppercase text-[var(--text-primary)] md:text-4xl lg:text-[2.75rem]">
+          {copy.aboutProgressionHeading}
+        </h2>
       </div>
 
-      <div class="space-y-6 lg:col-span-7">
+      <div
+        class="max-w-[62ch] space-y-7 font-sans-ui text-base leading-relaxed md:text-lg lg:col-span-7"
+        data-journey-journal
+      >
         {
-          journeyParagraphs.map((paragraph) => (
-            <p class="m-0 max-w-2xl font-sans-ui text-base leading-[1.75] text-[var(--text-secondary)] sm:text-[17px]">
-              {paragraph}
-            </p>
-          ))
+          journeyParagraphs.map((paragraph) => {
+            const words = paragraph.split(/\s+/).filter(Boolean);
+            return (
+              <p class="m-0">
+                {words.map((word, idx) => (
+                  <>
+                    <span data-journey-word class="inline">
+                      {word}
+                    </span>
+                    {idx < words.length - 1 ? ' ' : ''}
+                  </>
+                ))}
+              </p>
+            );
+          })
         }
       </div>
     </div>
   </section>
 
   <section class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-16 sm:py-24">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-      <p class="m-0 mb-4 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
-        /00-2
-      </p>
+    <div class="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
       <h2 class="m-0 mb-12 max-w-5xl font-display text-[clamp(1.65rem,3.6vw,3rem)] leading-[1.18] font-semibold uppercase text-[var(--text-primary)]">
         {philosophy}
       </h2>
@@ -121,10 +150,7 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   </section>
 
   <section class="border-b border-[var(--border-light)] bg-[var(--bg-primary)] py-16 sm:py-24">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-      <p class="m-0 mb-3 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
-        /00-3
-      </p>
+    <div class="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
       <h2 class="m-0 mb-10 font-display text-3xl leading-[1.1] font-semibold uppercase text-[var(--text-primary)] sm:text-4xl">
         {copy.aboutActivitiesHeading}
       </h2>
@@ -134,11 +160,8 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   </section>
 
   <section class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-16 sm:py-24">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-center lg:px-10">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:items-center lg:px-12">
       <div class="lg:col-span-5">
-        <p class="m-0 mb-3 font-mono-tech text-xs tracking-[0.14em] uppercase text-[var(--text-muted)]">
-          /00-4
-        </p>
         <h2 class="m-0 mb-5 font-display text-3xl leading-[1.1] font-semibold uppercase text-[var(--text-primary)] sm:text-4xl">
           {copy.aboutPersonalInterestHeading}
         </h2>
@@ -166,7 +189,7 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   </section>
 
   <ContactBanner
-    eyebrow="/00-5"
+    eyebrow={copy.basedIn}
     title={copy.homeCtaTitle}
     subtitle={copy.homeCtaSubtitle}
     ctaLabel={copy.aboutCtaButton}
@@ -174,3 +197,8 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   />
 </BaseLayout>
 
+<script>
+  import { initAboutMotion } from '../lib/motion/about-motion';
+
+  initAboutMotion();
+</script>
