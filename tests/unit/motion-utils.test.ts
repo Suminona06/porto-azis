@@ -27,6 +27,7 @@ import {
 } from '../../src/lib/motion/primitives';
 import {
   TECH_ACCORDION_DURATION_SEC,
+  TECH_ACCORDION_ICON_DURATION_SEC,
   TECH_ACCORDION_STAGGER_SEC,
   computeJourneyWordOpacity,
 } from '../../src/lib/motion/about-motion';
@@ -209,12 +210,13 @@ describe('shared motion primitives timing', () => {
     expect(computeJourneyWordOpacity(59, 60, 1)).toBe(1);
   });
 
-  it('defines [0.22, 1, 0.36, 1] easing and 380ms / 25ms Tech Stack accordion timing', () => {
+  it('defines [0.22, 1, 0.36, 1] easing and 560ms / 420ms / 40ms Tech Stack accordion timing', () => {
     expect(TECH_ACCORDION_EASE_POINTS).toEqual([0.22, 1, 0.36, 1]);
     expect(techAccordionEase(0)).toBe(0);
     expect(techAccordionEase(1)).toBe(1);
     expect(techAccordionEase(0.3)).toBeGreaterThan(0.5);
-    expect(TECH_ACCORDION_DURATION_SEC).toBe(0.38);
-    expect(TECH_ACCORDION_STAGGER_SEC).toBe(0.025);
+    expect(TECH_ACCORDION_DURATION_SEC).toBe(0.56);
+    expect(TECH_ACCORDION_ICON_DURATION_SEC).toBe(0.42);
+    expect(TECH_ACCORDION_STAGGER_SEC).toBe(0.04);
   });
 });

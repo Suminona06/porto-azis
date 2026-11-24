@@ -15,8 +15,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 const JOURNEY_DIM_OPACITY = 0.22;
 const JOURNEY_FEATHER_WORDS = 4;
-export const TECH_ACCORDION_DURATION_SEC = 0.38;
-export const TECH_ACCORDION_STAGGER_SEC = 0.025;
+export const TECH_ACCORDION_DURATION_SEC = 0.56;
+export const TECH_ACCORDION_ICON_DURATION_SEC = 0.42;
+export const TECH_ACCORDION_STAGGER_SEC = 0.04;
 
 /**
  * Pure helper computing `[0..total]` per-word opacity for bidirectional scroll-scrubbed
@@ -102,8 +103,17 @@ export function initAboutMotion(): () => void {
     for (const trigger of techTriggers) {
       const panelId = trigger.getAttribute('aria-controls');
       const panel = panelId ? document.getElementById(panelId) : null;
-      if (!panel) continue;
+      const iconEl = trigger.querySelector<SVGElement>('[data-accordion-icon]');
+      const vertEl = trigger.querySelector<SVGLineElement>('[data-accordion-symbol-vert]');
       const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      if (iconEl) {
+        gsap.set(iconEl, { rotation: 0, clearProps: 'transform' });
+      }
+      if (vertEl) {
+        gsap.set(vertEl, { scaleY: isOpen ? 0 : 1, opacity: isOpen ? 0 : 1 });
+      }
+      if (!panel) continue;
       if (isOpen) {
         panel.removeAttribute('hidden');
       } else {
@@ -217,11 +227,19 @@ export function initAboutMotion(): () => void {
     const nextOpen = !currentlyOpen;
     trigger.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
 
+    const iconEl = trigger.querySelector<SVGElement>('[data-accordion-icon]');
+    const vertEl = trigger.querySelector<SVGLineElement>('[data-accordion-symbol-vert]');
     const items = Array.from(panel.querySelectorAll<HTMLElement>('[data-tech-item]'));
     panelTimelines.get(panel)?.kill();
     panelTimelines.delete(panel);
 
     if (prefersReducedMotion()) {
+      if (iconEl) {
+        gsap.set(iconEl, { rotation: 0 });
+      }
+      if (vertEl) {
+        gsap.set(vertEl, { scaleY: nextOpen ? 0 : 1, opacity: nextOpen ? 0 : 1 });
+      }
       if (nextOpen) {
         panel.removeAttribute('hidden');
       } else {
@@ -242,6 +260,29 @@ export function initAboutMotion(): () => void {
           ScrollTrigger.refresh();
         },
       });
+      if (iconEl) {
+        tl.to(
+          iconEl,
+          {
+            rotation: 180,
+            duration: TECH_ACCORDION_ICON_DURATION_SEC,
+            ease: techAccordionEase,
+          },
+          0,
+        );
+      }
+      if (vertEl) {
+        tl.to(
+          vertEl,
+          {
+            scaleY: 0,
+            opacity: 0,
+            duration: TECH_ACCORDION_ICON_DURATION_SEC * 0.8,
+            ease: techAccordionEase,
+          },
+          0,
+        );
+      }
       tl.fromTo(
         panel,
         { height: 0, opacity: 0 },
@@ -257,16 +298,16 @@ export function initAboutMotion(): () => void {
       if (items.length > 0) {
         tl.fromTo(
           items,
-          { opacity: 0, y: -4 },
+          { opacity: 0, y: -6 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.24,
+            duration: 0.36,
             stagger: TECH_ACCORDION_STAGGER_SEC,
             ease: techAccordionEase,
             clearProps: 'opacity,transform',
           },
-          0.05,
+          0.08,
         );
       }
       panelTimelines.set(panel, tl);
@@ -283,6 +324,29 @@ export function initAboutMotion(): () => void {
           ScrollTrigger.refresh();
         },
       });
+      if (iconEl) {
+        tl.to(
+          iconEl,
+          {
+            rotation: 0,
+            duration: TECH_ACCORDION_ICON_DURATION_SEC,
+            ease: techAccordionEase,
+          },
+          0,
+        );
+      }
+      if (vertEl) {
+        tl.to(
+          vertEl,
+          {
+            scaleY: 1,
+            opacity: 1,
+            duration: TECH_ACCORDION_ICON_DURATION_SEC * 0.85,
+            ease: techAccordionEase,
+          },
+          0.04,
+        );
+      }
       tl.fromTo(
         panel,
         { height: startHeight, opacity: 1 },

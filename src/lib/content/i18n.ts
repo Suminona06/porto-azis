@@ -247,3 +247,16 @@ export function splitJourneyParagraphs(journey: string | null | undefined): stri
     .filter(Boolean);
 }
 
+/**
+ * Normalizes legacy ALL-CAPS philosophy strings into clean sentence-case while leaving
+ * intentionally mixed-case CMS copy untouched.
+ */
+export function normalizeSentenceCase(value: string | null | undefined): string {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) return '';
+  if (trimmed !== trimmed.toUpperCase()) return trimmed;
+  const cleaned = trimmed.replace(/^\[(?:PLACEHOLDER|SAMPLE)\]\s*/i, '');
+  const lower = cleaned.toLowerCase();
+  return lower.replace(/[a-z]/, (char) => char.toUpperCase());
+}
+

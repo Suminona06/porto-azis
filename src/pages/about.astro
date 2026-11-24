@@ -8,6 +8,7 @@ import ActivitiesList from '../components/portfolio/ActivitiesList.astro';
 import ContactBanner from '../components/portfolio/ContactBanner.astro';
 import {
   getUiCopy,
+  normalizeSentenceCase,
   pickLocale,
   splitHeadlineLockup,
   splitJourneyParagraphs,
@@ -39,7 +40,9 @@ const [heroLine1, heroLine2] = splitHeadlineLockup(
 const journeyParagraphs = splitJourneyParagraphs(
   pickLocale(sections.journey_en, sections.journey_id, locale),
 );
-const philosophy = pickLocale(sections.philosophy_en, sections.philosophy_id, locale);
+const philosophy = normalizeSentenceCase(
+  pickLocale(sections.philosophy_en, sections.philosophy_id, locale),
+);
 const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
 ---
 

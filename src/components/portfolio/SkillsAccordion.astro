@@ -22,22 +22,24 @@ const { groups, locale } = Astro.props;
             aria-expanded="false"
             aria-controls={panelId}
             data-tech-accordion-trigger
-            class="group flex w-full items-center justify-between gap-6 bg-transparent px-0 py-5 text-left text-[var(--tech-row-muted)] transition-colors duration-300 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] aria-expanded:text-[var(--text-primary)] lg:py-6"
+            class="group flex w-full items-center justify-between gap-6 bg-transparent px-0 py-3.5 text-left text-[var(--text-primary)] transition-colors duration-300 ease-out hover:text-[var(--tech-row-muted)] focus-visible:text-[var(--tech-row-muted)] lg:py-4"
           >
-            <span class="font-sans-ui text-base font-medium uppercase tracking-[0.02em] sm:text-lg lg:text-[19px]">
+            <span class="font-sans-ui text-[15px] leading-snug font-medium tracking-[0.015em] uppercase sm:text-base lg:text-[18px]">
               {title}
             </span>
 
             <span aria-hidden="true" class="inline-flex shrink-0 items-center justify-center">
               <svg
-                width="15"
-                height="15"
+                data-accordion-icon
+                width="14"
+                height="14"
                 viewBox="0 0 16 16"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="square"
-                class="block h-[15px] w-[15px]"
+                class="block h-[14px] w-[14px]"
+                style="transform-box: fill-box; transform-origin: center;"
               >
                 <line x1="2" y1="8" x2="14" y2="8" />
                 <line
@@ -46,7 +48,7 @@ const { groups, locale } = Astro.props;
                   y1="2"
                   x2="8"
                   y2="14"
-                  class="origin-center transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-aria-expanded:rotate-90 group-aria-expanded:opacity-0"
+                  style="transform-box: fill-box; transform-origin: center;"
                 />
               </svg>
             </span>
@@ -58,11 +60,11 @@ const { groups, locale } = Astro.props;
             hidden
             class="overflow-hidden"
           >
-            <ul class="m-0 flex list-none flex-col items-start space-y-2.5 p-0 pt-1 pb-6">
+            <ul class="m-0 flex list-none flex-col items-start space-y-1.5 p-0 pt-0.5 pb-4">
               {group.items.map((item) => (
                 <li
                   data-tech-item
-                  class="font-mono-tech text-[11px] leading-relaxed tracking-[0.08em] uppercase text-[var(--tech-item-muted)] transition-colors duration-200 hover:text-[var(--text-primary)] sm:text-xs"
+                  class="font-mono-tech text-[10px] leading-snug tracking-[0.08em] uppercase text-[var(--tech-item-muted)] transition-colors duration-200 hover:text-[var(--text-primary)] sm:text-[11px]"
                 >
                   {item}
                 </li>

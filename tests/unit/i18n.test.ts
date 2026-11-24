@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   getUiCopy,
+  normalizeSentenceCase,
   pickLocale,
   resolveLocale,
   splitHeadlineLockup,
@@ -80,6 +81,17 @@ describe('About page headline & journey helpers', () => {
     // Handles escaped \\n\\n sequences stored from SQL seeds without raw E'' literals
     const escaped = splitJourneyParagraphs('First paragraph.\\n\\nSecond paragraph.\\n\\nThird paragraph.');
     expect(escaped).toEqual(['First paragraph.', 'Second paragraph.', 'Third paragraph.']);
+  });
+
+  it('normalizes legacy ALL-CAPS philosophy copy to sentence-case while preserving mixed-case CMS copy', () => {
+    expect(
+      normalizeSentenceCase(
+        '[SAMPLE] CLEAR RUNBOOKS, VERSIONED INFRASTRUCTURE, AND HONEST MONITORING REDUCE INCIDENT STRESS.',
+      ),
+    ).toBe('Clear runbooks, versioned infrastructure, and honest monitoring reduce incident stress.');
+    expect(
+      normalizeSentenceCase('I build resilient AWS and CI/CD pipelines with clear runbooks.'),
+    ).toBe('I build resilient AWS and CI/CD pipelines with clear runbooks.');
   });
 });
 

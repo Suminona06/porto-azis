@@ -70,30 +70,30 @@ The expandable category rows SHALL match the exact typography, alignment, hairli
 
 #### Scenario: Category row typography & borderless layout
 - **WHEN** the category list renders
-- **THEN** each category row SHALL omit numeric prefixes (`/01`, `/02`, `/03`, `/04`) and display its title flush-left in **ALL-CAPS geometric Sans-Serif** (`font-sans font-medium uppercase text-base sm:text-lg lg:text-[19px] tracking-[0.02em]`), separated by crisp dark hairline borders (`1px solid #222222` top/bottom dividers in Dark mode, theme-adapted hairline in Light mode) with generous vertical row padding (`py-5 lg:py-6`)
+- **THEN** each category row SHALL omit numeric prefixes (`/01`, `/02`, `/03`, `/04`) and display its title flush-left in **ALL-CAPS geometric Sans-Serif** (`font-sans font-medium uppercase text-[15px] sm:text-base lg:text-[18px] tracking-[0.015em]`), separated by crisp dark hairline borders (`1px solid #222222` top/bottom dividers in Dark mode, theme-adapted hairline in Light mode) with compact vertical row padding (`py-3.5 lg:py-4`)
 
 #### Scenario: Row hover & active text color transition
-- **WHEN** a category row is idle and collapsed
-- **THEN** its title text color SHALL be muted neutral gray (`#A3A3A3` in Dark mode, theme-adapted muted ink in Light mode)
-- **WHEN** the user hovers over the row OR expands the category
-- **THEN** the category title text color SHALL transition smoothly (`transition-colors duration-300 ease-out`) to pure crisp primary ink (`#FFFFFF` in Dark mode, `#000000` in Light mode) with zero horizontal layout shift
+- **WHEN** a category row is idle or expanded (unhovered)
+- **THEN** its title text color SHALL be bright crisp primary ink (`#FFFFFF` in Dark mode, `#000000` in Light mode)
+- **WHEN** the user hovers over the row
+- **THEN** the category title text color SHALL transition smoothly (`transition-colors duration-300 ease-out`) to muted neutral gray (`#A3A3A3` in Dark mode, theme-adapted muted ink in Light mode) with zero horizontal layout shift
 
 ### Requirement: Bare Minimalist + / - Toggle Icon
 The accordion toggle indicator SHALL match the bare, borderless vector icon in the reference.
 
 #### Scenario: Borderless + icon and smooth - state transition
 - **WHEN** a category row renders on the right edge
-- **THEN** it SHALL display a **bare, borderless thin `+` icon** (`14px`–`16px` size, `1.5px` stroke width, `#A3A3A3` idle color transitioning to `#FFFFFF` on row hover or active state in Dark mode, theme-adapted in Light mode)—completely removing the bordered square box wrapper around the icon
+- **THEN** it SHALL display a **bare, borderless thin `+` icon** (`14px` size, `1.5px` stroke width, `#FFFFFF` idle color transitioning to `#A3A3A3` on row hover in Dark mode, theme-adapted in Light mode)—completely removing the bordered square box wrapper around the icon
 - **WHEN** the user clicks the row to expand or collapse it
-- **THEN** the `+` icon SHALL smoothly morph/rotate (`duration: 300ms`, `ease: [0.22, 1, 0.36, 1]`) into a horizontal `-` minus sign (`#FFFFFF` / primary ink) when open and back to `+` when closed
+- **THEN** the `+` icon SHALL smoothly rotate `180deg` and collapse its vertical bar (`duration: 420ms`, `ease: [0.22, 1, 0.36, 1]`) into a horizontal `-` minus sign when open and rotate/expand back to `+` when closed
 
 ### Requirement: Single-Column Vertical Monospace Tech Stack List
 The expanded content inside each category SHALL replace horizontal bordered pill boxes with a clean vertical monospace stack preserving all domain items.
 
 #### Scenario: Vertical single-column layout & typography
 - **WHEN** a category row is expanded
-- **THEN** its tech stack items SHALL render as a **single-column vertical list** (`flex flex-col items-start space-y-2.5 pt-1 pb-6`) aligned flush-left directly beneath the category title, with **zero borders, zero background boxes, and zero horizontal wrapping**
-- **AND** each item SHALL be styled in **ALL-CAPS Monospace** (`font-mono uppercase text-[11px] sm:text-xs tracking-[0.08em] text-[#8A8A8A]` in Dark mode, theme-adapted in Light mode), transitioning smoothly on individual item hover (`hover:text-[#FFFFFF]` / primary ink, `transition-colors duration-200`)
+- **THEN** its tech stack items SHALL render as a **single-column vertical list** (`flex flex-col items-start space-y-1.5 pt-0.5 pb-4`) aligned flush-left directly beneath the category title, with **zero borders, zero background boxes, and zero horizontal wrapping**
+- **AND** each item SHALL be styled in **ALL-CAPS Monospace** (`font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.08em] text-[#8A8A8A]` in Dark mode, theme-adapted in Light mode), transitioning smoothly on individual item hover (`hover:text-[#FFFFFF]` / primary ink, `transition-colors duration-200`)
 
 #### Scenario: Independent multi-open accordion behavior
 - **WHEN** the user clicks multiple category rows sequentially
@@ -104,7 +104,7 @@ All motion in the Tech Stack section SHALL be fluid, GPU-accelerated, and consis
 
 #### Scenario: Smooth height & staggered item reveal on expand/collapse
 - **WHEN** a category row toggles open or closed
-- **THEN** the drawer container SHALL animate smoothly between `height: 0, opacity: 0` and `height: "auto", opacity: 1` (`duration: 380ms`, `ease: [0.22, 1, 0.36, 1]`, `overflow: hidden`), while the vertical monospace items inside reveal with a subtle staggered fade/slide (`y: -4px -> 0`, `25ms` stagger per item)
+- **THEN** the drawer container SHALL animate smoothly between `height: 0, opacity: 0` and `height: "auto", opacity: 1` (`duration: 560ms`, `ease: [0.22, 1, 0.36, 1]`, `overflow: hidden`), while the vertical monospace items inside reveal with a gentle staggered fade/slide (`y: -6px -> 0`, `40ms` stagger per item)
 
 #### Scenario: Viewport entrance & reduced-motion accessibility
 - **WHEN** the Tech Stack section enters the viewport
