@@ -196,7 +196,7 @@ export function getUiCopy(locale: Locale): UiCopy {
 }
 
 /**
- * Splits a CMS About headline into a 2-line staggered display lockup (`\n` or `|`),
+ * Splits a CMS About headline into a 2-line staggered display lockup (`\n`, literal `\n`, or `|`),
  * falling back to `fallbackLine1` / `fallbackLine2` when a legacy single-line bio sentence is stored.
  */
 export function splitHeadlineLockup(
@@ -206,7 +206,7 @@ export function splitHeadlineLockup(
 ): [string, string] {
   const cleanFallback1 = fallbackLine1.trim().toUpperCase();
   const cleanFallback2 = fallbackLine2.trim().toUpperCase();
-  const raw = (headline ?? '').trim();
+  const raw = (headline ?? '').replace(/\\r\\n|\\n/g, '\n').trim();
   if (!raw) {
     return [cleanFallback1, cleanFallback2];
   }
@@ -238,9 +238,10 @@ export function splitHeadlineLockup(
   return [raw.toUpperCase(), cleanFallback2];
 }
 
-/** Splits localized Journey copy into trimmed non-empty paragraphs. */
+/** Splits localized Journey copy into trimmed non-empty paragraphs (normalizing escaped `\n`). */
 export function splitJourneyParagraphs(journey: string | null | undefined): string[] {
   return (journey ?? '')
+    .replace(/\\r\\n|\\n/g, '\n')
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);

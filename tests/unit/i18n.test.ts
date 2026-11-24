@@ -76,6 +76,10 @@ describe('About page headline & journey helpers', () => {
     for (const p of [...enParagraphs, ...idParagraphs]) {
       expect(p).not.toContain('—');
     }
+
+    // Handles escaped \\n\\n sequences stored from SQL seeds without raw E'' literals
+    const escaped = splitJourneyParagraphs('First paragraph.\\n\\nSecond paragraph.\\n\\nThird paragraph.');
+    expect(escaped).toEqual(['First paragraph.', 'Second paragraph.', 'Third paragraph.']);
   });
 });
 

@@ -27,21 +27,21 @@ The system SHALL render the `/about` Hero inside a clean `min-h-screen` viewport
 #### Scenario: Three-element About Hero renders with top metadata row, staggered 2-line headline, and bottom-right portrait
 - **WHEN** a visitor loads `/about` on desktop (`1440px`) or mobile (`375px`)
 - **THEN** the Hero SHALL render:
-  1. a single horizontal top metadata baseline row directly above the headline displaying two uppercase monospace micro-labels (`BASED IN INDONESIA` on the left and `ENGINEER` on the right, localized when `ID` is active) with `0.2em` tracking and muted ink;
-  2. a staggered 2-line display headline lockup with Line 1 in large uppercase editorial serif (`left-aligned`, decoded via the shared character-decode behavior) and Line 2 in large bold uppercase geometric sans-serif indented horizontally to the right beneath Line 1 (`12%` mobile / `16%` desktop left margin, revealed concurrently via the shared block-mask wipe); and
-  3. a sharp rectangular (`rounded-none`) monochrome/grayscale `3:4` portrait frame (`220px` mobile, `250px` small tablet, `290px` desktop width) anchored cleanly to the bottom-right corner of the Hero container with zero overlap against the headline lockup
+  1. a single horizontal top metadata baseline row positioned with generous breathing room below the fixed header (`pt-32 sm:pt-40 lg:pt-44`) directly above the headline displaying two uppercase monospace micro-labels (`BASED IN INDONESIA` on the left and `ENGINEER` on the right, localized when `ID` is active) with `0.2em` tracking and muted ink;
+  2. a restrained, reference-proportioned staggered 2-line display headline lockup with Line 1 in uppercase editorial serif (`clamp(1.75rem,3.4vw,3.1rem)`, left-aligned, decoded via the shared character-decode behavior) and Line 2 in bold uppercase geometric sans-serif (`clamp(1.45rem,2.9vw,2.65rem)`) indented slightly to the right beneath Line 1 (`6%` mobile / `7.5%` desktop left margin, revealed concurrently via the shared block-mask wipe); and
+  3. a sharp rectangular (`rounded-none`) monochrome/grayscale `3:4` portrait frame (`210px` mobile, `240px` small tablet, `280px` desktop width) anchored cleanly to the bottom-right corner of the Hero container with zero overlap against the headline lockup
 
 ### Requirement: Sticky Asymmetric "A Journey of Progression" Split & Scroll-Scrubbed Journal
-The system SHALL render a second section below the About Hero with generous vertical padding (`py-24 lg:py-36`), a bottom `1px` hairline border (`#262626` in Dark mode, theme-adapted subtle hairline in Light mode), and a 12-column desktop split (`lg:col-span-5` sticky heading, `lg:col-span-7` 3-paragraph engineering journal) with bidirectional scroll-scrubbed word-by-word illumination.
+The system SHALL render a second section below the About Hero with generous vertical padding (`py-24 lg:py-36`), a bottom `1px` hairline border (`#262626` in Dark mode, theme-adapted subtle hairline in Light mode), and a wide asymmetric 12-column desktop split (`lg:col-span-5` single-line sticky heading, `lg:col-start-8 lg:col-span-5` compact `max-w-[52ch]` engineering journal) with bidirectional scroll-scrubbed word-by-word illumination.
 
 #### Scenario: Left column heading remains sticky on desktop and flows statically on mobile
 - **WHEN** a visitor scrolls through the "A Journey of Progression" section on a desktop viewport (`>= 1024px`)
-- **THEN** the uppercase editorial serif heading `A JOURNEY OF PROGRESSION` (localized `PERJALANAN PROGRESI` in `ID`) SHALL remain pinned (`sticky`, `top-32`) in the left 5-column track until the section finishes scrolling out of view
+- **THEN** the uppercase editorial serif heading `A JOURNEY OF PROGRESSION` (localized `PERJALANAN PROGRESI` in `ID`, sized `1.75rem`–`2rem` so it sits cleanly on a single line on desktop) SHALL remain pinned (`sticky`, `top-32`) in the left 5-column track until the section finishes scrolling out of view
 - **AND WHEN** the viewport width is narrower than `1024px` (such as `375px` mobile)
 - **THEN** sticky positioning SHALL be disabled so the heading flows naturally above the narrative paragraphs with zero overlapping text
 
 #### Scenario: Three-paragraph personal engineering journal illuminates word-by-word on scroll
-- **WHEN** a visitor scrolls downward into the right-hand 3-paragraph personal engineering narrative (`max-w-[62ch]`, preserving Azis's progression across IT Support, DevOps/automation, and Cloud infrastructure & observability)
+- **WHEN** a visitor scrolls downward into the right-hand personal engineering narrative (`lg:col-start-8 lg:col-span-5`, `max-w-[52ch]`, `14px`–`15px` sans-serif with `1.68` line-height, preserving Azis's progression across IT Support, DevOps/automation, and Cloud infrastructure & observability and normalizing escaped newlines)
 - **THEN** words entering from the lower viewport SHALL start dimmed (`#333333` / `opacity: 0.25` in Dark mode, theme-adapted dimmed ink in Light mode) and progressively illuminate to full primary contrast (`#FFFFFF` / `opacity: 1` in Dark mode, `#000000` in Light mode) word-by-word in sync with vertical scroll progress, and reverse smoothly back to the dimmed state when scrolling upward
 
 ### Requirement: Bilingual CMS Continuity & Downstream About Sections

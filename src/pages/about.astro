@@ -54,14 +54,14 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   flushTop={true}
 >
   <section class="bg-[var(--bg-primary)]" data-about-hero>
-    <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between gap-10 px-6 pt-24 pb-8 sm:px-10 lg:px-12 lg:pt-28 lg:pb-10">
+    <div class="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between gap-10 px-6 pt-32 pb-6 sm:px-10 sm:pt-40 lg:px-12 lg:pt-44 lg:pb-8">
       <div>
-        <div class="flex items-center justify-between gap-4 font-mono-tech text-xs tracking-[0.2em] uppercase text-[var(--about-meta-ink)]">
+        <div class="flex items-center justify-between gap-4 font-mono-tech text-[11px] tracking-[0.2em] uppercase text-[var(--about-meta-ink)]">
           <span>{copy.basedIn}</span>
           <span>{copy.aboutTagEngineer}</span>
         </div>
 
-        <h1 class="m-0 mt-6 sm:mt-8">
+        <h1 class="m-0 mt-5 sm:mt-6">
           <CipherText
             text={heroLine1}
             as="span"
@@ -70,14 +70,14 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
             charset="alnum"
             trigger="manual"
             data-about-cipher
-            class="block font-display text-[clamp(2.25rem,6vw,4.75rem)] leading-[1.04] font-normal tracking-tight uppercase text-[var(--text-primary)]"
+            class="block font-display text-[clamp(1.75rem,3.4vw,3.1rem)] leading-[1.08] font-normal tracking-tight uppercase text-[var(--text-primary)]"
           />
-          <span class="mt-2 ml-[12%] block sm:mt-3 md:ml-[16%]">
+          <span class="mt-1.5 ml-[6%] block sm:mt-2 md:ml-[7.5%]">
             <BlockMaskReveal
               durationMs={700}
               trigger="manual"
               data-about-mask
-              class="font-sans-ui text-[clamp(1.75rem,4.8vw,4rem)] leading-[1.08] font-bold tracking-tight uppercase text-[var(--text-primary)]"
+              class="font-sans-ui text-[clamp(1.45rem,2.9vw,2.65rem)] leading-[1.1] font-bold tracking-tight uppercase text-[var(--text-primary)]"
             >
               {heroLine2}
             </BlockMaskReveal>
@@ -90,13 +90,13 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
           durationMs={700}
           trigger="manual"
           data-about-curtain
-          class="aspect-[3/4] w-[220px] rounded-none sm:w-[250px] lg:w-[290px]"
+          class="aspect-[3/4] w-[210px] rounded-none sm:w-[240px] lg:w-[280px]"
         >
           <img
             src={sections.profile_image_url || '/placeholders/profile-placeholder.svg'}
             alt="Azis Muhamad Fadli portrait"
-            width="580"
-            height="773"
+            width="560"
+            height="747"
             fetchpriority="high"
             decoding="async"
             class="h-full w-full rounded-none object-cover grayscale contrast-105"
@@ -107,15 +107,15 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
   </section>
 
   <section class="border-b border-[var(--about-divider)] bg-[var(--bg-primary)] py-24 lg:py-36">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-y-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-12 lg:px-12">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-y-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-8 lg:px-12">
       <div class="self-start lg:sticky lg:top-32 lg:col-span-5">
-        <h2 class="m-0 font-display text-3xl leading-[1.1] font-normal tracking-tight uppercase text-[var(--text-primary)] md:text-4xl lg:text-[2.75rem]">
+        <h2 class="m-0 font-display text-2xl leading-[1.15] font-normal tracking-tight uppercase text-[var(--text-primary)] sm:text-[1.75rem] xl:text-[2rem]">
           {copy.aboutProgressionHeading}
         </h2>
       </div>
 
       <div
-        class="max-w-[62ch] space-y-7 font-sans-ui text-base leading-relaxed md:text-lg lg:col-span-7"
+        class="max-w-[52ch] space-y-6 font-sans-ui text-[14px] leading-[1.68] md:text-[15px] lg:col-span-5 lg:col-start-8"
         data-journey-journal
       >
         {
