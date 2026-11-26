@@ -25,6 +25,8 @@ export interface UiCopy {
   aboutActivitiesKeywords: string;
   aboutActivitiesSpan: string;
   aboutPersonalInterestHeading: string;
+  aboutPersonalInterestLine1: string;
+  aboutPersonalInterestLine2: string;
   aboutCtaButton: string;
   worksIndexLabel: string;
   worksPageTitle: string;
@@ -84,6 +86,8 @@ const EN_COPY: UiCopy = {
   aboutActivitiesKeywords: 'INFRASTRUCTURE • DEVOPS • OBSERVABILITY',
   aboutActivitiesSpan: "(ACTIVITIES / '24–'26)",
   aboutPersonalInterestHeading: 'PERSONAL INTEREST',
+  aboutPersonalInterestLine1: 'PERSONAL',
+  aboutPersonalInterestLine2: 'INTEREST',
   aboutCtaButton: 'CONTACT ME →',
   worksIndexLabel: '/03 WORKS',
   worksPageTitle: 'SELECTED PROJECTS',
@@ -143,6 +147,8 @@ const ID_COPY: UiCopy = {
   aboutActivitiesKeywords: 'INFRASTRUKTUR • DEVOPS • OBSERVABILITAS',
   aboutActivitiesSpan: "(AKTIVITAS / '24–'26)",
   aboutPersonalInterestHeading: 'MINAT PRIBADI',
+  aboutPersonalInterestLine1: 'MINAT',
+  aboutPersonalInterestLine2: 'PRIBADI',
   aboutCtaButton: 'KONTAK SAYA →',
   worksIndexLabel: '/03 KARYA',
   worksPageTitle: 'PROYEK PILIHAN',
@@ -251,6 +257,28 @@ export function splitJourneyParagraphs(journey: string | null | undefined): stri
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
+}
+
+/**
+ * Splits localized Personal Interest copy into two balanced narrative paragraphs (above and below media),
+ * stripping legacy `[PLACEHOLDER]` / `[SAMPLE]` tags and filling Paragraph 2 from `fallbackParagraph2`
+ * when a single-paragraph CMS value is stored.
+ */
+export function splitInterestParagraphs(
+  interest: string | null | undefined,
+  fallbackParagraph2 = '',
+): [string, string] {
+  const parts = splitJourneyParagraphs(interest)
+    .map((p) => p.replace(/^\[(?:PLACEHOLDER|SAMPLE)\]\s*/i, '').trim())
+    .filter(Boolean);
+
+  if (parts.length >= 2) {
+    return [parts[0]!, parts.slice(1).join(' ')];
+  }
+  if (parts.length === 1) {
+    return [parts[0]!, fallbackParagraph2.trim()];
+  }
+  return ['', fallbackParagraph2.trim()];
 }
 
 /**

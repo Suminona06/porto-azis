@@ -11,8 +11,10 @@ import {
   normalizeSentenceCase,
   pickLocale,
   splitHeadlineLockup,
+  splitInterestParagraphs,
   splitJourneyParagraphs,
 } from '../lib/content/i18n';
+import { PLACEHOLDER_ABOUT } from '../lib/content/placeholder';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 import { fetchAboutData, fetchSiteProfile } from '../lib/supabase/queries';
 
@@ -43,7 +45,18 @@ const journeyParagraphs = splitJourneyParagraphs(
 const philosophy = normalizeSentenceCase(
   pickLocale(sections.philosophy_en, sections.philosophy_id, locale),
 );
-const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
+const defaultInterestParagraphs = splitJourneyParagraphs(
+  pickLocale(PLACEHOLDER_ABOUT.sections.interest_en, PLACEHOLDER_ABOUT.sections.interest_id, locale),
+);
+const [interestParagraph1, interestParagraph2] = splitInterestParagraphs(
+  pickLocale(sections.interest_en, sections.interest_id, locale),
+  defaultInterestParagraphs[1] ?? '',
+);
+const interestParagraph1Words = interestParagraph1.split(/\s+/).filter(Boolean);
+const interestParagraph2Words = interestParagraph2.split(/\s+/).filter(Boolean);
+const hasInterestImage =
+  Boolean(sections.interest_image_url) &&
+  sections.interest_image_url !== '/placeholders/interest-placeholder.svg';
 ---
 
 <BaseLayout
@@ -191,31 +204,81 @@ const interest = pickLocale(sections.interest_en, sections.interest_id, locale);
     </div>
   </section>
 
-  <section class="border-b border-[var(--border-light)] bg-[var(--bg-alt)] py-16 sm:py-24">
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:items-center lg:px-12">
-      <div class="lg:col-span-5">
-        <h2 class="m-0 mb-5 font-display text-3xl leading-[1.1] font-semibold uppercase text-[var(--text-primary)] sm:text-4xl">
-          {copy.aboutPersonalInterestHeading}
+  <section class="border-b border-[var(--about-divider)] bg-[var(--bg-primary)] py-24 sm:py-32 lg:py-40" data-interest-section>
+    <div class="mx-auto grid max-w-7xl grid-cols-1 items-start gap-y-8 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-12 lg:px-12">
+      <div class="self-start lg:col-span-4">
+        <span class="m-0 mb-3 block font-mono-tech text-[11px] tracking-[0.08em] uppercase text-[var(--about-meta-ink)]">
+          /00-4
+        </span>
+        <h2 class="m-0 font-display text-3xl leading-[1.08] font-normal tracking-[-0.01em] uppercase text-[var(--text-primary)] sm:text-4xl lg:text-[42px]">
+          <span class="block">{copy.aboutPersonalInterestLine1}</span>
+          <span class="block">{copy.aboutPersonalInterestLine2}</span>
         </h2>
-        <p class="m-0 max-w-lg font-sans-ui text-base leading-[1.75] text-[var(--text-secondary)] sm:text-[17px]">
-          {interest}
-        </p>
       </div>
 
-      <div class="lg:col-span-7">
-        <div class="border border-[var(--border-light)] bg-[var(--bg-primary)] p-3">
-          <div class="aspect-[4/3] w-full overflow-hidden border border-[var(--border-light)]">
-            <img
-              src={sections.interest_image_url || '/placeholders/interest-placeholder.svg'}
-              alt="Homelab and infrastructure tinkering"
-              width="800"
-              height="600"
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
-          </div>
+      <div class="lg:col-span-8">
+        {
+          interestParagraph1Words.length > 0 && (
+            <p
+              class="m-0 max-w-[60ch] font-sans-ui text-sm leading-[1.65] font-normal text-[var(--text-primary)] sm:text-base lg:text-[16px]"
+              data-interest-paragraph="1"
+            >
+              {interestParagraph1Words.map((word, idx) => (
+                <>
+                  <span data-interest-word class="inline">
+                    {word}
+                  </span>
+                  {idx < interestParagraph1Words.length - 1 ? ' ' : ''}
+                </>
+              ))}
+            </p>
+          )
+        }
+
+        <div class="group relative mt-8 aspect-[16/10] w-full overflow-hidden rounded-none bg-[#111111] sm:aspect-[16/9] lg:mt-10">
+          {
+            hasInterestImage ? (
+              <img
+                src={sections.interest_image_url}
+                alt={
+                  locale === 'id'
+                    ? 'Eksperimen homelab dan ruang kerja teknis'
+                    : 'Homelab and personal infrastructure setup'
+                }
+                width="1280"
+                height="720"
+                loading="lazy"
+                decoding="async"
+                data-interest-media
+                class="h-full w-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                data-interest-media
+                class="h-full w-full bg-[#141414] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+              />
+            )
+          }
         </div>
+
+        {
+          interestParagraph2Words.length > 0 && (
+            <p
+              class="m-0 mt-8 max-w-[60ch] font-sans-ui text-sm leading-[1.65] font-normal text-[var(--text-primary)] sm:text-base lg:mt-10 lg:text-[16px]"
+              data-interest-paragraph="2"
+            >
+              {interestParagraph2Words.map((word, idx) => (
+                <>
+                  <span data-interest-word class="inline">
+                    {word}
+                  </span>
+                  {idx < interestParagraph2Words.length - 1 ? ' ' : ''}
+                </>
+              ))}
+            </p>
+          )
+        }
       </div>
     </div>
   </section>

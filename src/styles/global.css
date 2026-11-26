@@ -618,7 +618,8 @@
   }
 
   [data-reveal-word],
-  [data-journey-word] {
+  [data-journey-word],
+  [data-interest-word] {
     color: var(--text-primary) !important;
     opacity: 1 !important;
   }
@@ -633,12 +634,15 @@
   [data-tech-accordion-trigger],
   [data-tech-item],
   [data-accordion-symbol-vert],
-  [data-activity-media] {
+  [data-activity-media],
+  [data-interest-media] {
     transition: none !important;
   }
 
   [data-activity-card]:hover [data-activity-media],
-  [data-activity-card]:focus-within [data-activity-media] {
+  [data-activity-card]:focus-within [data-activity-media],
+  [data-interest-section] .group:hover [data-interest-media],
+  [data-interest-section] .group:focus-within [data-interest-media] {
     transform: none !important;
   }
 

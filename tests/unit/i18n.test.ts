@@ -5,6 +5,7 @@ import {
   pickLocale,
   resolveLocale,
   splitHeadlineLockup,
+  splitInterestParagraphs,
   splitJourneyParagraphs,
 } from '../../src/lib/content/i18n';
 import { PLACEHOLDER_ABOUT } from '../../src/lib/content/placeholder';
@@ -92,6 +93,27 @@ describe('About page headline & journey helpers', () => {
     expect(
       normalizeSentenceCase('I build resilient AWS and CI/CD pipelines with clear runbooks.'),
     ).toBe('I build resilient AWS and CI/CD pipelines with clear runbooks.');
+  });
+
+  it('splits default EN and ID personal interest copy into 2 clean paragraphs without placeholder tags', () => {
+    const enPair = splitInterestParagraphs(PLACEHOLDER_ABOUT.sections.interest_en);
+    const idPair = splitInterestParagraphs(PLACEHOLDER_ABOUT.sections.interest_id);
+    expect(enPair[0]).toBeTruthy();
+    expect(enPair[1]).toBeTruthy();
+    expect(idPair[0]).toBeTruthy();
+    expect(idPair[1]).toBeTruthy();
+    for (const p of [...enPair, ...idPair]) {
+      expect(p).not.toContain('[PLACEHOLDER]');
+      expect(p).not.toContain('[SAMPLE]');
+      expect(p).not.toContain('—');
+    }
+
+    expect(
+      splitInterestParagraphs(
+        '[SAMPLE] Homelab notes with Proxmox.',
+        'Downtime reading and focus reset.',
+      ),
+    ).toEqual(['Homelab notes with Proxmox.', 'Downtime reading and focus reset.']);
   });
 });
 

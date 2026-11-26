@@ -11,13 +11,13 @@ See `proposal.md` for motivation and scope. Technically, this repository is an *
 
 **Goals:**
 - Extract reusable Astro motion primitives under `src/components/motion/` (`CipherText.astro`, `BlockMaskReveal.astro`, `ImageCurtainReveal.astro`) powered by shared GSAP lifecycle helpers in `src/lib/motion/`, so `/` and `/about` share one animation implementation.
-- Overhaul `/about` Hero, "A Journey of Progression", and the Tech Stack (`/00-2` intro + `SkillsAccordion.astro`) to 1:1 layout, density, and motion parity with the reference video while keeping Light/Dark CSS theme tokens, `EN`/`ID` CMS fields, and `prefers-reduced-motion` support intact.
+- Overhaul `/about` Hero, "A Journey of Progression", Tech Stack (`/00-2` intro + `SkillsAccordion.astro`), Activities & Milestones (`/00-3` + `ActivitiesList.astro`), and Personal Interest (`/00-4`) to 1:1 layout, density, and motion parity with the reference video while keeping Light/Dark CSS theme tokens, `EN`/`ID` CMS fields, and `prefers-reduced-motion` support intact.
 - Keep `gsap` + `ScrollTrigger` as the sole motion runtime with `gsap.context()` cleanup and zero layout shift.
 
 **Non-Goals:**
 - Installing React, `@astrojs/react`, or `framer-motion`.
-- Redesigning `/about` downstream sections (`ActivitiesList`, `Personal Interest`, `ContactBanner`) beyond preserving them cleanly below the Tech Stack section.
-- Changing database schema columns in Supabase (`about_sections` already stores `headline_en`, `headline_id`, `profile_image_url`, `journey_en`, `journey_id`, `philosophy_en`, `philosophy_id`, and `skill_groups` already stores IT/DevOps/Cloud categories & items).
+- Redesigning the closing `ContactBanner` section beyond preserving it cleanly below the `/00-4` Personal Interest section.
+- Changing database schema columns in Supabase (`about_sections` already stores `headline_en`, `headline_id`, `profile_image_url`, `journey_en`, `journey_id`, `philosophy_en`, `philosophy_id`, `interest_en`, `interest_id`, `interest_image_url`, and `skill_groups` already stores IT/DevOps/Cloud categories & items).
 
 ## Decisions
 
@@ -59,6 +59,12 @@ See `proposal.md` for motivation and scope. Technically, this repository is an *
   - **GSAP Drawer & Entrance Choreography:** Instead of `framer-motion` (non-goal), implement a `techAccordionEase` (`createCubicBezierEase(0.22, 1, 0.36, 1)` in `src/lib/motion/easing.ts`) controller inside `src/lib/motion/about-motion.ts` (replacing `SkillsAccordion.astro`'s inline `<script is:inline>`):
     - Expand animates `[data-accordion-panel]` from `height: 0, opacity: 0` to `height: "auto", opacity: 1` (`0.38s`, `techAccordionEase`, `overflow: hidden`) while staggering `[data-tech-item]` (`y: -4 -> 0`, `opacity: 0 -> 1`, `0.025s` stagger). Collapse reverses smoothly to `height: 0, opacity: 0` (`0.38s`, `techAccordionEase`) before setting `hidden`.
     - Register a `ScrollTrigger` (`once: true`) entrance on `[data-tech-stack-section]` revealing `/00-2`, the intro statement, and category dividers cleanly without affecting `aria-expanded` or `prefers-reduced-motion` static state.
+
+### 6. Personal Interest (`/00-4`) 2-Column Split & Dual Scroll-Scrubbed Illumination
+- **Decision:** Overhaul the `/00-4` Personal Interest section in `src/pages/about.astro` on `bg-[var(--bg-primary)]` (`#000000` in Dark mode) with `py-24 sm:py-32 lg:py-40` and a 12-column grid (`grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-12 items-start`):
+  - **Left Column (`lg:col-span-4`, `self-start`, non-sticky):** Render only `/00-4` (`font-mono-tech text-[11px] tracking-[0.08em] text-[var(--about-meta-ink)] mb-3 block`, `#666666` Dark) and the 2-line uppercase Serif heading `PERSONAL` / `INTEREST` (`font-display uppercase text-[var(--text-primary)] text-3xl sm:text-4xl lg:text-[42px] leading-[1.08] tracking-[-0.01em]`).
+  - **Right Column (`lg:col-span-8`):** Split `pickLocale(sections.interest_en, sections.interest_id, locale)` via the existing paragraph-splitting utility (normalized `\n\n`, seeded cleanly in `placeholder.ts` and `0002_seed_placeholder.sql` with two balanced paragraphs and zero `[PLACEHOLDER]`/`[SAMPLE]` prefixes). Render Paragraph 1 at the top baseline, followed (`mt-8 lg:mt-10`) by the sharp borderless photo container (`relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden rounded-none bg-[#111111] group`) with `group-hover:scale-[1.02]` (`duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]`) and `#141414` dark neutral fallback when no real image URL is configured (instead of the bright white wireframe `/placeholders/interest-placeholder.svg`), followed (`mt-8 lg:mt-10`) by Paragraph 2.
+  - **Dual Scroll-Scrubbed Word Illumination:** Reuse the shared `ScrollTrigger` (`scrub: true`) word-illumination routine in `src/lib/motion/about-motion.ts` across both Paragraph 1 and Paragraph 2 independently (`#333333` / `opacity: 0.25` -> `#FFFFFF` / `opacity: 1` in Dark mode, theme-adapted in Light mode), preserving immediate static contrast and disabling hover scale under `prefers-reduced-motion: reduce`.
 
 ## Risks / Trade-offs
 

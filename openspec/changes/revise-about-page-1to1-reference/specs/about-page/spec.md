@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, minimalist `/00-2` Tech Stack intro and borderless vertical monospace accordion, `/00-3` Activities & Milestones scroll-driven sticky stacked card deck with full-bleed panoramic media overlays, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
+Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, minimalist `/00-2` Tech Stack intro and borderless vertical monospace accordion, `/00-3` Activities & Milestones scroll-driven sticky stacked card deck with full-bleed panoramic media overlays, `/00-4` Personal Interest 2-column asymmetric split with vertical media-and-copy rhythm and dual scroll-scrubbed word illumination, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
 
 ## ADDED Requirements
 
@@ -45,11 +45,11 @@ The system SHALL render a second section below the About Hero with generous vert
 - **THEN** words entering from the lower viewport SHALL start dimmed (`#333333` / `opacity: 0.25` in Dark mode, theme-adapted dimmed ink in Light mode) and progressively illuminate to full primary contrast (`#FFFFFF` / `opacity: 1` in Dark mode, `#000000` in Light mode) word-by-word in sync with vertical scroll progress, and reverse smoothly back to the dimmed state when scrolling upward
 
 ### Requirement: Bilingual CMS Continuity & Downstream About Sections
-The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections`, `skill_groups`, `activities`, and `site_profile`), render Light and Dark themes legibly across all refactored sections, and preserve Personal Interest and closing Contact CTA sections downstream.
+The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections`, `skill_groups`, `activities`, and `site_profile`), render Light and Dark themes legibly across all refactored sections, and preserve the closing Contact CTA section downstream.
 
-#### Scenario: Switching locale updates About Hero metadata, headline, 3-paragraph journal, Tech Stack, and Activities & Milestones
+#### Scenario: Switching locale updates About Hero metadata, headline, 3-paragraph journal, Tech Stack, Activities & Milestones, and Personal Interest
 - **WHEN** a visitor toggles between `EN` and `ID` on `/about`
-- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, Tech Stack philosophy intro (`philosophy_en`/`philosophy_id`) and `skill_groups` categories, Activities & Milestones heading/metadata/cards (`activities`), and downstream CMS sections SHALL render in the active language with automatic fallback if a translation is empty
+- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, Tech Stack philosophy intro (`philosophy_en`/`philosophy_id`) and `skill_groups` categories, Activities & Milestones heading/metadata/cards (`activities`), Personal Interest `/00-4` 2-line heading and 2-paragraph narrative (`interest_en`/`interest_id`), and downstream closing Contact CTA SHALL render in the active language with automatic fallback if a translation is empty
 
 ### Requirement: Reduced-Motion Accessibility for About Motion & Primitives
 The system SHALL respect `prefers-reduced-motion: reduce` across all shared entrance primitives, the scroll-scrubbed journal, and the Tech Stack section, rendering full-contrast static states from first paint and responding immediately if the user's motion preference changes at runtime.
@@ -167,3 +167,51 @@ The Activities & Milestones card deck SHALL adapt header density and sticky offs
 #### Scenario: Reduced motion disables image zoom and smooth-scroll interpolation
 - **WHEN** `prefers-reduced-motion` is enabled
 - **THEN** the Activities & Milestones cards SHALL disable image hover zoom scaling and smooth-scroll interpolation while preserving clean static card readability.
+
+### Requirement: 2-Column Asymmetric Split Layout & Micro-Indexed Header (1:1 Parity)
+The Personal Interest section SHALL replace the left-stacked paragraph and white wireframe box with the exact 2-column editorial split from the reference video.
+
+#### Scenario: Section spacing, surface, and 12-column desktop grid
+- **WHEN** the user scrolls past the Activities & Milestones section into the Personal Interest section
+- **THEN** the section SHALL render on a deep `#000000` background with generous vertical padding (`py-24 sm:py-32 lg:py-40`) and a 12-column desktop grid (`grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-12 items-start`).
+
+#### Scenario: Left column micro-index & 2-line serif heading (`lg:col-span-4` or `lg:col-span-5`)
+- **WHEN** the left column renders
+- **THEN** it SHALL contain ONLY:
+  1. Top monospace micro-index `/00-4` (`font-mono text-[11px] tracking-[0.08em] text-[#666666] mb-3 block`).
+  2. Two-line uppercase editorial Serif heading `PERSONAL` (line 1) and `INTEREST` (line 2) (`font-serif uppercase text-white text-3xl sm:text-4xl lg:text-[42px] leading-[1.08] tracking-[-0.01em]`).
+- **THEN** the left column SHALL align cleanly to the top baseline (`self-start`, non-sticky) with NO body paragraphs beneath it on desktop.
+
+### Requirement: Right Column Vertical Choreography (Paragraph 1 -> Sharp Photo -> Paragraph 2)
+The right column (`lg:col-span-8` or `lg:col-span-7`) SHALL sequence two narrative paragraphs sandwiching a full-width borderless photograph.
+
+#### Scenario: Top narrative paragraph (Paragraph 1)
+- **WHEN** the right column renders at the same top baseline as `/00-4`
+- **THEN** it SHALL display the first personal interest paragraph (`font-sans font-normal text-sm sm:text-base lg:text-[16px] leading-[1.65] max-w-[60ch]`) detailing personal homelab, Proxmox, self-hosted backups, and network experiments outside daily operations.
+
+#### Scenario: Full-bleed sharp rectangular photograph
+- **WHEN** Paragraph 1 concludes
+- **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a sharp-cornered, borderless full-color photograph (`relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden rounded-none bg-[#111111] group`) with zero white outer border frames and zero inner text overlay.
+- **THEN** hovering over the photograph on pointer devices SHALL apply a subtle, smooth zoom (`w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`). If no image is configured yet, render a clean dark neutral surface (`#141414`) instead of a bright white wireframe placeholder.
+
+#### Scenario: Bottom narrative paragraph (Paragraph 2)
+- **WHEN** the photograph concludes
+- **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a second balanced narrative paragraph (`font-sans font-normal text-sm sm:text-base lg:text-[16px] leading-[1.65] max-w-[60ch]`) covering personal downtime, continuous reading, and physical/mental recharge outside engineering work.
+
+### Requirement: Dual Scroll-Scrubbed Word-by-Word Illumination
+Both Paragraph 1 (above the photo) and Paragraph 2 (below the photo) SHALL reuse the shared scroll-scrubbed text illumination primitive from the Journey section.
+
+#### Scenario: Progressive scroll-linked word illumination & reverse dimming
+- **WHEN** the user scrolls vertically through Paragraph 1 and subsequently Paragraph 2
+- **THEN** each word SHALL transition sequentially from dim dark gray (`#333333` / `opacity: 0.25`) to pure crisp white (`#FFFFFF` / `opacity: 1`) scrubbed directly to vertical scroll progress (`useScroll` + `useTransform` or GSAP `ScrollTrigger` `scrub: true`), and smoothly dim back to `#333333` when scrolling upward.
+
+### Requirement: Responsive Mobile Layout & Reduced-Motion Accessibility
+The Personal Interest section SHALL stack cleanly in reading order on narrow viewports and bypass motion/hover effects when reduced motion is preferred.
+
+#### Scenario: Mobile (`< 1024px`) vertical stacking order
+- **WHEN** the Personal Interest section renders on mobile (`< 1024px`)
+- **THEN** it SHALL stack elements in a single clean vertical column in exact reading order: (1) `/00-4` + `PERSONAL INTEREST`, (2) Paragraph 1, (3) Full-width `aspect-[16/10]` `rounded-none` photo, and (4) Paragraph 2, maintaining identical font ratios and scroll-scrubbed illumination.
+
+#### Scenario: Reduced Motion (`prefers-reduced-motion`)
+- **WHEN** `prefers-reduced-motion` is enabled
+- **THEN** the Personal Interest section SHALL bypass scroll-scrubbed opacity transitions and image hover scaling to render crisp static `#FFFFFF` body text immediately.

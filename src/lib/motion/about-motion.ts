@@ -68,6 +68,10 @@ export function initAboutMotion(): () => void {
   const aboutCurtainEl = document.querySelector<HTMLElement>('[data-about-curtain]');
   const journeyJournalEl = document.querySelector<HTMLElement>('[data-journey-journal]');
   const journeyWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-journey-word]'));
+  const interestParagraphEls = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-interest-paragraph]'),
+  );
+  const interestWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-interest-word]'));
   const techStackSectionEl = document.querySelector<HTMLElement>('[data-tech-stack-section]');
   const techRevealEls = Array.from(
     techStackSectionEl?.querySelectorAll<HTMLElement>('[data-tech-reveal]') ?? [],
@@ -91,10 +95,10 @@ export function initAboutMotion(): () => void {
   const panelTimelines = new Map<HTMLElement, gsap.core.Timeline>();
   const cleanups: Array<() => void> = [];
 
-  const applyJourneyProgress = (progress: number) => {
-    const total = journeyWordEls.length;
+  const applyWordProgress = (wordEls: HTMLElement[], progress: number) => {
+    const total = wordEls.length;
     for (let i = 0; i < total; i += 1) {
-      const word = journeyWordEls[i];
+      const word = wordEls[i];
       if (!word) continue;
       word.style.opacity = String(computeJourneyWordOpacity(i, total, progress));
     }
@@ -113,6 +117,10 @@ export function initAboutMotion(): () => void {
     applyPrimitivesReducedMotion(aboutHeroEl ?? document);
 
     for (const word of journeyWordEls) {
+      word.style.opacity = '1';
+    }
+
+    for (const word of interestWordEls) {
       word.style.opacity = '1';
     }
 
@@ -199,25 +207,40 @@ export function initAboutMotion(): () => void {
         );
       }
 
-      if (journeyJournalEl && journeyWordEls.length > 0) {
-        applyJourneyProgress(0);
+      const bindWordIllumination = (
+        triggerEl: HTMLElement,
+        wordEls: HTMLElement[],
+        start: string,
+        end: string,
+      ) => {
+        if (wordEls.length === 0) return;
+        applyWordProgress(wordEls, 0);
 
         ScrollTrigger.create({
-          trigger: journeyJournalEl,
-          start: 'top 82%',
-          end: 'bottom 45%',
+          trigger: triggerEl,
+          start,
+          end,
           scrub: true,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            applyJourneyProgress(self.progress);
+            applyWordProgress(wordEls, self.progress);
           },
           onLeaveBack: () => {
-            applyJourneyProgress(0);
+            applyWordProgress(wordEls, 0);
           },
           onLeave: () => {
-            applyJourneyProgress(1);
+            applyWordProgress(wordEls, 1);
           },
         });
+      };
+
+      if (journeyJournalEl) {
+        bindWordIllumination(journeyJournalEl, journeyWordEls, 'top 82%', 'bottom 45%');
+      }
+
+      for (const paragraphEl of interestParagraphEls) {
+        const words = Array.from(paragraphEl.querySelectorAll<HTMLElement>('[data-interest-word]'));
+        bindWordIllumination(paragraphEl, words, 'top 84%', 'bottom 50%');
       }
 
       if (techStackSectionEl && techRevealEls.length > 0) {
