@@ -120,7 +120,7 @@ export const PLACEHOLDER_ABOUT: AboutBundle = {
       'Outside daily operations, I spend time refining a personal homelab built on Proxmox, testing self-hosted backup workflows, VLAN segmentation, and local DNS routing. Treating home infrastructure like a small production lab keeps troubleshooting instincts sharp without risking client environments.\n\nAway from the terminal, I make room for slower routines through technical field reading, post-incident case studies, and regular exercise to reset focus. Stepping back from alerts and dashboards helps bring steadier judgment back to complex engineering work.',
     interest_id:
       'Di luar pekerjaan operasional harian, saya meluangkan waktu mengembangkan homelab pribadi berbasis Proxmox, menguji alur backup mandiri, segmentasi VLAN, dan perutean DNS lokal. Memperlakukan infrastruktur rumahan seperti lab produksi kecil menjaga ketajaman triase tanpa mengganggu lingkungan klien.\n\nSaat jauh dari terminal, saya menjaga ritme lewat bacaan catatan teknis, studi kasus pasca-insiden, serta olahraga rutin untuk memulihkan fokus. Mengambil jarak sejenak dari notifikasi dan dasbor membantu menghadirkan pertimbangan yang lebih tenang saat kembali menangani sistem.',
-    interest_image_url: '',
+    interest_image_url: '/placeholders/interest-placeholder.svg',
   },
   skillGroups: [
     {

@@ -72,6 +72,8 @@ export function initAboutMotion(): () => void {
     document.querySelectorAll<HTMLElement>('[data-interest-paragraph]'),
   );
   const interestWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-interest-word]'));
+  const interestMediaFrameEl = document.querySelector<HTMLElement>('[data-interest-media-frame]');
+  const interestParallaxEl = document.querySelector<HTMLElement>('[data-interest-parallax]');
   const techStackSectionEl = document.querySelector<HTMLElement>('[data-tech-stack-section]');
   const techRevealEls = Array.from(
     techStackSectionEl?.querySelectorAll<HTMLElement>('[data-tech-reveal]') ?? [],
@@ -122,6 +124,10 @@ export function initAboutMotion(): () => void {
 
     for (const word of interestWordEls) {
       word.style.opacity = '1';
+    }
+
+    if (interestParallaxEl) {
+      gsap.set(interestParallaxEl, { yPercent: 0, clearProps: 'transform' });
     }
 
     for (const el of techRevealEls) {
@@ -241,6 +247,24 @@ export function initAboutMotion(): () => void {
       for (const paragraphEl of interestParagraphEls) {
         const words = Array.from(paragraphEl.querySelectorAll<HTMLElement>('[data-interest-word]'));
         bindWordIllumination(paragraphEl, words, 'top 84%', 'bottom 50%');
+      }
+
+      if (interestMediaFrameEl && interestParallaxEl) {
+        gsap.fromTo(
+          interestParallaxEl,
+          { yPercent: -8 },
+          {
+            yPercent: 8,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: interestMediaFrameEl,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
       }
 
       if (techStackSectionEl && techRevealEls.length > 0) {

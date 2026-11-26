@@ -650,6 +650,12 @@
     transform: none !important;
   }
 
+  [data-interest-parallax] {
+    top: 0 !important;
+    height: 100% !important;
+    transform: none !important;
+  }
+
   .button-primary,
   .button-primary-arrow {
     transition: none !important;

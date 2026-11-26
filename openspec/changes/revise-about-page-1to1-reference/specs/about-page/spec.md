@@ -192,11 +192,11 @@ The right column (`lg:col-span-8` or `lg:col-span-7`) SHALL sequence two narrati
 #### Scenario: Full-bleed sharp rectangular photograph
 - **WHEN** Paragraph 1 concludes
 - **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a sharp-cornered, borderless full-color photograph (`relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden rounded-none bg-[#111111] group`) with zero white outer border frames and zero inner text overlay.
-- **THEN** hovering over the photograph on pointer devices SHALL apply a subtle, smooth zoom (`w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`). If no image is configured yet, render a clean dark neutral surface (`#141414`) instead of a bright white wireframe placeholder.
+- **THEN** hovering over the photograph on pointer devices SHALL apply a subtle, smooth zoom (`w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`) inside an oversized vertical parallax container (`data-interest-parallax`, GSAP `ScrollTrigger` `scrub: true` `yPercent: -8 -> 8`). If no real image is uploaded yet, render the dark editorial geometric placeholder (`/placeholders/interest-placeholder.svg` on `#141414`/`#111111`) instead of a bright white wireframe placeholder.
 
 #### Scenario: Bottom narrative paragraph (Paragraph 2)
 - **WHEN** the photograph concludes
-- **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a second balanced narrative paragraph (`font-sans font-normal text-sm sm:text-base lg:text-[16px] leading-[1.65] max-w-[60ch]`) covering personal downtime, continuous reading, and physical/mental recharge outside engineering work.
+- **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a second balanced narrative paragraph (`font-sans font-normal text-sm sm:text-base lg:text-[16px] leading-[1.65] max-w-[60ch] lg:ml-auto lg:w-[73%] lg:max-w-none`, offset to the right beneath the photograph on desktop and flush-left on mobile) covering personal downtime, continuous reading, and physical/mental recharge outside engineering work.
 
 ### Requirement: Dual Scroll-Scrubbed Word-by-Word Illumination
 Both Paragraph 1 (above the photo) and Paragraph 2 (below the photo) SHALL reuse the shared scroll-scrubbed text illumination primitive from the Journey section.

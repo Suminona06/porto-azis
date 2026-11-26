@@ -53,9 +53,7 @@ const [interestParagraph1, interestParagraph2] = splitInterestParagraphs(
 );
 const interestParagraph1Words = interestParagraph1.split(/\s+/).filter(Boolean);
 const interestParagraph2Words = interestParagraph2.split(/\s+/).filter(Boolean);
-const hasInterestImage =
-  Boolean(sections.interest_image_url) &&
-  sections.interest_image_url !== '/placeholders/interest-placeholder.svg';
+const interestImageSrc = sections.interest_image_url || '/placeholders/interest-placeholder.svg';
 const isHttpContact = /^https?:\/\//i.test(profile.contact_url);
 const aboutCtaLabel = copy.aboutCtaButton.replace(/\s*→\s*$/, '');
 ---
@@ -236,37 +234,35 @@ const aboutCtaLabel = copy.aboutCtaButton.replace(/\s*→\s*$/, '');
           )
         }
 
-        <div class="group relative mt-8 aspect-[16/10] w-full overflow-hidden rounded-none bg-[#111111] sm:aspect-[16/9] lg:mt-10">
-          {
-            hasInterestImage ? (
-              <img
-                src={sections.interest_image_url}
-                alt={
-                  locale === 'id'
-                    ? 'Eksperimen homelab dan ruang kerja teknis'
-                    : 'Homelab and personal infrastructure setup'
-                }
-                width="1280"
-                height="720"
-                loading="lazy"
-                decoding="async"
-                data-interest-media
-                class="h-full w-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
-              />
-            ) : (
-              <div
-                aria-hidden="true"
-                data-interest-media
-                class="h-full w-full bg-[#141414] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
-              />
-            )
-          }
+        <div
+          class="group relative mt-8 aspect-[16/10] w-full overflow-hidden rounded-none bg-[#111111] sm:aspect-[16/9] lg:mt-10"
+          data-interest-media-frame
+        >
+          <div
+            class="absolute inset-x-0 -top-[12%] h-[124%] w-full will-change-transform"
+            data-interest-parallax
+          >
+            <img
+              src={interestImageSrc}
+              alt={
+                locale === 'id'
+                  ? 'Eksperimen homelab dan ruang kerja teknis'
+                  : 'Homelab and personal infrastructure setup'
+              }
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+              data-interest-media
+              class="h-full w-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+            />
+          </div>
         </div>
 
         {
           interestParagraph2Words.length > 0 && (
             <p
-              class="m-0 mt-8 max-w-[60ch] font-sans-ui text-sm leading-[1.65] font-normal text-[var(--text-primary)] sm:text-base lg:mt-10 lg:text-[16px]"
+              class="m-0 mt-8 max-w-[60ch] font-sans-ui text-sm leading-[1.65] font-normal text-[var(--text-primary)] sm:text-base lg:mt-10 lg:ml-auto lg:w-[73%] lg:max-w-none lg:text-[16px]"
               data-interest-paragraph="2"
             >
               {interestParagraph2Words.map((word, idx) => (
