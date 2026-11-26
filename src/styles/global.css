@@ -30,6 +30,8 @@
   --tech-row-muted: #52525b;
   --tech-item-muted: #52525b;
   --activities-sub-ink: #52525b;
+  --about-watermark-ink: #a1a1aa;
+  --about-cta-ink: #3f3f46;
   --navbar-height: 64px;
 
   --font-display: "Playfair Display", Georgia, serif;
@@ -83,6 +85,8 @@
   --tech-row-muted: #a3a3a3;
   --tech-item-muted: #8a8a8a;
   --activities-sub-ink: #737373;
+  --about-watermark-ink: #333333;
+  --about-cta-ink: #d4d4d4;
 
   color-scheme: dark;
 }
@@ -660,6 +664,18 @@
   .button-primary:hover .button-primary-arrow,
   .button-primary:focus-visible .button-primary-arrow {
     transform: none;
+  }
+
+  [data-closing-cta-link],
+  [data-closing-cta-arrow],
+  [data-closing-cta-underline] {
+    transition: none !important;
+  }
+
+  [data-closing-cta-link]:hover [data-closing-cta-arrow],
+  [data-closing-cta-link]:focus-visible [data-closing-cta-arrow] {
+    transform: none !important;
+    translate: none !important;
   }
 }
 

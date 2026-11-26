@@ -27,6 +27,10 @@ export interface UiCopy {
   aboutPersonalInterestHeading: string;
   aboutPersonalInterestLine1: string;
   aboutPersonalInterestLine2: string;
+  aboutClosingWatermarkRole: string;
+  aboutClosingLine1: string;
+  aboutClosingLine2: string;
+  aboutClosingLine3: string;
   aboutCtaButton: string;
   worksIndexLabel: string;
   worksPageTitle: string;
@@ -88,6 +92,10 @@ const EN_COPY: UiCopy = {
   aboutPersonalInterestHeading: 'PERSONAL INTEREST',
   aboutPersonalInterestLine1: 'PERSONAL',
   aboutPersonalInterestLine2: 'INTEREST',
+  aboutClosingWatermarkRole: 'SYSTEMS & WEB ENGINEER',
+  aboutClosingLine1: 'FROM RELIABLE INFRASTRUCTURE TO',
+  aboutClosingLine2: 'SCALABLE WEB SYSTEMS,',
+  aboutClosingLine3: "LET'S BUILD TOGETHER.",
   aboutCtaButton: 'CONTACT ME →',
   worksIndexLabel: '/03 WORKS',
   worksPageTitle: 'SELECTED PROJECTS',
@@ -149,6 +157,10 @@ const ID_COPY: UiCopy = {
   aboutPersonalInterestHeading: 'MINAT PRIBADI',
   aboutPersonalInterestLine1: 'MINAT',
   aboutPersonalInterestLine2: 'PRIBADI',
+  aboutClosingWatermarkRole: 'SYSTEMS & WEB ENGINEER',
+  aboutClosingLine1: 'DARI INFRASTRUKTUR ANDAL HINGGA',
+  aboutClosingLine2: 'SISTEM WEB TERUKUR,',
+  aboutClosingLine3: 'MARI BANGUN BERSAMA.',
   aboutCtaButton: 'KONTAK SAYA →',
   worksIndexLabel: '/03 KARYA',
   worksPageTitle: 'PROYEK PILIHAN',
