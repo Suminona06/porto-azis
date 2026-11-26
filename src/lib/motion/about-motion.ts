@@ -73,7 +73,7 @@ export function initAboutMotion(): () => void {
   );
   const interestWordEls = Array.from(document.querySelectorAll<HTMLElement>('[data-interest-word]'));
   const interestMediaFrameEl = document.querySelector<HTMLElement>('[data-interest-media-frame]');
-  const interestParallaxEl = document.querySelector<HTMLElement>('[data-interest-parallax]');
+  const interestParallaxEl = document.querySelector<HTMLImageElement>('img[data-interest-parallax]');
   const techStackSectionEl = document.querySelector<HTMLElement>('[data-tech-stack-section]');
   const techRevealEls = Array.from(
     techStackSectionEl?.querySelectorAll<HTMLElement>('[data-tech-reveal]') ?? [],
@@ -252,9 +252,9 @@ export function initAboutMotion(): () => void {
       if (interestMediaFrameEl && interestParallaxEl) {
         gsap.fromTo(
           interestParallaxEl,
-          { yPercent: -8 },
+          { yPercent: -15 },
           {
-            yPercent: 8,
+            yPercent: 15,
             ease: 'none',
             scrollTrigger: {
               trigger: interestMediaFrameEl,

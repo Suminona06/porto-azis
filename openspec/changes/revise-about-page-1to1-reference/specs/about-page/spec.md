@@ -192,7 +192,7 @@ The right column (`lg:col-span-8` or `lg:col-span-7`) SHALL sequence two narrati
 #### Scenario: Full-bleed sharp rectangular photograph
 - **WHEN** Paragraph 1 concludes
 - **THEN** directly beneath it (`mt-8 lg:mt-10`), the section SHALL render a sharp-cornered, borderless full-color photograph (`relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden rounded-none bg-[#111111] group`) with zero white outer border frames and zero inner text overlay.
-- **THEN** hovering over the photograph on pointer devices SHALL apply a subtle, smooth zoom (`w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`) inside an oversized vertical parallax container (`data-interest-parallax`, GSAP `ScrollTrigger` `scrub: true` `yPercent: -8 -> 8`). If no real image is uploaded yet, render the dark editorial geometric placeholder (`/placeholders/interest-placeholder.svg` on `#141414`/`#111111`) instead of a bright white wireframe placeholder.
+- **THEN** hovering over the photograph on pointer devices SHALL apply a subtle, smooth zoom (`transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`) on the media zoom wrapper while the oversized `<img>` element (`-top-[24%] h-[148%]`, `data-interest-parallax`) scrubs vertically via GSAP `ScrollTrigger` (`yPercent: -15 -> 15`, `scrub: true`). If no real image is uploaded yet, render the dark editorial geometric placeholder (`/placeholders/interest-placeholder.svg` on `#111111`) instead of a bright white wireframe placeholder.
 
 #### Scenario: Bottom narrative paragraph (Paragraph 2)
 - **WHEN** the photograph concludes
@@ -223,44 +223,44 @@ The About page SHALL remove the reused Homepage `"Let's have a chat"` CTA compon
 - **WHEN** the About page renders below the `/00-4` Personal Interest section
 - **THEN** it SHALL completely remove the Homepage `"Let's have a chat"` CTA section and render the dedicated About Page `/00-5` closing section instead.
 
-### Requirement: Top Hairline Divider & 2-Column Aligned Split Grid (1:1 Parity)
-The `/00-5` section SHALL align precisely with the vertical column axis of the `/00-4` Personal Interest section above it.
+### Requirement: Top Hairline Divider & 2-Column Asymmetric Split Grid (1:1 Reference Parity)
+The `/00-5` section SHALL render with a top hairline divider and the exact 12-column asymmetric split proportions from the reference (`lg:col-span-6 xl:col-span-7` left watermark canvas, `lg:col-span-6 xl:col-span-5` right CTA column).
 
 #### Scenario: Top border rule & section spacing
 - **WHEN** the user scrolls past the second paragraph of Personal Interest
 - **THEN** the `/00-5` section SHALL begin with a full-width subtle hairline top divider (`border-t border-[#1F1F1F]`) on a `#000000` surface with generous vertical padding (`py-24 sm:py-32 lg:py-40`).
 
-#### Scenario: Identical 12-column split axis (`lg:col-span-4` / `lg:col-span-8` matching `/00-4` ratio)
+#### Scenario: Asymmetric 12-column split (`lg:col-span-6 xl:col-span-7` / `lg:col-span-6 xl:col-span-5`)
 - **WHEN** rendered on desktop (`>= 1024px`)
-- **THEN** the section SHALL use the exact same 12-column horizontal split ratio (`lg:col-span-4` / `lg:col-span-8`) as the `/00-4` Personal Interest section above it so the left edge of `/00-5`, the 3-line display headline, and `CONTACT ME →` align vertically along the exact same column axis as the right-hand narrative column of Personal Interest.
+- **THEN** the section SHALL allocate `lg:col-span-6 xl:col-span-7` to the left negative-space watermark canvas and `lg:col-span-6 xl:col-span-5` to the right CTA column so the `/00-5` block sits cleanly in the right-hand ~42% editorial column matching the reference screenshot.
 
 ### Requirement: Left Column Staggered Monospace Watermark Lockup
-The left column (`lg:col-span-4`) SHALL render a subtle, non-interactive staggered monospace identity watermark on desktop viewports while remaining hidden on mobile.
+The left column (`lg:col-span-6 xl:col-span-7`) SHALL render a subtle, non-interactive staggered monospace identity watermark on desktop viewports while remaining hidden on mobile.
 
 #### Scenario: Subtle low-contrast identity watermark in left negative space
 - **WHEN** rendered on desktop (`>= 1024px`)
-- **THEN** the left column SHALL display a subtle, non-interactive staggered monospace watermark lockup (`font-mono text-[10px] tracking-[0.16em] uppercase text-[#333333] select-none pointer-events-none`) featuring my full name on the left (`AZIS MUHAMAD FADLI`) and my role staggered slightly lower and to the right (`SYSTEMS & WEB ENGINEER`), hidden on mobile viewports (`hidden lg:flex`) to preserve clean mobile vertical rhythm.
+- **THEN** the left column SHALL display a subtle, non-interactive staggered monospace watermark lockup (`font-mono text-[11px] tracking-[0.14em] uppercase text-[#525252] select-none pointer-events-none`) featuring my full name (`AZIS MUHAMAD FADLI`) positioned in the upper-left-mid negative space and my role (`SYSTEMS & WEB ENGINEER`) staggered lower and further toward the center (`mt-10 self-center lg:ml-[18%]`), hidden below `1024px` (`hidden lg:flex`) to preserve clean mobile vertical rhythm.
 
 ### Requirement: Right Column `/00-5` Micro-Index, 3-Line ALL-CAPS Sans Statement & `CONTACT ME →` Link
-The right column (`lg:col-span-8`) SHALL display the `/00-5` micro-index, the 3-line ALL-CAPS geometric Sans-Serif closing statement, and the minimalist `CONTACT ME →` anchor with 1:1 hover underline and arrow micro-interactions.
+The right column (`lg:col-span-6 xl:col-span-5`) SHALL display the `/00-5` micro-index, the 3-line ALL-CAPS geometric Sans-Serif closing statement, and the bold minimalist `CONTACT ME →` anchor with smooth left-to-right origin-swap underline and arrow hover micro-interactions.
 
 #### Scenario: Micro-index & 3-line uppercase Sans-Serif display copy
 - **WHEN** the right column renders
 - **THEN** it SHALL display:
-  1. Monospace micro-index `/00-5` (`font-mono text-[11px] tracking-[0.08em] text-[#666666] mb-4 block`).
-  2. A crisp 3-line **ALL-CAPS geometric Sans-Serif** closing statement (`font-sans font-medium uppercase text-white text-2xl sm:text-3xl lg:text-[36px] leading-[1.15] tracking-[-0.01em] max-w-[26ch]`) matching the exact cadence and visual weight of the reference:
+  1. Monospace micro-index `/00-5` (`font-mono text-[11px] tracking-[0.08em] text-[#666666] mb-3.5 block`).
+  2. A crisp 3-line **ALL-CAPS geometric Sans-Serif** closing statement (`font-sans font-medium uppercase text-white text-xl sm:text-2xl lg:text-[22px] xl:text-[24px] leading-[1.24] tracking-[-0.01em]`) fitting cleanly on 3 lines on desktop and matching the visual scale of the reference:
      - Line 1: `FROM RELIABLE INFRASTRUCTURE TO`
      - Line 2: `SCALABLE WEB SYSTEMS,`
      - Line 3: `LET'S BUILD TOGETHER.`
 
-#### Scenario: Minimalist `CONTACT ME →` link & 1:1 hover animation
-- **WHEN** the CTA link renders beneath the 3-line headline (`mt-8 lg:mt-10`)
-- **THEN** it SHALL render as a clean inline anchor (`group relative inline-flex items-center gap-3 pb-1.5 font-mono text-[11px] sm:text-xs tracking-[0.12em] uppercase text-[#D4D4D4] hover:text-[#FFFFFF] transition-colors duration-300`) linking to the contact action (`mailto:` or `/contact` matching existing site contact behavior via `profile.contact_url`), containing `CONTACT ME` and a crisp horizontal right arrow SVG (`→`, `16px`, `1.5px` stroke).
-- **THEN** at rest, the link SHALL have **no visible underline** (`scale-x-0`).
-- **WHEN** the user hovers over `CONTACT ME →`
-- **THEN** a `1px` solid `#FFFFFF` bottom underline (`absolute bottom-0 left-0 right-0 h-[1px] bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]`) SHALL smoothly expand from left to right across the full width of the text and arrow, while the `→` arrow simultaneously glides rightward (`translate-x-0 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]`).
+#### Scenario: Bold `CONTACT ME →` link & smooth left-to-right open/close underline animation
+- **WHEN** the CTA link renders beneath the 3-line headline (`mt-7 lg:mt-8`)
+- **THEN** it SHALL render as a bold inline anchor (`closing-cta-link inline-flex items-center font-mono text-xs font-semibold tracking-[0.08em] uppercase text-white`) linking to the contact action (`mailto:` or `/contact` matching existing site contact behavior via `profile.contact_url`), containing `CONTACT ME` and a crisp elongated horizontal right arrow SVG (`→`, `24px` width, `1.85px` stroke).
+- **THEN** at rest, the link SHALL have **no visible underline** (`transform-origin: right center; transform: scaleX(0)`).
+- **WHEN** the user hovers over or focuses `CONTACT ME →`
+- **THEN** a `1.5px` solid `#FFFFFF` bottom underline (`transform-origin: left center; transform: scaleX(1); transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1)`) SHALL smoothly sweep from left to right across the full width of the text and arrow, while the `→` arrow simultaneously glides rightward (`translateX(8px)`, `650ms`, `cubic-bezier(0.22, 1, 0.36, 1)`).
 - **WHEN** the pointer leaves the link
-- **THEN** the underline SHALL retract smoothly (`scale-x-100 -> scale-x-0`) and the arrow SHALL glide back to rest.
+- **THEN** the underline SHALL swap origin to `right center` and sweep smoothly out from left to right (`scaleX(1) -> scaleX(0)` over `650ms`, so the left end disappears first) while the arrow glides smoothly back to `translateX(0)`.
 
 ### Requirement: Accessibility & Reduced-Motion Compliance
 Section `/00-5` SHALL honor `prefers-reduced-motion: reduce` by disabling sliding arrow translation while maintaining high-contrast hover feedback.
