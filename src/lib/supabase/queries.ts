@@ -191,10 +191,7 @@ export async function fetchAboutData(
       !activitiesRes.error && Array.isArray(activitiesRes.data) && activitiesRes.data.length > 0
         ? (activitiesRes.data as ActivityItem[]).map((item) => ({
             ...item,
-            image_url: sanitizeMediaUrlOrFallback(
-              item.image_url,
-              '/placeholders/activity-placeholder.svg',
-            ),
+            image_url: sanitizeMediaUrlOrFallback(item.image_url, ''),
           }))
         : PLACEHOLDER_ABOUT.activities;
 

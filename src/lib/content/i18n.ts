@@ -22,6 +22,8 @@ export interface UiCopy {
   aboutTagEngineer: string;
   aboutProgressionHeading: string;
   aboutActivitiesHeading: string;
+  aboutActivitiesKeywords: string;
+  aboutActivitiesSpan: string;
   aboutPersonalInterestHeading: string;
   aboutCtaButton: string;
   worksIndexLabel: string;
@@ -79,6 +81,8 @@ const EN_COPY: UiCopy = {
   aboutTagEngineer: 'ENGINEER',
   aboutProgressionHeading: 'A JOURNEY OF PROGRESSION',
   aboutActivitiesHeading: 'ACTIVITIES & MILESTONES',
+  aboutActivitiesKeywords: 'INFRASTRUCTURE • DEVOPS • OBSERVABILITY',
+  aboutActivitiesSpan: "(ACTIVITIES / '24–'26)",
   aboutPersonalInterestHeading: 'PERSONAL INTEREST',
   aboutCtaButton: 'CONTACT ME →',
   worksIndexLabel: '/03 WORKS',
@@ -136,6 +140,8 @@ const ID_COPY: UiCopy = {
   aboutTagEngineer: 'ENGINEER',
   aboutProgressionHeading: 'PERJALANAN PROGRESI',
   aboutActivitiesHeading: 'AKTIVITAS & PENCAPAIAN',
+  aboutActivitiesKeywords: 'INFRASTRUKTUR • DEVOPS • OBSERVABILITAS',
+  aboutActivitiesSpan: "(AKTIVITAS / '24–'26)",
   aboutPersonalInterestHeading: 'MINAT PRIBADI',
   aboutCtaButton: 'KONTAK SAYA →',
   worksIndexLabel: '/03 KARYA',

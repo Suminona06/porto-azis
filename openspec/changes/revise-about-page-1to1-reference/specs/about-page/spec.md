@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, minimalist `/00-2` Tech Stack intro and borderless vertical monospace accordion, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
+Defines the 1:1 reference-aligned About page (`/about`) experience, shared entrance motion behaviors across Home and About, sticky asymmetric split narrative layout, scroll-scrubbed word-by-word journal illumination, minimalist `/00-2` Tech Stack intro and borderless vertical monospace accordion, `/00-3` Activities & Milestones scroll-driven sticky stacked card deck with full-bleed panoramic media overlays, and reduced-motion accessibility while preserving Azis Muhamad Fadli's personal engineering bio, bilingual (`EN` / `ID`) CMS integration, and Light/Dark theme support.
 
 ## ADDED Requirements
 
@@ -45,11 +45,11 @@ The system SHALL render a second section below the About Hero with generous vert
 - **THEN** words entering from the lower viewport SHALL start dimmed (`#333333` / `opacity: 0.25` in Dark mode, theme-adapted dimmed ink in Light mode) and progressively illuminate to full primary contrast (`#FFFFFF` / `opacity: 1` in Dark mode, `#000000` in Light mode) word-by-word in sync with vertical scroll progress, and reverse smoothly back to the dimmed state when scrolling upward
 
 ### Requirement: Bilingual CMS Continuity & Downstream About Sections
-The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections`, `skill_groups`, and `site_profile`), render Light and Dark themes legibly across all refactored sections, drive the overhauled Tech Stack section with `philosophy_en`/`philosophy_id` and existing IT/DevOps/Cloud `skill_groups`, and preserve Activities & Milestones, Personal Interest, and closing Contact CTA sections downstream.
+The system SHALL continue sourcing localized About content (`EN` / `ID` with automatic fallback) from the CMS data layer (`about_sections`, `skill_groups`, `activities`, and `site_profile`), render Light and Dark themes legibly across all refactored sections, and preserve Personal Interest and closing Contact CTA sections downstream.
 
-#### Scenario: Switching locale updates About Hero metadata, headline, 3-paragraph journal, and Tech Stack
+#### Scenario: Switching locale updates About Hero metadata, headline, 3-paragraph journal, Tech Stack, and Activities & Milestones
 - **WHEN** a visitor toggles between `EN` and `ID` on `/about`
-- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, Tech Stack philosophy intro and category titles, and downstream CMS sections SHALL render in the active language with automatic fallback if a translation is empty
+- **THEN** the top metadata micro-labels, 2-line Hero display lockup, `A JOURNEY OF PROGRESSION` heading, 3-paragraph narrative, Tech Stack philosophy intro (`philosophy_en`/`philosophy_id`) and `skill_groups` categories, Activities & Milestones heading/metadata/cards (`activities`), and downstream CMS sections SHALL render in the active language with automatic fallback if a translation is empty
 
 ### Requirement: Reduced-Motion Accessibility for About Motion & Primitives
 The system SHALL respect `prefers-reduced-motion: reduce` across all shared entrance primitives, the scroll-scrubbed journal, and the Tech Stack section, rendering full-contrast static states from first paint and responding immediately if the user's motion preference changes at runtime.
@@ -109,3 +109,61 @@ All motion in the Tech Stack section SHALL be fluid, GPU-accelerated, and consis
 #### Scenario: Viewport entrance & reduced-motion accessibility
 - **WHEN** the Tech Stack section enters the viewport
 - **THEN** the `/00-2` label, intro statement, and category dividers SHALL enter smoothly using the shared About page reveal timing (`once: true`), and when `prefers-reduced-motion` is enabled, all animations SHALL bypass transitions to render static `#FFFFFF` / `#A3A3A3` (or Light theme equivalent) states immediately
+
+### Requirement: Activities & Milestones Section Header (1:1 Parity)
+The section header SHALL replace the standalone serif title and thick white divider rule with the exact micro-indexed editorial header from the reference.
+
+#### Scenario: Micro-index, serif display heading, and dual metadata sub-row
+- **WHEN** the Activities & Milestones section renders
+- **THEN** it SHALL display:
+  1. Top monospace micro-index `/00-3` (`font-mono text-[11px] tracking-[0.08em] text-[#666666] mb-3`).
+  2. Uppercase editorial Serif heading `ACTIVITIES & MILESTONES` (`font-serif uppercase text-white text-3xl sm:text-4xl lg:text-[42px] leading-[1.08] tracking-[-0.01em]`).
+  3. A sub-header metadata row (`mt-3 mb-10 lg:mb-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 font-mono text-[10px] sm:text-[11px] tracking-[0.08em] text-[#737373] uppercase`) containing dot-separated domain keywords on the left and `(ACTIVITIES / '24–'26)` on the right—with NO thick `#FFFFFF` horizontal divider rule beneath it.
+
+### Requirement: Scroll-Driven Sticky Stacked Card Deck (Accordion Stack)
+The milestone items SHALL replace the `[+]`/`[-]` bordered box accordion and white-framed split cards with a **scroll-driven sticky stacked card deck** matching the reference video 1:1.
+
+#### Scenario: Incremental sticky header stacking on vertical scroll
+- **WHEN** the user scrolls vertically through the Activities & Milestones section
+- **THEN** each milestone card `i` (`0, 1, 2, ...`) SHALL use `position: sticky` with an incremental top offset below the fixed navbar (`top: calc(var(--navbar-height, 64px) + i * 48px)` on desktop; `top: calc(var(--navbar-height, 56px) + i * 44px)` on mobile) and ascending `z-index` (`10 + i`), so each subsequent card's dark header bar slides smoothly upward over the preceding card's photograph and docks cleanly beneath the previous header bar.
+- **WHEN** the user scrolls back upward
+- **THEN** the stacked header bars SHALL un-dock smoothly in reverse sequence without layout jitter.
+
+#### Scenario: Click-to-scroll header navigation
+- **WHEN** the user clicks any pinned or visible card header bar
+- **THEN** the viewport SHALL smoothly scroll (`behavior: 'smooth'`) to that card's corresponding vertical anchor position.
+
+### Requirement: Sticky Card Header Bar Typography & Status Dot
+Each card's top header strip SHALL match the exact typography, contrast, and right-hand dot indicator of the reference.
+
+#### Scenario: Header bar structure, colors, and hover illumination
+- **WHEN** a milestone card header bar renders
+- **THEN** it SHALL span full container width (`h-11 sm:h-12 px-4 sm:px-6 bg-[#0A0A0A] border-t border-[#262626] flex items-center justify-between gap-4 cursor-pointer select-none group`).
+- **THEN** the left side (`flex items-center gap-3 sm:gap-4 min-w-0`) SHALL render the zero-padded monospace index (`/01`, `/02`, etc., `font-mono text-[11px] tracking-[0.06em] text-[#737373] shrink-0`) followed by the milestone title in **ALL-CAPS geometric Sans-Serif** (`font-sans font-semibold uppercase text-xs sm:text-sm lg:text-[16px] tracking-[0.02em] text-[#D4D4D4] group-hover:text-[#FFFFFF] transition-colors duration-300 truncate`), removing any `[SAMPLE]` prefixes.
+- **THEN** the right side (`flex items-center gap-2.5 sm:gap-3 shrink-0 font-mono text-[10px] sm:text-[11px] tracking-[0.08em] text-[#8A8A8A] uppercase`) SHALL render `<CATEGORY> • <YEAR>` followed by a solid circular white dot (`w-1.5 h-1.5 rounded-full bg-white`), completely eliminating `+`/`-` icons and bordered boxes.
+
+### Requirement: Full-Bleed Panoramic Photograph & Bottom-Left Overlay Caption
+The body of each card SHALL display an edge-to-edge dark-scrim photograph with overlaid editorial metadata in the bottom-left corner.
+
+#### Scenario: Full-bleed image container, gradient scrim, and subtle hover zoom
+- **WHEN** a milestone card body renders directly beneath its sticky header bar
+- **THEN** it SHALL occupy a full-width panoramic viewport (`relative w-full h-[360px] sm:h-[460px] lg:h-[540px] overflow-hidden bg-[#111111]`).
+- **THEN** the image SHALL cover the full container (`w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]`), covered by a bottom-heavy dark gradient scrim (`bg-gradient-to-t from-black/90 via-black/45 to-black/15`). If no image URL is set yet, render a dark monochrome textured surface (`#141414`) instead of a bright white placeholder box.
+
+#### Scenario: Bottom-left overlaid metadata block
+- **WHEN** the card media renders
+- **THEN** a content overlay (`absolute bottom-0 left-0 right-0 p-5 sm:p-7 lg:p-9`) with a constrained text column (`max-w-[540px]`) SHALL display:
+  1. Uppercase monospace eyebrow subtitle (`font-mono text-[10px] sm:text-[11px] tracking-[0.08em] text-[#D4D4D4] uppercase mb-2`).
+  2. Concise Sans-Serif description (`font-sans text-xs sm:text-sm lg:text-[15px] leading-[1.55] text-[#EDEDED] mb-4`).
+  3. Subtle hairline divider (`border-t border-white/25 pt-2.5 flex items-center justify-between font-mono text-[10px] sm:text-[11px] tracking-[0.08em] text-[#A3A3A3] uppercase`) showing the city/venue on the left and the year on the right.
+
+### Requirement: Responsive & Accessibility Constraints
+The Activities & Milestones card deck SHALL adapt header density and sticky offsets for narrow mobile viewports (`< 640px` / `< 480px`) and honor `prefers-reduced-motion: reduce`.
+
+#### Scenario: Mobile header condensation and capped sticky stacking offsets
+- **WHEN** the Activities & Milestones section renders on mobile (`< 640px`)
+- **THEN** it SHALL condense header bar height to `44px` (`h-11`), hide the category word on `< 480px` (`hidden min-[480px]:inline`) while keeping `<YEAR> •` visible so the ALL-CAPS milestone title never collides on narrow screens, and cap stacked sticky offset gracefully so cards remain readable.
+
+#### Scenario: Reduced motion disables image zoom and smooth-scroll interpolation
+- **WHEN** `prefers-reduced-motion` is enabled
+- **THEN** the Activities & Milestones cards SHALL disable image hover zoom scaling and smooth-scroll interpolation while preserving clean static card readability.

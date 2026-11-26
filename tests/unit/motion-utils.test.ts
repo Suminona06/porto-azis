@@ -29,6 +29,7 @@ import {
   TECH_ACCORDION_DURATION_SEC,
   TECH_ACCORDION_ICON_DURATION_SEC,
   TECH_ACCORDION_STAGGER_SEC,
+  computeActivityScrollTarget,
   computeJourneyWordOpacity,
 } from '../../src/lib/motion/about-motion';
 
@@ -218,5 +219,12 @@ describe('shared motion primitives timing', () => {
     expect(TECH_ACCORDION_DURATION_SEC).toBe(0.56);
     expect(TECH_ACCORDION_ICON_DURATION_SEC).toBe(0.42);
     expect(TECH_ACCORDION_STAGGER_SEC).toBe(0.04);
+  });
+
+  it('computes natural click-to-scroll target Y for sticky milestone cards', () => {
+    // Deck starts at 2400px, preceding cards total 1176px (2 * 588px), card 2 sticky top is 160px
+    expect(computeActivityScrollTarget(2400, 1176, 160)).toBe(3416);
+    // Clamps cleanly at 0 if sticky offset exceeds deck top
+    expect(computeActivityScrollTarget(40, 0, 64)).toBe(0);
   });
 });

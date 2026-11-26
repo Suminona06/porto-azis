@@ -20,6 +20,18 @@ export const TECH_ACCORDION_ICON_DURATION_SEC = 0.42;
 export const TECH_ACCORDION_STAGGER_SEC = 0.04;
 
 /**
+ * Pure helper computing the vertical document scroll target for a sticky milestone card
+ * using the deck's natural flow position and preceding card heights (immune to stuck offsets).
+ */
+export function computeActivityScrollTarget(
+  deckTopDocY: number,
+  precedingHeightsSum: number,
+  stickyTopPx: number,
+): number {
+  return Math.max(0, Math.round(deckTopDocY + precedingHeightsSum - stickyTopPx));
+}
+
+/**
  * Pure helper computing `[0..total]` per-word opacity for bidirectional scroll-scrubbed
  * journal illumination (`0.22` dimmed start -> `1` full contrast end).
  */
@@ -63,6 +75,14 @@ export function initAboutMotion(): () => void {
   const techTriggers = Array.from(
     document.querySelectorAll<HTMLButtonElement>('[data-tech-accordion-trigger]'),
   );
+  const activitiesSectionEl = document.querySelector<HTMLElement>('[data-activities-section]');
+  const activitiesRevealEls = Array.from(
+    activitiesSectionEl?.querySelectorAll<HTMLElement>('[data-activities-reveal]') ?? [],
+  );
+  const activitiesDeckEl = document.querySelector<HTMLElement>('[data-activities-deck]');
+  const activityCards = Array.from(
+    activitiesDeckEl?.querySelectorAll<HTMLElement>('[data-activity-card]') ?? [],
+  );
 
   let activeCtx: gsap.Context | null = null;
   let heroTl: gsap.core.Timeline | null = null;
@@ -97,6 +117,10 @@ export function initAboutMotion(): () => void {
     }
 
     for (const el of techRevealEls) {
+      gsap.set(el, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+    }
+
+    for (const el of activitiesRevealEls) {
       gsap.set(el, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
     }
 
@@ -209,6 +233,26 @@ export function initAboutMotion(): () => void {
             clearProps: 'opacity,transform',
             scrollTrigger: {
               trigger: techStackSectionEl,
+              start: 'top 85%',
+              once: true,
+            },
+          },
+        );
+      }
+
+      if (activitiesSectionEl && activitiesRevealEls.length > 0) {
+        gsap.fromTo(
+          activitiesRevealEls,
+          { opacity: 0, y: 12 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.08,
+            ease: techAccordionEase,
+            clearProps: 'opacity,transform',
+            scrollTrigger: {
+              trigger: activitiesSectionEl,
               start: 'top 85%',
               once: true,
             },
@@ -370,6 +414,46 @@ export function initAboutMotion(): () => void {
     cleanups.push(() => {
       trigger.removeEventListener('click', onClick);
       trigger.removeAttribute('data-tech-bound');
+    });
+  }
+
+  const syncNavbarHeightVar = () => {
+    const header = document.querySelector<HTMLElement>('header');
+    if (header && header.offsetHeight > 0) {
+      document.documentElement.style.setProperty('--navbar-height', `${header.offsetHeight}px`);
+    }
+  };
+  syncNavbarHeightVar();
+  window.addEventListener('resize', syncNavbarHeightVar, { passive: true });
+  cleanups.push(() => {
+    window.removeEventListener('resize', syncNavbarHeightVar);
+  });
+
+  if (activitiesDeckEl && activityCards.length > 0) {
+    activityCards.forEach((card, cardIdx) => {
+      const headerBtn = card.querySelector<HTMLButtonElement>('[data-activity-header]');
+      if (!headerBtn || headerBtn.getAttribute('data-activity-bound') === 'true') return;
+      headerBtn.setAttribute('data-activity-bound', 'true');
+
+      const onHeaderClick = () => {
+        const deckTopDocY = activitiesDeckEl.getBoundingClientRect().top + window.scrollY;
+        let precedingHeightsSum = 0;
+        for (let k = 0; k < cardIdx; k += 1) {
+          precedingHeightsSum += activityCards[k]?.offsetHeight ?? 0;
+        }
+        const stickyTopPx = parseFloat(window.getComputedStyle(card).top) || 0;
+        const targetY = computeActivityScrollTarget(deckTopDocY, precedingHeightsSum, stickyTopPx);
+        window.scrollTo({
+          top: targetY,
+          behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+        });
+      };
+
+      headerBtn.addEventListener('click', onHeaderClick);
+      cleanups.push(() => {
+        headerBtn.removeEventListener('click', onHeaderClick);
+        headerBtn.removeAttribute('data-activity-bound');
+      });
     });
   }
 
